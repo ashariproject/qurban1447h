@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -6,7 +5,6 @@ import {
   Package, 
   Users, 
   Beef, 
-  Meat, 
   MapPin,
   LayoutDashboard,
   ChevronLeft,
