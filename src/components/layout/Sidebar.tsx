@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { 
   Package, 
   Users, 
-  Cow, 
+  Beef, 
   Meat, 
   MapPin,
   LayoutDashboard,
@@ -24,7 +24,7 @@ interface RoleInfo {
 const roles: Record<Role, RoleInfo> = {
   admin: { name: "Admin", icon: LayoutDashboard },
   shohibul: { name: "Petugas Shohibul", icon: Users },
-  animal: { name: "Petugas Hewan", icon: Cow },
+  animal: { name: "Petugas Hewan", icon: Beef },
   packaging: { name: "Petugas Pengemasan", icon: Package },
   distribution: { name: "Petugas Distribusi", icon: MapPin }
 };
