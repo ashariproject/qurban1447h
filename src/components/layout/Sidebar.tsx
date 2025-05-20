@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,12 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Define user roles for the sidebar
 type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution";
@@ -17,14 +24,35 @@ type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution";
 interface RoleInfo {
   name: string;
   icon: React.ElementType;
+  description: string;
 }
 
 const roles: Record<Role, RoleInfo> = {
-  admin: { name: "Admin", icon: LayoutDashboard },
-  shohibul: { name: "Petugas Shohibul", icon: Users },
-  animal: { name: "Petugas Hewan", icon: Beef },
-  packaging: { name: "Petugas Pengemasan", icon: Package },
-  distribution: { name: "Petugas Distribusi", icon: MapPin }
+  admin: { 
+    name: "Admin", 
+    icon: LayoutDashboard,
+    description: "Akses penuh seluruh fitur dan data. Mengatur akun petugas. Monitoring progres real-time semua tahapan. Menyusun laporan akhir."
+  },
+  shohibul: { 
+    name: "Petugas Shohibul", 
+    icon: Users,
+    description: "Input dan update data shohibul (nama, kontak, alamat, partisipasi). Memetakan lokasi shohibul. Validasi pembayaran/konfirmasi."
+  },
+  animal: { 
+    name: "Petugas Hewan", 
+    icon: Beef,
+    description: "Input data hewan: jenis, identitas/tag. Update status hewan: diterima → disembelih → dipotong. Dokumentasi: foto/video penyembelihan."
+  },
+  packaging: { 
+    name: "Petugas Pengemasan", 
+    icon: Package,
+    description: "Input hasil pengemasan daging: paket sapi dan kambing. Jumlah kemasan & estimasi berat per paket. Status: dikemas / siap distribusi."
+  },
+  distribution: { 
+    name: "Petugas Distribusi", 
+    icon: MapPin,
+    description: "Input data penerima: nama, alamat, kluster wilayah. Jenis paket diterima: sapi/kambing. Status distribusi: terkirim / belum. Bukti terima: tanda tangan digital, foto."
+  }
 };
 
 interface SidebarProps {
@@ -60,24 +88,33 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
         <div className="px-3 mb-2">
           {!collapsed && <p className="text-xs text-sidebar-foreground/60 mb-2 px-3">Peran</p>}
         </div>
-        <nav className="space-y-1 px-3">
-          {Object.entries(roles).map(([key, { name, icon: Icon }]) => (
-            <Button
-              key={key}
-              variant="ghost"
-              className={cn(
-                "w-full justify-start",
-                activeRole === key
-                  ? "bg-sidebar-accent text-qurban-600 font-medium"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-              )}
-              onClick={() => onRoleChange(key as Role)}
-            >
-              <Icon className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
-              {!collapsed && <span>{name}</span>}
-            </Button>
-          ))}
-        </nav>
+        <TooltipProvider>
+          <nav className="space-y-1 px-3">
+            {Object.entries(roles).map(([key, { name, icon: Icon, description }]) => (
+              <Tooltip key={key} delayDuration={300}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start",
+                      activeRole === key
+                        ? "bg-sidebar-accent text-qurban-600 font-medium"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                    )}
+                    onClick={() => onRoleChange(key as Role)}
+                  >
+                    <Icon className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                    {!collapsed && <span>{name}</span>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="max-w-xs text-xs">
+                  <p className="font-medium">{name}</p>
+                  <p className="mt-1">{description}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </nav>
+        </TooltipProvider>
       </div>
 
       <div className="p-4 border-t border-sidebar-border">
