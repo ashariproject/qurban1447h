@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,33 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				qurban: {
+					'50': '#f1f8f2',
+					'100': '#dcefde',
+					'200': '#bde0c0',
+					'300': '#92ca97',
+					'400': '#6baf71',
+					'500': '#4d9153',
+					'600': '#3a7440',
+					'700': '#305c35',
+					'800': '#29492d',
+					'900': '#243d28',
+					'950': '#0f2012',
+				},
+				light: {
+					'50': '#f5f5f5',
+					'100': '#e9e9e9',
+					'200': '#d9d9d9',
+					'300': '#c4c4c4',
+					'400': '#9e9e9e',
+					'500': '#7b7b7b',
+					'600': '#555555',
+					'700': '#434343',
+					'800': '#262626',
+					'900': '#171717',
+					'950': '#0d0d0d',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +111,16 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'progress-fill': {
+					'0%': { width: '0%' },
+					'100%': { width: 'var(--progress-width)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'progress-fill': 'progress-fill 1s ease-in-out forwards'
 			}
 		}
 	},
