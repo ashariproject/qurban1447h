@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { 
@@ -108,6 +109,15 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+
+  // Check if a menu item is active
+  const isActive = (path: string) => {
+    if (path === "/" && location.pathname === "/") {
+      return true;
+    }
+    return location.pathname.startsWith(path) && path !== "/";
+  };
 
   return (
     <div
@@ -175,14 +185,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
                     variant="ghost"
                     className={cn(
                       "w-full justify-start",
-                      "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                      isActive(item.path)
+                        ? "bg-sidebar-accent text-qurban-600 font-medium"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent/50"
                     )}
                     asChild
                   >
-                    <a href={item.path}>
+                    <Link to={item.path}>
                       <item.icon className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
                       {!collapsed && <span>{item.name}</span>}
-                    </a>
+                    </Link>
                   </Button>
                 </TooltipTrigger>
                 {collapsed && (
