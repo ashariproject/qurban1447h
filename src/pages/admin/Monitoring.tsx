@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -140,7 +139,7 @@ const Monitoring = () => {
                         <p className="text-sm font-medium">{stage.name}</p>
                         <div className="flex items-center justify-between mt-2">
                           <p className="text-xl font-bold">{stage.completed}/{stage.total}</p>
-                          <Badge variant={calculatePercentage(stage.completed, stage.total) >= 80 ? "success" : "default"}>
+                          <Badge variant={calculatePercentage(stage.completed, stage.total) >= 80 ? "secondary" : "default"}>
                             {calculatePercentage(stage.completed, stage.total)}%
                           </Badge>
                         </div>
