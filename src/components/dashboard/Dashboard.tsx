@@ -1,11 +1,40 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ProgressCard from './ProgressCard';
 import DistributionCard from './DistributionCard';
+import { format } from 'date-fns';
 
 const Dashboard: React.FC = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="space-y-8">
+      {/* Date and Time Header */}
+      <div className="bg-white rounded-lg shadow p-6 border">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Dashboard Qurban</h1>
+            <p className="text-gray-500 mt-1">Monitoring real-time pelaksanaan qurban</p>
+          </div>
+          <div className="mt-4 md:mt-0 text-right">
+            <div className="text-lg font-semibold text-gray-900">
+              {format(currentTime, 'EEEE, dd MMMM yyyy')}
+            </div>
+            <div className="text-2xl font-bold text-blue-600">
+              {format(currentTime, 'HH:mm:ss')}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Progress Section */}
       <section>
         <h2 className="text-xl font-semibold mb-4">PROGRES QURBAN</h2>
