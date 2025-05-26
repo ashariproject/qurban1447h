@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -12,25 +11,61 @@ const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [userRole, setUserRole] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Simple credentials for easy access
+  // User credentials with their roles and redirect paths
   const validCredentials = {
-    admin: 'admin123',
-    petugas: 'petugas123',
-    qurban: 'qurban123'
+    admin: { 
+      password: 'admin123', 
+      role: 'admin',
+      redirectPath: '/admin'
+    },
+    petugasshohibul: { 
+      password: 'petugas123', 
+      role: 'shohibul',
+      redirectPath: '/shohibul/data'
+    },
+    petugashewan: { 
+      password: 'petugas123', 
+      role: 'animal',
+      redirectPath: '/animal/data'
+    },
+    petugaspengemasan: { 
+      password: 'petugas123', 
+      role: 'packaging',
+      redirectPath: '/packaging/data'
+    },
+    petugasdistribusi: { 
+      password: 'petugas123', 
+      role: 'distribution',
+      redirectPath: '/distribution/recipients'
+    }
   };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (validCredentials[username as keyof typeof validCredentials] === password) {
+    const userCredential = validCredentials[username as keyof typeof validCredentials];
+    
+    if (userCredential && userCredential.password === password) {
       setIsLoggedIn(true);
+      setUserRole(userCredential.role);
+      
       toast({
         title: "Login Berhasil",
         description: `Selamat datang, ${username}!`,
       });
+
+      // Redirect to appropriate page based on role
+      if (username === 'admin') {
+        // Admin stays on dashboard
+        return;
+      } else {
+        // Other users redirect to their specific pages
+        navigate(userCredential.redirectPath);
+      }
     } else {
       toast({
         title: "Login Gagal",
@@ -44,17 +79,20 @@ const Index = () => {
     setIsLoggedIn(false);
     setUsername('');
     setPassword('');
+    setUserRole('');
+    navigate('/');
     toast({
       title: "Logout Berhasil",
       description: "Anda telah keluar dari sistem.",
     });
   };
 
-  if (isLoggedIn) {
+  // Only show dashboard for admin users
+  if (isLoggedIn && username === 'admin') {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="bg-white shadow-sm border-b px-6 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold">Dashboard Qurban As Sakinah</h1>
+          <h1 className="text-xl font-semibold">Dashboard Qurban As Sakinah - Admin</h1>
           <Button onClick={handleLogout} variant="outline">
             Logout
           </Button>
@@ -109,9 +147,11 @@ const Index = () => {
           <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
             <h3 className="font-medium text-blue-800 mb-2">Akun Demo:</h3>
             <div className="text-sm text-blue-700 space-y-1">
-              <div><strong>admin</strong> / admin123</div>
-              <div><strong>petugas</strong> / petugas123</div>
-              <div><strong>qurban</strong> / qurban123</div>
+              <div><strong>admin</strong> / admin123 (Dashboard utama)</div>
+              <div><strong>petugasshohibul</strong> / petugas123 (Data Shohibul)</div>
+              <div><strong>petugashewan</strong> / petugas123 (Data Hewan)</div>
+              <div><strong>petugaspengemasan</strong> / petugas123 (Data Pengemasan)</div>
+              <div><strong>petugasdistribusi</strong> / petugas123 (Data Penerima)</div>
             </div>
           </div>
         </CardContent>
