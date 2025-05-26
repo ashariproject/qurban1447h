@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,22 @@ interface LayoutProps {
 type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution";
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [activeRole, setActiveRole] = useState<Role>("admin");
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // Determine user role based on current path
+  const getUserRoleFromPath = (): Role => {
+    const path = location.pathname;
+    if (path.startsWith('/admin')) return 'admin';
+    if (path.startsWith('/shohibul')) return 'shohibul';
+    if (path.startsWith('/animal')) return 'animal';
+    if (path.startsWith('/packaging')) return 'packaging';
+    if (path.startsWith('/distribution')) return 'distribution';
+    return 'admin'; // default
+  };
+
+  const [activeRole, setActiveRole] = useState<Role>(getUserRoleFromPath());
+  const currentUserRole = getUserRoleFromPath();
 
   const handleBackToMain = () => {
     navigate('/');
@@ -22,7 +36,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar activeRole={activeRole} onRoleChange={setActiveRole} />
+      <Sidebar 
+        activeRole={activeRole} 
+        onRoleChange={setActiveRole}
+        currentUserRole={currentUserRole}
+      />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b bg-white">

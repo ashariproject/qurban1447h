@@ -105,9 +105,10 @@ const roles: Record<Role, RoleInfo> = {
 interface SidebarProps {
   activeRole: Role;
   onRoleChange: (role: Role) => void;
+  currentUserRole: Role;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange, currentUserRole }) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
@@ -117,6 +118,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
       return true;
     }
     return location.pathname.startsWith(path) && path !== "/";
+  };
+
+  // Get available roles for current user (admin sees all, others see only their role)
+  const getAvailableRoles = () => {
+    if (currentUserRole === 'admin') {
+      return Object.entries(roles);
+    }
+    return [[currentUserRole, roles[currentUserRole]]];
   };
 
   return (
@@ -141,36 +150,41 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
       </div>
 
       <div className="flex-1 py-4 overflow-y-auto flex flex-col">
-        <div className="px-3 mb-2">
-          {!collapsed && <p className="text-xs text-sidebar-foreground/60 mb-2 px-3">Peran</p>}
-        </div>
-        <TooltipProvider>
-          <nav className="space-y-1 px-3 mb-6">
-            {Object.entries(roles).map(([key, { name, icon: Icon, description }]) => (
-              <Tooltip key={key} delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className={cn(
-                      "w-full justify-start",
-                      activeRole === key
-                        ? "bg-sidebar-accent text-qurban-600 font-medium"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                    )}
-                    onClick={() => onRoleChange(key as Role)}
-                  >
-                    <Icon className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
-                    {!collapsed && <span>{name}</span>}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="max-w-xs text-xs">
-                  <p className="font-medium">{name}</p>
-                  <p className="mt-1">{description}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </nav>
-        </TooltipProvider>
+        {/* Only show role switcher for admin */}
+        {currentUserRole === 'admin' && (
+          <>
+            <div className="px-3 mb-2">
+              {!collapsed && <p className="text-xs text-sidebar-foreground/60 mb-2 px-3">Peran</p>}
+            </div>
+            <TooltipProvider>
+              <nav className="space-y-1 px-3 mb-6">
+                {getAvailableRoles().map(([key, { name, icon: Icon, description }]) => (
+                  <Tooltip key={key} delayDuration={300}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className={cn(
+                          "w-full justify-start",
+                          activeRole === key
+                            ? "bg-sidebar-accent text-qurban-600 font-medium"
+                            : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                        )}
+                        onClick={() => onRoleChange(key as Role)}
+                      >
+                        <Icon className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                        {!collapsed && <span>{name}</span>}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="max-w-xs text-xs">
+                      <p className="font-medium">{name}</p>
+                      <p className="mt-1">{description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </nav>
+            </TooltipProvider>
+          </>
+        )}
         
         {/* Role-specific menu items */}
         {!collapsed && <div className="px-3 mb-2">
@@ -178,7 +192,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
         </div>}
         <TooltipProvider>
           <nav className="space-y-1 px-3 flex-1">
-            {roles[activeRole].menuItems.map((item, index) => (
+            {roles[currentUserRole].menuItems.map((item, index) => (
               <Tooltip key={index} delayDuration={300}>
                 <TooltipTrigger asChild>
                   <Button
@@ -212,11 +226,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
         {!collapsed && (
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-full bg-qurban-100 flex items-center justify-center">
-              <span className="font-semibold text-qurban-600">A</span>
+              <span className="font-semibold text-qurban-600">
+                {roles[currentUserRole].name.charAt(0)}
+              </span>
             </div>
             <div>
-              <p className="text-sm font-medium">Admin Qurban</p>
-              <p className="text-xs text-sidebar-foreground/60">Akses Penuh</p>
+              <p className="text-sm font-medium">{roles[currentUserRole].name}</p>
+              <p className="text-xs text-sidebar-foreground/60">
+                {currentUserRole === 'admin' ? 'Akses Penuh' : 'Petugas'}
+              </p>
             </div>
           </div>
         )}
