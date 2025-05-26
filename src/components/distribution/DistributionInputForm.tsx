@@ -25,7 +25,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-  lokasi: z.string().min(1, "Lokasi harus dipilih"),
+  jenisDistribusi: z.enum(["shohibul", "warga"], {
+    required_error: "Jenis distribusi harus dipilih",
+  }),
+  shohibulId: z.string().optional(),
+  wilayahWarga: z.string().optional(),
+  sektorDetail: z.string().optional(),
   jumlahPaket: z.number().min(1, "Jumlah paket harus lebih dari 0"),
   jenisKemasan: z.enum(["kg1", "kg2", "kg5"], {
     required_error: "Jenis kemasan harus dipilih",
@@ -41,7 +46,10 @@ const DistributionInputForm = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      lokasi: "",
+      jenisDistribusi: undefined,
+      shohibulId: "",
+      wilayahWarga: "",
+      sektorDetail: "",
       jumlahPaket: 0,
       namaPenerima: "",
       noHpPenerima: "",
@@ -49,28 +57,56 @@ const DistributionInputForm = () => {
     },
   });
 
+  const watchJenisDistribusi = form.watch('jenisDistribusi');
+  const watchWilayahWarga = form.watch('wilayahWarga');
+
   const onSubmit = (data: FormValues) => {
     console.log("Data Distribusi:", data);
     alert("Data distribusi berhasil disimpan!");
     form.reset();
   };
 
-  const lokasiOptions = [
-    "Pantai Mentari",
-    "Sukolilo",
-    "Gunung Anyar", 
-    "Rungkut",
-    "Tenggilis",
-    "Gebang",
-    "Lainnya"
+  // Data shohibul yang tersimpan (contoh data)
+  const shohibulOptions = [
+    { id: "SH001", nama: "Ahmad Suryanto" },
+    { id: "SH002", nama: "Siti Nurhaliza" },
+    { id: "SH003", nama: "Budi Santoso" },
+    { id: "SH004", nama: "Fatimah Rahman" },
+    { id: "SH005", nama: "Muhammad Ridwan" },
   ];
+
+  const wilayahWargaOptions = [
+    { value: "pantai_mentari", label: "Pantai Mentari (6 sektor)" },
+    { value: "komplek_al", label: "Komplek AL (4 gang)" },
+  ];
+
+  const getSektorOptions = () => {
+    if (watchWilayahWarga === "pantai_mentari") {
+      return [
+        "Sektor 1 - Pantai Mentari Timur",
+        "Sektor 2 - Pantai Mentari Barat",
+        "Sektor 3 - Pantai Mentari Utara",
+        "Sektor 4 - Pantai Mentari Selatan",
+        "Sektor 5 - Pantai Mentari Tengah",
+        "Sektor 6 - Pantai Mentari Pesisir"
+      ];
+    } else if (watchWilayahWarga === "komplek_al") {
+      return [
+        "Gang 1 - Jl. Laksamana",
+        "Gang 2 - Jl. Admiral",
+        "Gang 3 - Jl. Kapten Laut",
+        "Gang 4 - Jl. Kolonel Laut"
+      ];
+    }
+    return [];
+  };
 
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
         <CardTitle>Form Input Distribusi</CardTitle>
         <CardDescription>
-          Input jumlah paket yang diserahkan sesuai dengan lokasi distribusi.
+          Input distribusi untuk Shohibul Qurban atau Warga sesuai wilayah yang ditentukan.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -78,31 +114,120 @@ const DistributionInputForm = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="lokasi"
+              name="jenisDistribusi"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lokasi Distribusi</FormLabel>
+                  <FormLabel>Jenis Distribusi</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Pilih lokasi distribusi" />
+                        <SelectValue placeholder="Pilih jenis distribusi" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {lokasiOptions.map((lokasi) => (
-                        <SelectItem key={lokasi} value={lokasi}>
-                          {lokasi}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="shohibul">Shohibul Qurban</SelectItem>
+                      <SelectItem value="warga">Distribusi Warga</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Pilih lokasi dimana paket akan diserahkan.
+                    Pilih apakah distribusi untuk shohibul atau warga umum.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {watchJenisDistribusi === "shohibul" && (
+              <FormField
+                control={form.control}
+                name="shohibulId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pilih Shohibul Qurban</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih shohibul qurban" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {shohibulOptions.map((shohibul) => (
+                          <SelectItem key={shohibul.id} value={shohibul.id}>
+                            {shohibul.id} - {shohibul.nama}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Pilih shohibul qurban yang akan menerima distribusi.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {watchJenisDistribusi === "warga" && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="wilayahWarga"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Wilayah Distribusi Warga</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Pilih wilayah distribusi" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {wilayahWargaOptions.map((wilayah) => (
+                            <SelectItem key={wilayah.value} value={wilayah.value}>
+                              {wilayah.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Pilih wilayah untuk distribusi warga.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {watchWilayahWarga && (
+                  <FormField
+                    control={form.control}
+                    name="sektorDetail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Detail Sektor/Gang</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Pilih sektor/gang detail" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {getSektorOptions().map((sektor) => (
+                              <SelectItem key={sektor} value={sektor}>
+                                {sektor}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Pilih sektor atau gang spesifik untuk distribusi.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </>
+            )}
 
             <FormField
               control={form.control}
@@ -162,7 +287,7 @@ const DistributionInputForm = () => {
                     <Input placeholder="Masukkan nama penerima" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Nama koordinator penerima di lokasi distribusi.
+                    Nama penerima atau koordinator di lokasi distribusi.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
