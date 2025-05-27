@@ -15,6 +15,15 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Animal data that would be integrated from AnimalDataForm
+  const animalData = {
+    totalSapi: 12,
+    totalKambing: 13,
+    totalHewan: 25,
+    sapiDisembelih: 8,
+    kambingDipotong: 7
+  };
+
   // Simulated packaging data that would be integrated from PackagingDataTable
   const packagingData = {
     totalPacksProduced: 35, // This would come from packaging officer input
@@ -24,8 +33,8 @@ const Dashboard: React.FC = () => {
 
   // Updated progress data with packaging integration
   const progressData = {
-    penyembelihan: { current: 18, total: 25, bgColor: "bg-gradient-to-br from-red-500 to-red-600" },
-    pengeletan: { current: 15, total: 25, bgColor: "bg-gradient-to-br from-orange-500 to-orange-600" },
+    penyembelihan: { current: animalData.sapiDisembelih, total: animalData.totalSapi, bgColor: "bg-gradient-to-br from-red-500 to-red-600" },
+    pengeletan: { current: animalData.kambingDipotong, total: animalData.totalKambing, bgColor: "bg-gradient-to-br from-orange-500 to-orange-600" },
     penimbangan: { current: packagingData.totalPacksProduced, total: 25, bgColor: "bg-gradient-to-br from-purple-500 to-purple-600" },
   };
 
@@ -87,6 +96,28 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Animal Summary Section */}
+      <section>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">TOTAL HEWAN QURBAN</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg">
+            <h3 className="text-lg font-semibold mb-2">TOTAL HEWAN</h3>
+            <div className="text-4xl font-bold">{animalData.totalHewan}</div>
+            <div className="text-blue-100 text-sm mt-2">Sapi + Kambing</div>
+          </div>
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6 shadow-lg">
+            <h3 className="text-lg font-semibold mb-2">HEWAN SAPI</h3>
+            <div className="text-4xl font-bold">{animalData.totalSapi}</div>
+            <div className="text-orange-100 text-sm mt-2">Ekor Sapi Qurban</div>
+          </div>
+          <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
+            <h3 className="text-lg font-semibold mb-2">HEWAN KAMBING</h3>
+            <div className="text-4xl font-bold">{animalData.totalKambing}</div>
+            <div className="text-green-100 text-sm mt-2">Ekor Kambing Qurban</div>
+          </div>
+        </div>
+      </section>
+
       {/* Progress Section */}
       <section>
         <h2 className="text-xl font-semibold mb-4 text-gray-800">PROGRES QURBAN</h2>
@@ -95,14 +126,14 @@ const Dashboard: React.FC = () => {
             title="PENYEMBELIHAN" 
             current={progressData.penyembelihan.current} 
             total={progressData.penyembelihan.total}
-            description={`Diselesaikan oleh petugas hewan: ${progressData.penyembelihan.current} dari ${progressData.penyembelihan.total} ekor`}
+            description={`Diselesaikan oleh petugas hewan: ${progressData.penyembelihan.current} dari ${progressData.penyembelihan.total} ekor sapi`}
             bgColor={progressData.penyembelihan.bgColor}
           />
           <ProgressCard 
             title="PENGELETAN (Pemotongan Daging)" 
             current={progressData.pengeletan.current} 
             total={progressData.pengeletan.total}
-            description={`Diproses oleh petugas hewan: ${progressData.pengeletan.current} dari ${progressData.pengeletan.total} hewan`}
+            description={`Diproses oleh petugas hewan: ${progressData.pengeletan.current} dari ${progressData.pengeletan.total} ekor kambing`}
             bgColor={progressData.pengeletan.bgColor}
           />
           <ProgressCard 
@@ -136,18 +167,18 @@ const Dashboard: React.FC = () => {
       {/* Summary Statistics */}
       <section className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">RINGKASAN STATISTIK</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">
-              {distributionData.reduce((acc, curr) => acc + curr.current, 0)}
+              {animalData.totalHewan}
             </div>
-            <div className="text-sm text-gray-600">Total Paket Terdistribusi</div>
+            <div className="text-sm text-gray-600">Total Hewan</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {Math.round((distributionData.reduce((acc, curr) => acc + curr.current, 0) / distributionData.reduce((acc, curr) => acc + curr.total, 0)) * 100)}%
+              {Math.round(((animalData.sapiDisembelih + animalData.kambingDipotong) / animalData.totalHewan) * 100)}%
             </div>
-            <div className="text-sm text-gray-600">Persentase Distribusi</div>
+            <div className="text-sm text-gray-600">Hewan Diproses</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-orange-600">
@@ -160,6 +191,12 @@ const Dashboard: React.FC = () => {
               {progressData.penimbangan.current}
             </div>
             <div className="text-sm text-gray-600">Paket Dikemas</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-red-600">
+              {distributionData.reduce((acc, curr) => acc + curr.current, 0)}
+            </div>
+            <div className="text-sm text-gray-600">Paket Terdistribusi</div>
           </div>
         </div>
       </section>
