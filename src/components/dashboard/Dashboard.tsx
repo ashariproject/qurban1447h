@@ -3,9 +3,11 @@ import React, { useState, useEffect } from 'react';
 import ProgressCard from './ProgressCard';
 import DistributionCard from './DistributionCard';
 import { format } from 'date-fns';
+import { useQurban } from '@/contexts/QurbanContext';
 
 const Dashboard: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const { animalData, packagingData } = useQurban();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -15,27 +17,37 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Animal data that would be integrated from AnimalDataForm
-  const animalData = {
-    totalSapi: 12,
-    totalKambing: 13,
-    totalHewan: 25,
-    sapiDisembelih: 8,
-    kambingDipotong: 7
+  // Calculate total values
+  const totalHewan = animalData.totalSapi + animalData.totalKambing;
+  const totalDisembelih = animalData.sapiDisembelih + animalData.kambingDisembelih;
+  const totalPacksProduced = packagingData.sapiPacksOutput + packagingData.kambingPacksOutput;
+
+  // Progress data for Sapi
+  const progressDataSapi = {
+    penyembelihan: { 
+      current: animalData.sapiDisembelih, 
+      total: animalData.totalSapi, 
+      bgColor: "bg-gradient-to-br from-red-500 to-red-600" 
+    },
+    pengemasan: { 
+      current: packagingData.sapiPacksOutput, 
+      total: packagingData.sapiPacksInput, 
+      bgColor: "bg-gradient-to-br from-blue-500 to-blue-600" 
+    },
   };
 
-  // Simulated packaging data that would be integrated from PackagingDataTable
-  const packagingData = {
-    totalPacksProduced: 35, // This would come from packaging officer input
-    sapiPacks: 20,
-    kambingPacks: 15
-  };
-
-  // Updated progress data with packaging integration
-  const progressData = {
-    penyembelihan: { current: animalData.sapiDisembelih, total: animalData.totalSapi, bgColor: "bg-gradient-to-br from-red-500 to-red-600" },
-    pengeletan: { current: animalData.kambingDipotong, total: animalData.totalKambing, bgColor: "bg-gradient-to-br from-orange-500 to-orange-600" },
-    penimbangan: { current: packagingData.totalPacksProduced, total: 25, bgColor: "bg-gradient-to-br from-purple-500 to-purple-600" },
+  // Progress data for Kambing
+  const progressDataKambing = {
+    penyembelihan: { 
+      current: animalData.kambingDisembelih, 
+      total: animalData.totalKambing, 
+      bgColor: "bg-gradient-to-br from-orange-500 to-orange-600" 
+    },
+    pengemasan: { 
+      current: packagingData.kambingPacksOutput, 
+      total: packagingData.kambingPacksInput, 
+      bgColor: "bg-gradient-to-br from-purple-500 to-purple-600" 
+    },
   };
 
   const distributionData = [
@@ -102,7 +114,7 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg">
             <h3 className="text-lg font-semibold mb-2">TOTAL HEWAN</h3>
-            <div className="text-4xl font-bold">{animalData.totalHewan}</div>
+            <div className="text-4xl font-bold">{totalHewan}</div>
             <div className="text-blue-100 text-sm mt-2">Sapi + Kambing</div>
           </div>
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6 shadow-lg">
@@ -118,30 +130,44 @@ const Dashboard: React.FC = () => {
         </div>
       </section>
 
-      {/* Progress Section */}
+      {/* Progress Section - Sapi */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">PROGRES QURBAN</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">PROGRES QURBAN SAPI</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ProgressCard 
-            title="PENYEMBELIHAN" 
-            current={progressData.penyembelihan.current} 
-            total={progressData.penyembelihan.total}
-            description={`Diselesaikan oleh petugas hewan: ${progressData.penyembelihan.current} dari ${progressData.penyembelihan.total} ekor sapi`}
-            bgColor={progressData.penyembelihan.bgColor}
+            title="PENYEMBELIHAN SAPI" 
+            current={progressDataSapi.penyembelihan.current} 
+            total={progressDataSapi.penyembelihan.total}
+            description={`Diselesaikan: ${progressDataSapi.penyembelihan.current} dari ${progressDataSapi.penyembelihan.total} ekor sapi`}
+            bgColor={progressDataSapi.penyembelihan.bgColor}
           />
           <ProgressCard 
-            title="PENGELETAN (Pemotongan Daging)" 
-            current={progressData.pengeletan.current} 
-            total={progressData.pengeletan.total}
-            description={`Diproses oleh petugas hewan: ${progressData.pengeletan.current} dari ${progressData.pengeletan.total} ekor kambing`}
-            bgColor={progressData.pengeletan.bgColor}
+            title="PENGEMASAN SAPI" 
+            current={progressDataSapi.pengemasan.current} 
+            total={progressDataSapi.pengemasan.total}
+            description={`Pack dikemas: ${progressDataSapi.pengemasan.current} dari ${progressDataSapi.pengemasan.total} pack daging sapi`}
+            bgColor={progressDataSapi.pengemasan.bgColor}
+          />
+        </div>
+      </section>
+
+      {/* Progress Section - Kambing */}
+      <section>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">PROGRES QURBAN KAMBING</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ProgressCard 
+            title="PENYEMBELIHAN KAMBING" 
+            current={progressDataKambing.penyembelihan.current} 
+            total={progressDataKambing.penyembelihan.total}
+            description={`Diselesaikan: ${progressDataKambing.penyembelihan.current} dari ${progressDataKambing.penyembelihan.total} ekor kambing`}
+            bgColor={progressDataKambing.penyembelihan.bgColor}
           />
           <ProgressCard 
-            title="PENIMBANGAN & PENGEMASAN" 
-            current={progressData.penimbangan.current} 
-            total={progressData.penimbangan.total}
-            description={`Pack dikemas oleh petugas pengemasan: ${progressData.penimbangan.current} pack (${packagingData.sapiPacks} sapi + ${packagingData.kambingPacks} kambing)`}
-            bgColor={progressData.penimbangan.bgColor}
+            title="PENGEMASAN KAMBING" 
+            current={progressDataKambing.pengemasan.current} 
+            total={progressDataKambing.pengemasan.total}
+            description={`Pack dikemas: ${progressDataKambing.pengemasan.current} dari ${progressDataKambing.pengemasan.total} pack daging kambing`}
+            bgColor={progressDataKambing.pengemasan.bgColor}
           />
         </div>
       </section>
@@ -170,25 +196,25 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">
-              {animalData.totalHewan}
+              {totalHewan}
             </div>
             <div className="text-sm text-gray-600">Total Hewan</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {Math.round(((animalData.sapiDisembelih + animalData.kambingDipotong) / animalData.totalHewan) * 100)}%
+              {Math.round((totalDisembelih / totalHewan) * 100)}%
             </div>
             <div className="text-sm text-gray-600">Hewan Diproses</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-orange-600">
-              {progressData.penyembelihan.current}
+              {totalDisembelih}
             </div>
             <div className="text-sm text-gray-600">Hewan Disembelih</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-600">
-              {progressData.penimbangan.current}
+              {totalPacksProduced}
             </div>
             <div className="text-sm text-gray-600">Paket Dikemas</div>
           </div>

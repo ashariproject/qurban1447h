@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QurbanProvider } from "@/contexts/QurbanContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -40,49 +41,51 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          
-          {/* Admin Routes */}
-          <Route path="/admin/users" element={<UsersManagement />} />
-          <Route path="/admin/monitoring" element={<Monitoring />} />
-          <Route path="/admin/reports" element={<Reports />} />
-          <Route path="/admin/settings" element={<Settings />} />
-          
-          {/* Shohibul Routes */}
-          <Route path="/shohibul/data" element={<ShohibulData />} />
-          <Route path="/shohibul/map" element={<LocationMap />} />
-          <Route path="/shohibul/payments" element={<Payments />} />
-          
-          {/* Animal Routes */}
-          <Route path="/animal/data" element={<AnimalData />} />
-          <Route path="/animal/status" element={<AnimalStatus />} />
-          <Route path="/animal/documentation" element={<Documentation />} />
-          
-          {/* Packaging Routes */}
-          <Route path="/packaging/data" element={<PackagingData />} />
-          
-          {/* Distribution Routes */}
-          <Route path="/distribution/recipients" element={<Recipients />} />
-          <Route path="/distribution/routes" element={<DistributionRoutes />} />
-          <Route path="/distribution/status" element={<DeliveryStatus />} />
-          
-          {/* Dashboard routes for each role */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/shohibul" element={<ShohibulDashboard />} />
-          <Route path="/animal" element={<AnimalDashboard />} />
-          <Route path="/packaging" element={<PackagingDashboard />} />
-          <Route path="/distribution" element={<DistributionDashboard />} />
-          
-          {/* Catch-all route for 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <QurbanProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin/users" element={<UsersManagement />} />
+            <Route path="/admin/monitoring" element={<Monitoring />} />
+            <Route path="/admin/reports" element={<Reports />} />
+            <Route path="/admin/settings" element={<Settings />} />
+            
+            {/* Shohibul Routes */}
+            <Route path="/shohibul/data" element={<ShohibulData />} />
+            <Route path="/shohibul/map" element={<LocationMap />} />
+            <Route path="/shohibul/payments" element={<Payments />} />
+            
+            {/* Animal Routes */}
+            <Route path="/animal/data" element={<AnimalData />} />
+            <Route path="/animal/status" element={<AnimalStatus />} />
+            <Route path="/animal/documentation" element={<Documentation />} />
+            
+            {/* Packaging Routes */}
+            <Route path="/packaging/data" element={<PackagingData />} />
+            
+            {/* Distribution Routes */}
+            <Route path="/distribution/recipients" element={<Recipients />} />
+            <Route path="/distribution/routes" element={<DistributionRoutes />} />
+            <Route path="/distribution/status" element={<DeliveryStatus />} />
+            
+            {/* Dashboard routes for each role */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/shohibul" element={<ShohibulDashboard />} />
+            <Route path="/animal" element={<AnimalDashboard />} />
+            <Route path="/packaging" element={<PackagingDashboard />} />
+            <Route path="/distribution" element={<DistributionDashboard />} />
+            
+            {/* Catch-all route for 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QurbanProvider>
   </QueryClientProvider>
 );
 
