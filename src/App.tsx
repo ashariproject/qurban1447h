@@ -29,7 +29,6 @@ import Documentation from "./pages/animal/Documentation";
 // Packaging Pages
 import PackagingDashboard from "./pages/packaging/Dashboard";
 import PackagingData from "./pages/packaging/Data";
-import PackagingStatus from "./pages/packaging/Status";
 
 // Distribution Pages
 import DistributionDashboard from "./pages/distribution/Dashboard";
@@ -66,7 +65,6 @@ const App = () => (
           
           {/* Packaging Routes */}
           <Route path="/packaging/data" element={<PackagingData />} />
-          <Route path="/packaging/status" element={<PackagingStatus />} />
           
           {/* Distribution Routes */}
           <Route path="/distribution/recipients" element={<Recipients />} />

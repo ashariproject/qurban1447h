@@ -15,12 +15,18 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Simulated data that would come from each officer's input
-  // In real implementation, this would be fetched from the backend
+  // Simulated packaging data that would be integrated from PackagingDataTable
+  const packagingData = {
+    totalPacksProduced: 35, // This would come from packaging officer input
+    sapiPacks: 20,
+    kambingPacks: 15
+  };
+
+  // Updated progress data with packaging integration
   const progressData = {
     penyembelihan: { current: 18, total: 25, bgColor: "bg-gradient-to-br from-red-500 to-red-600" },
     pengeletan: { current: 15, total: 25, bgColor: "bg-gradient-to-br from-orange-500 to-orange-600" },
-    penimbangan: { current: 20, total: 25, bgColor: "bg-gradient-to-br from-yellow-500 to-yellow-600" },
+    penimbangan: { current: packagingData.totalPacksProduced, total: 25, bgColor: "bg-gradient-to-br from-purple-500 to-purple-600" },
   };
 
   const distributionData = [
@@ -103,7 +109,7 @@ const Dashboard: React.FC = () => {
             title="PENIMBANGAN & PENGEMASAN" 
             current={progressData.penimbangan.current} 
             total={progressData.penimbangan.total}
-            description={`Dikemas oleh petugas pengemasan: ${progressData.penimbangan.current} dari ${progressData.penimbangan.total} hewan`}
+            description={`Pack dikemas oleh petugas pengemasan: ${progressData.penimbangan.current} pack (${packagingData.sapiPacks} sapi + ${packagingData.kambingPacks} kambing)`}
             bgColor={progressData.penimbangan.bgColor}
           />
         </div>

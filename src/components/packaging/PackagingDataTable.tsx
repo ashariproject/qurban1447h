@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +19,9 @@ const PackagingDataTable = () => {
     sapi: { input: 0, output: 0 },
     kambing: { input: 0, output: 0 }
   });
+
+  // Calculate total packs produced
+  const totalPacksProduced = data.sapi.output + data.kambing.output;
 
   const updateValue = (type: 'sapi' | 'kambing', operation: 'input' | 'output', action: 'increment' | 'decrement') => {
     setData(prev => {
@@ -112,6 +114,13 @@ const PackagingDataTable = () => {
           <CardTitle className="text-xl font-bold text-center">Data Pengemasan Daging Qurban</CardTitle>
         </CardHeader>
         <CardContent className="space-y-8">
+          {/* Total Pack Summary */}
+          <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-6 text-center">
+            <h3 className="text-lg font-semibold mb-2">TOTAL PACK DIHASILKAN</h3>
+            <div className="text-4xl font-bold">{totalPacksProduced}</div>
+            <div className="text-purple-100 text-sm mt-2">Pack Daging Siap Distribusi</div>
+          </div>
+
           {/* Daging Sapi */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">DAGING SAPI</h3>
