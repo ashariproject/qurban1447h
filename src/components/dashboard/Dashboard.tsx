@@ -4,6 +4,7 @@ import ProgressCard from './ProgressCard';
 import DistributionCard from './DistributionCard';
 import { format } from 'date-fns';
 import { useQurban } from '@/contexts/QurbanContext';
+import { Beef, Cat } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -118,12 +119,18 @@ const Dashboard: React.FC = () => {
             <div className="text-blue-100 text-sm mt-2">Sapi + Kambing</div>
           </div>
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-2">HEWAN SAPI</h3>
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <Beef className="h-6 w-6" />
+              HEWAN SAPI
+            </h3>
             <div className="text-4xl font-bold">{animalData.totalSapi}</div>
             <div className="text-orange-100 text-sm mt-2">Ekor Sapi Qurban</div>
           </div>
           <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-2">HEWAN KAMBING</h3>
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <Cat className="h-6 w-6" />
+              HEWAN KAMBING
+            </h3>
             <div className="text-4xl font-bold">{animalData.totalKambing}</div>
             <div className="text-green-100 text-sm mt-2">Ekor Kambing Qurban</div>
           </div>
@@ -132,7 +139,10 @@ const Dashboard: React.FC = () => {
 
       {/* Progress Section - Sapi */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">PROGRES QURBAN SAPI</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+          <Beef className="h-6 w-6" />
+          PROGRES QURBAN SAPI
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ProgressCard 
             title="PENYEMBELIHAN SAPI" 
@@ -140,6 +150,7 @@ const Dashboard: React.FC = () => {
             total={progressDataSapi.penyembelihan.total}
             description={`Diselesaikan: ${progressDataSapi.penyembelihan.current} dari ${progressDataSapi.penyembelihan.total} ekor sapi`}
             bgColor={progressDataSapi.penyembelihan.bgColor}
+            icon={Beef}
           />
           <ProgressCard 
             title="PENGEMASAN SAPI" 
@@ -147,13 +158,17 @@ const Dashboard: React.FC = () => {
             total={progressDataSapi.pengemasan.total}
             description={`Pack dikemas: ${progressDataSapi.pengemasan.current} dari ${progressDataSapi.pengemasan.total} pack daging sapi`}
             bgColor={progressDataSapi.pengemasan.bgColor}
+            icon={Beef}
           />
         </div>
       </section>
 
       {/* Progress Section - Kambing */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">PROGRES QURBAN KAMBING</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+          <Cat className="h-6 w-6" />
+          PROGRES QURBAN KAMBING
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ProgressCard 
             title="PENYEMBELIHAN KAMBING" 
@@ -161,6 +176,7 @@ const Dashboard: React.FC = () => {
             total={progressDataKambing.penyembelihan.total}
             description={`Diselesaikan: ${progressDataKambing.penyembelihan.current} dari ${progressDataKambing.penyembelihan.total} ekor kambing`}
             bgColor={progressDataKambing.penyembelihan.bgColor}
+            icon={Cat}
           />
           <ProgressCard 
             title="PENGEMASAN KAMBING" 
@@ -168,6 +184,7 @@ const Dashboard: React.FC = () => {
             total={progressDataKambing.pengemasan.total}
             description={`Pack dikemas: ${progressDataKambing.pengemasan.current} dari ${progressDataKambing.pengemasan.total} pack daging kambing`}
             bgColor={progressDataKambing.pengemasan.bgColor}
+            icon={Cat}
           />
         </div>
       </section>
@@ -202,7 +219,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {Math.round((totalDisembelih / totalHewan) * 100)}%
+              {totalHewan > 0 ? Math.round((totalDisembelih / totalHewan) * 100) : 0}%
             </div>
             <div className="text-sm text-gray-600">Hewan Diproses</div>
           </div>
