@@ -28,26 +28,26 @@ const DistributionCard: React.FC<DistributionCardProps> = ({
   }
 
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow border-0 overflow-hidden h-full">
-      <div className={cn("text-white p-4", bgColor)}>
-        <CardTitle className="text-lg font-medium text-white leading-tight">{title}</CardTitle>
+    <Card className="shadow-md hover:shadow-lg transition-shadow border-0 overflow-hidden">
+      <div className={cn("text-white p-2", bgColor)}>
+        <CardTitle className="text-xs font-medium text-white leading-tight">{title}</CardTitle>
         {subtitle && (
-          <p className="text-sm text-white text-opacity-90 mt-1">{subtitle}</p>
+          <p className="text-xs text-white text-opacity-90 mt-0.5">{subtitle}</p>
         )}
-        <div className="flex items-center justify-between mt-3">
-          <span className="text-xl font-bold">{current}/{total}</span>
-          <span className="text-lg font-medium bg-white bg-opacity-20 px-2 py-1 rounded">{percentage}%</span>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-sm font-bold">{current}/{total}</span>
+          <span className="text-xs font-medium bg-white bg-opacity-20 px-1 py-0.5 rounded">{percentage}%</span>
         </div>
       </div>
-      <CardContent className="p-4 bg-white">
-        <div className="space-y-3">
-          <div className="w-full bg-gray-200 rounded-full h-3">
+      <CardContent className="p-2 bg-white">
+        <div className="space-y-1">
+          <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
-              className={cn("h-3 rounded-full transition-all duration-500", progressColorClass)}
+              className={cn("h-2 rounded-full transition-all duration-500", progressColorClass)}
               style={{ width: `${percentage}%` }}
             ></div>
           </div>
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="flex justify-between text-xs text-gray-600">
             <span>Terkirim: {current}</span>
             <span>Sisa: {total - current}</span>
           </div>

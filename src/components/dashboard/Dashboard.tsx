@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import ProgressCard from './ProgressCard';
 import DistributionCard from './DistributionCard';
@@ -52,36 +53,36 @@ const Dashboard: React.FC = () => {
 
   const distributionData = [
     { 
-      title: "SHOHIBUL QURBAN SAPI", 
-      subtitle: "Jumlah Shohibul: 21",
+      title: "SHOHIBUL SAPI", 
+      subtitle: "21 Shohibul",
       current: 16, 
       total: 21,
       bgColor: "bg-gradient-to-br from-blue-500 to-blue-600"
     },
     { 
-      title: "SHOHIBUL QURBAN KAMBING", 
-      subtitle: "Jumlah Shohibul: 12",
+      title: "SHOHIBUL KAMBING", 
+      subtitle: "12 Shohibul",
       current: 10, 
       total: 12,
       bgColor: "bg-gradient-to-br from-indigo-500 to-indigo-600"
     },
     { 
-      title: "WARGA PANTAI MENTARI", 
-      subtitle: "Target: 180 KK (6 Sektor)",
+      title: "PANTAI MENTARI", 
+      subtitle: "180 KK",
       current: 45, 
       total: 180,
       bgColor: "bg-gradient-to-br from-green-500 to-green-600"
     },
     { 
-      title: "WARGA KOMPLEK AL", 
-      subtitle: "Target: 25 KK (4 Gang)",
+      title: "KOMPLEK AL", 
+      subtitle: "25 KK",
       current: 18, 
       total: 25,
       bgColor: "bg-gradient-to-br from-teal-500 to-teal-600"
     },
     { 
       title: "WARGA LAIN", 
-      subtitle: "Jumlah: 600 KK",
+      subtitle: "600 KK",
       current: 125, 
       total: 600,
       bgColor: "bg-gradient-to-br from-purple-500 to-purple-600"
@@ -89,159 +90,159 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 h-screen overflow-hidden">
       {/* Date and Time Header */}
-      <div className="bg-gradient-to-r from-white to-gray-50 rounded-lg shadow-lg p-6 border border-gray-200">
+      <div className="bg-gradient-to-r from-white to-gray-50 rounded-lg shadow-lg p-4 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard Qurban Real-Time</h1>
-            <p className="text-gray-600 mt-1">Monitoring langsung dari input petugas lapangan</p>
+            <h1 className="text-xl font-bold text-gray-900">Dashboard Qurban Real-Time</h1>
+            <p className="text-gray-600 text-sm">Monitoring langsung dari input petugas lapangan</p>
           </div>
-          <div className="mt-4 md:mt-0 text-right">
-            <div className="text-lg font-semibold text-gray-900">
+          <div className="mt-2 md:mt-0 text-right">
+            <div className="text-sm font-semibold text-gray-900">
               {format(currentTime, 'EEEE, dd MMMM yyyy')}
             </div>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-lg font-bold text-blue-600">
               {format(currentTime, 'HH:mm:ss')}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Animal Summary Section */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">TOTAL HEWAN QURBAN</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-2">TOTAL HEWAN</h3>
-            <div className="text-4xl font-bold">{totalHewan}</div>
-            <div className="text-blue-100 text-sm mt-2">Sapi + Kambing</div>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-180px)]">
+        
+        {/* Left Column - Animal Summary & Progress */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Animal Summary */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-3 shadow-lg">
+              <h3 className="text-sm font-semibold mb-1">TOTAL HEWAN</h3>
+              <div className="text-2xl font-bold">{totalHewan}</div>
+              <div className="text-blue-100 text-xs">Sapi + Kambing</div>
+            </div>
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-3 shadow-lg">
+              <h3 className="text-sm font-semibold mb-1 flex items-center gap-1">
+                <Beef className="h-4 w-4" />
+                SAPI
+              </h3>
+              <div className="text-2xl font-bold">{animalData.totalSapi}</div>
+              <div className="text-orange-100 text-xs">Ekor Sapi</div>
+            </div>
+            <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-3 shadow-lg">
+              <h3 className="text-sm font-semibold mb-1 flex items-center gap-1">
+                <Zap className="h-4 w-4" />
+                KAMBING
+              </h3>
+              <div className="text-2xl font-bold">{animalData.totalKambing}</div>
+              <div className="text-green-100 text-xs">Ekor Kambing</div>
+            </div>
           </div>
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <Beef className="h-6 w-6" />
-              HEWAN SAPI
-            </h3>
-            <div className="text-4xl font-bold">{animalData.totalSapi}</div>
-            <div className="text-orange-100 text-sm mt-2">Ekor Sapi Qurban</div>
-          </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <Zap className="h-6 w-6" />
-              HEWAN KAMBING
-            </h3>
-            <div className="text-4xl font-bold">{animalData.totalKambing}</div>
-            <div className="text-green-100 text-sm mt-2">Ekor Kambing Qurban</div>
-          </div>
-        </div>
-      </section>
 
-      {/* Progress Section - Sapi */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-          <Beef className="h-6 w-6" />
-          PROGRES QURBAN SAPI
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ProgressCard 
-            title="PENYEMBELIHAN SAPI" 
-            current={progressDataSapi.penyembelihan.current} 
-            total={progressDataSapi.penyembelihan.total}
-            description={`Diselesaikan: ${progressDataSapi.penyembelihan.current} dari ${progressDataSapi.penyembelihan.total} ekor sapi`}
-            bgColor={progressDataSapi.penyembelihan.bgColor}
-            icon={Beef}
-          />
-          <ProgressCard 
-            title="PENGEMASAN SAPI" 
-            current={progressDataSapi.pengemasan.current} 
-            total={progressDataSapi.pengemasan.total}
-            description={`Pack dikemas: ${progressDataSapi.pengemasan.current} dari ${progressDataSapi.pengemasan.total} pack daging sapi`}
-            bgColor={progressDataSapi.pengemasan.bgColor}
-            icon={Beef}
-          />
-        </div>
-      </section>
+          {/* Progress Cards - Sapi & Kambing */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Sapi Progress */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-1">
+                <Beef className="h-4 w-4" />
+                PROGRES SAPI
+              </h3>
+              <div className="space-y-2">
+                <ProgressCard 
+                  title="SEMBELIH" 
+                  current={progressDataSapi.penyembelihan.current} 
+                  total={progressDataSapi.penyembelihan.total}
+                  description={`${progressDataSapi.penyembelihan.current}/${progressDataSapi.penyembelihan.total} ekor`}
+                  bgColor={progressDataSapi.penyembelihan.bgColor}
+                  icon={Beef}
+                />
+                <ProgressCard 
+                  title="KEMAS" 
+                  current={progressDataSapi.pengemasan.current} 
+                  total={progressDataSapi.pengemasan.total}
+                  description={`${progressDataSapi.pengemasan.current}/${progressDataSapi.pengemasan.total} pack`}
+                  bgColor={progressDataSapi.pengemasan.bgColor}
+                  icon={Beef}
+                />
+              </div>
+            </div>
 
-      {/* Progress Section - Kambing */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-          <Zap className="h-6 w-6" />
-          PROGRES QURBAN KAMBING
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ProgressCard 
-            title="PENYEMBELIHAN KAMBING" 
-            current={progressDataKambing.penyembelihan.current} 
-            total={progressDataKambing.penyembelihan.total}
-            description={`Diselesaikan: ${progressDataKambing.penyembelihan.current} dari ${progressDataKambing.penyembelihan.total} ekor kambing`}
-            bgColor={progressDataKambing.penyembelihan.bgColor}
-            icon={Zap}
-          />
-          <ProgressCard 
-            title="PENGEMASAN KAMBING" 
-            current={progressDataKambing.pengemasan.current} 
-            total={progressDataKambing.pengemasan.total}
-            description={`Pack dikemas: ${progressDataKambing.pengemasan.current} dari ${progressDataKambing.pengemasan.total} pack daging kambing`}
-            bgColor={progressDataKambing.pengemasan.bgColor}
-            icon={Zap}
-          />
-        </div>
-      </section>
+            {/* Kambing Progress */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-1">
+                <Zap className="h-4 w-4" />
+                PROGRES KAMBING
+              </h3>
+              <div className="space-y-2">
+                <ProgressCard 
+                  title="SEMBELIH" 
+                  current={progressDataKambing.penyembelihan.current} 
+                  total={progressDataKambing.penyembelihan.total}
+                  description={`${progressDataKambing.penyembelihan.current}/${progressDataKambing.penyembelihan.total} ekor`}
+                  bgColor={progressDataKambing.penyembelihan.bgColor}
+                  icon={Zap}
+                />
+                <ProgressCard 
+                  title="KEMAS" 
+                  current={progressDataKambing.pengemasan.current} 
+                  total={progressDataKambing.pengemasan.total}
+                  description={`${progressDataKambing.pengemasan.current}/${progressDataKambing.pengemasan.total} pack`}
+                  bgColor={progressDataKambing.pengemasan.bgColor}
+                  icon={Zap}
+                />
+              </div>
+            </div>
+          </div>
 
-      {/* Distribution Section */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">DISTRIBUSI QURBAN</h2>
-        <p className="text-sm text-gray-600 mb-4">Data berdasarkan input petugas distribusi</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {distributionData.map((item, index) => (
-            <DistributionCard 
-              key={index}
-              title={item.title}
-              subtitle={item.subtitle}
-              current={item.current} 
-              total={item.total}
-              bgColor={item.bgColor}
-            />
-          ))}
+          {/* Summary Statistics */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-3">
+            <h3 className="text-sm font-semibold mb-2 text-gray-800">RINGKASAN STATISTIK</h3>
+            <div className="grid grid-cols-5 gap-2 text-center">
+              <div>
+                <div className="text-lg font-bold text-blue-600">{totalHewan}</div>
+                <div className="text-xs text-gray-600">Total Hewan</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-green-600">
+                  {totalHewan > 0 ? Math.round((totalDisembelih / totalHewan) * 100) : 0}%
+                </div>
+                <div className="text-xs text-gray-600">Diproses</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-orange-600">{totalDisembelih}</div>
+                <div className="text-xs text-gray-600">Disembelih</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-purple-600">{totalPacksProduced}</div>
+                <div className="text-xs text-gray-600">Dikemas</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-red-600">
+                  {distributionData.reduce((acc, curr) => acc + curr.current, 0)}
+                </div>
+                <div className="text-xs text-gray-600">Terdistribusi</div>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
 
-      {/* Summary Statistics */}
-      <section className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">RINGKASAN STATISTIK</h2>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
-              {totalHewan}
-            </div>
-            <div className="text-sm text-gray-600">Total Hewan</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {totalHewan > 0 ? Math.round((totalDisembelih / totalHewan) * 100) : 0}%
-            </div>
-            <div className="text-sm text-gray-600">Hewan Diproses</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">
-              {totalDisembelih}
-            </div>
-            <div className="text-sm text-gray-600">Hewan Disembelih</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">
-              {totalPacksProduced}
-            </div>
-            <div className="text-sm text-gray-600">Paket Dikemas</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-red-600">
-              {distributionData.reduce((acc, curr) => acc + curr.current, 0)}
-            </div>
-            <div className="text-sm text-gray-600">Paket Terdistribusi</div>
+        {/* Right Column - Distribution */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-gray-800">DISTRIBUSI QURBAN</h3>
+          <div className="space-y-2 h-full overflow-y-auto">
+            {distributionData.map((item, index) => (
+              <DistributionCard 
+                key={index}
+                title={item.title}
+                subtitle={item.subtitle}
+                current={item.current} 
+                total={item.total}
+                bgColor={item.bgColor}
+              />
+            ))}
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
