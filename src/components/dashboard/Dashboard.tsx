@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import ProgressCard from './ProgressCard';
 import DistributionCard from './DistributionCard';
 import { format } from 'date-fns';
 import { useQurban } from '@/contexts/QurbanContext';
-import { Beef, Sheep } from 'lucide-react';
+import { Beef, Zap } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -128,7 +127,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
             <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <Sheep className="h-6 w-6" />
+              <Zap className="h-6 w-6" />
               HEWAN KAMBING
             </h3>
             <div className="text-4xl font-bold">{animalData.totalKambing}</div>
@@ -166,7 +165,7 @@ const Dashboard: React.FC = () => {
       {/* Progress Section - Kambing */}
       <section>
         <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-          <Sheep className="h-6 w-6" />
+          <Zap className="h-6 w-6" />
           PROGRES QURBAN KAMBING
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -176,7 +175,7 @@ const Dashboard: React.FC = () => {
             total={progressDataKambing.penyembelihan.total}
             description={`Diselesaikan: ${progressDataKambing.penyembelihan.current} dari ${progressDataKambing.penyembelihan.total} ekor kambing`}
             bgColor={progressDataKambing.penyembelihan.bgColor}
-            icon={Sheep}
+            icon={Zap}
           />
           <ProgressCard 
             title="PENGEMASAN KAMBING" 
@@ -184,7 +183,7 @@ const Dashboard: React.FC = () => {
             total={progressDataKambing.pengemasan.total}
             description={`Pack dikemas: ${progressDataKambing.pengemasan.current} dari ${progressDataKambing.pengemasan.total} pack daging kambing`}
             bgColor={progressDataKambing.pengemasan.bgColor}
-            icon={Sheep}
+            icon={Zap}
           />
         </div>
       </section>
