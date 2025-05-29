@@ -18,7 +18,7 @@ const DistributionCard: React.FC<DistributionCardProps> = ({
   subtitle,
   bgColor = "bg-gradient-to-br from-gray-500 to-gray-600"
 }) => {
-  const percentage = Math.round((current / total) * 100);
+  const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
   
   let progressColorClass = "bg-red-500";
   if (percentage > 30 && percentage < 70) {
@@ -41,9 +41,9 @@ const DistributionCard: React.FC<DistributionCardProps> = ({
       </div>
       <CardContent className="p-4 bg-white">
         <div className="space-y-3">
-          <div className="progress-bar bg-gray-200">
+          <div className="w-full bg-gray-200 rounded-full h-3">
             <div 
-              className={cn("progress-bar-fill transition-all duration-500", progressColorClass)}
+              className={cn("h-3 rounded-full transition-all duration-500", progressColorClass)}
               style={{ width: `${percentage}%` }}
             ></div>
           </div>
