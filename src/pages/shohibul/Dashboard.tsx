@@ -6,13 +6,8 @@ import ShohibulStatusTable from '@/components/shohibul/ShohibulStatusTable';
 export interface ShohibulStatusData {
   id: string;
   nama: string;
-  jenisQurban: 'sapi-mandiri' | 'kambing-mandiri';
+  jenisQurban: 'sapi-mandiri' | 'kambing-mandiri' | 'kambing-titip-beli' | 'sapi-patungan';
   jumlahHewan: number;
-  pembayaran: {
-    status: 'belum-bayar' | 'lunas' | 'cicil';
-    jumlahDibayar: number;
-    totalBiaya: number;
-  };
   statusDatang: boolean;
   statusSiapSembelih: boolean;
   statusSiapKirim: boolean;
@@ -27,11 +22,6 @@ const ShohibulDashboard = () => {
       nama: 'Ahmad Susanto',
       jenisQurban: 'sapi-mandiri',
       jumlahHewan: 1,
-      pembayaran: {
-        status: 'lunas',
-        jumlahDibayar: 18000000,
-        totalBiaya: 18000000
-      },
       statusDatang: true,
       statusSiapSembelih: true,
       statusSiapKirim: false,
@@ -43,11 +33,6 @@ const ShohibulDashboard = () => {
       nama: 'Siti Nurhaliza',
       jenisQurban: 'kambing-mandiri',
       jumlahHewan: 2,
-      pembayaran: {
-        status: 'cicil',
-        jumlahDibayar: 2500000,
-        totalBiaya: 5000000
-      },
       statusDatang: false,
       statusSiapSembelih: false,
       statusSiapKirim: false,
@@ -59,11 +44,6 @@ const ShohibulDashboard = () => {
       nama: 'Budi Santoso',
       jenisQurban: 'sapi-mandiri',
       jumlahHewan: 1,
-      pembayaran: {
-        status: 'lunas',
-        jumlahDibayar: 18000000,
-        totalBiaya: 18000000
-      },
       statusDatang: true,
       statusSiapSembelih: true,
       statusSiapKirim: true,
@@ -72,7 +52,7 @@ const ShohibulDashboard = () => {
     }
   ]);
 
-  const updateStatus = (id: string, field: keyof Omit<ShohibulStatusData, 'id' | 'nama' | 'jenisQurban' | 'jumlahHewan' | 'pembayaran' | 'tanggalDaftar'>, value: boolean) => {
+  const updateStatus = (id: string, field: keyof Omit<ShohibulStatusData, 'id' | 'nama' | 'jenisQurban' | 'jumlahHewan' | 'tanggalDaftar'>, value: boolean) => {
     // Implementation for updating status would go here
     console.log(`Updating ${field} for ${id} to ${value}`);
   };
@@ -82,7 +62,7 @@ const ShohibulDashboard = () => {
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg p-6">
           <h1 className="text-3xl font-bold mb-2">Dashboard Shohibul</h1>
-          <p className="text-green-100">Pantau status lengkap shohibul qurban mulai dari pembayaran hingga penyerahan</p>
+          <p className="text-green-100">Pantau status lengkap shohibul qurban mulai dari kedatangan hingga penyerahan</p>
         </div>
 
         <ShohibulStatusTable 

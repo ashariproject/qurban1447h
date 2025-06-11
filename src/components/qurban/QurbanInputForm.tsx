@@ -33,10 +33,17 @@ const formSchema = z.object({
   nama: z.string().min(1, "Nama harus diisi"),
   alamat: z.string().min(1, "Alamat harus diisi"),
   noTelepon: z.string().min(1, "Nomor telepon harus diisi"),
-  jenisQurban: z.enum(['sapi-mandiri', 'kambing-mandiri'], {
+  jenisQurban: z.enum(['sapi-mandiri', 'kambing-mandiri', 'kambing-titip-beli', 'sapi-patungan'], {
     required_error: "Jenis qurban harus dipilih",
   }),
   jumlahHewan: z.number().min(1, "Jumlah hewan minimal 1"),
+  pembayaran: z.object({
+    status: z.enum(['belum-bayar', 'lunas', 'cicil'], {
+      required_error: "Status pembayaran harus dipilih",
+    }),
+    jumlahDibayar: z.number().min(0, "Jumlah dibayar minimal 0"),
+    totalBiaya: z.number().min(1, "Total biaya minimal 1"),
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -53,6 +60,11 @@ const QurbanInputForm: React.FC<QurbanInputFormProps> = ({ onSubmit }) => {
       alamat: "",
       noTelepon: "",
       jumlahHewan: 1,
+      pembayaran: {
+        status: 'belum-bayar',
+        jumlahDibayar: 0,
+        totalBiaya: 0,
+      },
     },
   });
 
@@ -66,7 +78,7 @@ const QurbanInputForm: React.FC<QurbanInputFormProps> = ({ onSubmit }) => {
       <CardHeader>
         <CardTitle>Form Input Data Shohibul</CardTitle>
         <CardDescription>
-          Masukkan data shohibul qurban baru termasuk jenis qurban yang dipilih.
+          Masukkan data shohibul qurban baru termasuk jenis qurban dan data pembayaran.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -141,6 +153,8 @@ const QurbanInputForm: React.FC<QurbanInputFormProps> = ({ onSubmit }) => {
                       <SelectContent>
                         <SelectItem value="sapi-mandiri">Sapi Mandiri</SelectItem>
                         <SelectItem value="kambing-mandiri">Kambing Mandiri</SelectItem>
+                        <SelectItem value="kambing-titip-beli">Kambing (Titip Beli)</SelectItem>
+                        <SelectItem value="sapi-patungan">Sapi Patungan</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormDescription>
@@ -173,6 +187,74 @@ const QurbanInputForm: React.FC<QurbanInputFormProps> = ({ onSubmit }) => {
                   </FormItem>
                 )}
               />
+            </div>
+
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-4">Data Pembayaran</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="pembayaran.status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status Pembayaran</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Pilih status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="belum-bayar">Belum Bayar</SelectItem>
+                          <SelectItem value="cicil">Cicil</SelectItem>
+                          <SelectItem value="lunas">Lunas</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="pembayaran.jumlahDibayar"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Jumlah Dibayar</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          min="0"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="pembayaran.totalBiaya"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Total Biaya</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          min="1"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <Button type="submit" className="w-full">Simpan Data Shohibul</Button>

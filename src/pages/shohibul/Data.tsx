@@ -9,8 +9,13 @@ export interface ShohibulData {
   nama: string;
   alamat: string;
   noTelepon: string;
-  jenisQurban: 'sapi-mandiri' | 'kambing-mandiri';
+  jenisQurban: 'sapi-mandiri' | 'kambing-mandiri' | 'kambing-titip-beli' | 'sapi-patungan';
   jumlahHewan: number;
+  pembayaran: {
+    status: 'belum-bayar' | 'lunas' | 'cicil';
+    jumlahDibayar: number;
+    totalBiaya: number;
+  };
   tanggalDaftar: string;
 }
 
@@ -23,6 +28,11 @@ const ShohibulData = () => {
       noTelepon: '081234567890',
       jenisQurban: 'sapi-mandiri',
       jumlahHewan: 1,
+      pembayaran: {
+        status: 'lunas',
+        jumlahDibayar: 18000000,
+        totalBiaya: 18000000
+      },
       tanggalDaftar: '2024-01-15'
     },
     {
@@ -32,6 +42,11 @@ const ShohibulData = () => {
       noTelepon: '081987654321',
       jenisQurban: 'kambing-mandiri',
       jumlahHewan: 2,
+      pembayaran: {
+        status: 'cicil',
+        jumlahDibayar: 2500000,
+        totalBiaya: 5000000
+      },
       tanggalDaftar: '2024-01-16'
     }
   ]);
@@ -60,7 +75,7 @@ const ShohibulData = () => {
       <div className="space-y-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Data Shohibul</h1>
-          <p className="text-gray-500">Kelola data shohibul qurban seperti nama, kontak, dan alamat.</p>
+          <p className="text-gray-500">Kelola data shohibul qurban seperti nama, kontak, alamat, dan pembayaran.</p>
         </div>
         
         <QurbanInputForm onSubmit={handleAddShohibul} />

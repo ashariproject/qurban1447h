@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import ShohibulEditDialog from './ShohibulEditDialog';
 import { Edit, Trash2, Filter } from 'lucide-react';
 
@@ -68,9 +69,36 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
         return 'Sapi Mandiri';
       case 'kambing-mandiri':
         return 'Kambing Mandiri';
+      case 'kambing-titip-beli':
+        return 'Kambing (Titip Beli)';
+      case 'sapi-patungan':
+        return 'Sapi Patungan';
       default:
         return jenis;
     }
+  };
+
+  const getPembayaranBadge = (pembayaran: ShohibulData['pembayaran']) => {
+    const percentage = (pembayaran.jumlahDibayar / pembayaran.totalBiaya) * 100;
+    
+    switch (pembayaran.status) {
+      case 'lunas':
+        return <Badge className="bg-green-100 text-green-800">Lunas</Badge>;
+      case 'cicil':
+        return <Badge className="bg-yellow-100 text-yellow-800">Cicil ({percentage.toFixed(0)}%)</Badge>;
+      case 'belum-bayar':
+        return <Badge className="bg-red-100 text-red-800">Belum Bayar</Badge>;
+      default:
+        return <Badge variant="secondary">Unknown</Badge>;
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(amount);
   };
 
   return (
@@ -97,6 +125,8 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
               <SelectItem value="all">Semua Jenis</SelectItem>
               <SelectItem value="sapi-mandiri">Sapi Mandiri</SelectItem>
               <SelectItem value="kambing-mandiri">Kambing Mandiri</SelectItem>
+              <SelectItem value="kambing-titip-beli">Kambing (Titip Beli)</SelectItem>
+              <SelectItem value="sapi-patungan">Sapi Patungan</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -110,60 +140,73 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
             }
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>No</TableHead>
-                <TableHead>Nama</TableHead>
-                <TableHead>Alamat</TableHead>
-                <TableHead>No. Telepon</TableHead>
-                <TableHead>Jenis Qurban</TableHead>
-                <TableHead>Jumlah Hewan</TableHead>
-                <TableHead>Tanggal Daftar</TableHead>
-                <TableHead>Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredData.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell className="font-medium">{item.nama}</TableCell>
-                  <TableCell>{item.alamat}</TableCell>
-                  <TableCell>{item.noTelepon}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      item.jenisQurban === 'sapi-mandiri' 
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}>
-                      {getJenisLabel(item.jenisQurban)}
-                    </span>
-                  </TableCell>
-                  <TableCell>{item.jumlahHewan}</TableCell>
-                  <TableCell>{new Date(item.tanggalDaftar).toLocaleDateString('id-ID')}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(item)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>No</TableHead>
+                  <TableHead>Nama</TableHead>
+                  <TableHead>Alamat</TableHead>
+                  <TableHead>No. Telepon</TableHead>
+                  <TableHead>Jenis Qurban</TableHead>
+                  <TableHead>Jumlah Hewan</TableHead>
+                  <TableHead>Status Pembayaran</TableHead>
+                  <TableHead>Biaya</TableHead>
+                  <TableHead>Tanggal Daftar</TableHead>
+                  <TableHead>Aksi</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredData.map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell className="font-medium">{item.nama}</TableCell>
+                    <TableCell>{item.alamat}</TableCell>
+                    <TableCell>{item.noTelepon}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        item.jenisQurban === 'sapi-mandiri' 
+                          ? 'bg-blue-100 text-blue-800'
+                          : item.jenisQurban === 'kambing-mandiri'
+                          ? 'bg-green-100 text-green-800'
+                          : item.jenisQurban === 'kambing-titip-beli'
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'bg-orange-100 text-orange-800'
+                      }`}>
+                        {getJenisLabel(item.jenisQurban)}
+                      </span>
+                    </TableCell>
+                    <TableCell>{item.jumlahHewan} ekor</TableCell>
+                    <TableCell>{getPembayaranBadge(item.pembayaran)}</TableCell>
+                    <TableCell className="text-sm">
+                      <div>{formatCurrency(item.pembayaran.jumlahDibayar)}</div>
+                      <div className="text-gray-500">dari {formatCurrency(item.pembayaran.totalBiaya)}</div>
+                    </TableCell>
+                    <TableCell>{new Date(item.tanggalDaftar).toLocaleDateString('id-ID')}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(item)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
 
         {editingItem && (

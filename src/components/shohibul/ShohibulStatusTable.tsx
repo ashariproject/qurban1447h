@@ -19,8 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, Clock, DollarSign, Truck, Package, Users } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Truck, Package, Users } from 'lucide-react';
 
 interface ShohibulStatusTableProps {
   data: ShohibulStatusData[];
@@ -32,14 +31,12 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
   onUpdateStatus,
 }) => {
   const [filterJenis, setFilterJenis] = useState<string>('all');
-  const [filterPembayaran, setFilterPembayaran] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredData = data.filter(item => {
     const matchesJenis = filterJenis === 'all' || item.jenisQurban === filterJenis;
-    const matchesPembayaran = filterPembayaran === 'all' || item.pembayaran.status === filterPembayaran;
     const matchesSearch = item.nama.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesJenis && matchesPembayaran && matchesSearch;
+    return matchesJenis && matchesSearch;
   });
 
   const getStatusIcon = (status: boolean) => {
@@ -56,37 +53,17 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
         return 'Sapi Mandiri';
       case 'kambing-mandiri':
         return 'Kambing Mandiri';
+      case 'kambing-titip-beli':
+        return 'Kambing (Titip Beli)';
+      case 'sapi-patungan':
+        return 'Sapi Patungan';
       default:
         return jenis;
     }
   };
 
-  const getPembayaranBadge = (pembayaran: ShohibulStatusData['pembayaran']) => {
-    const percentage = (pembayaran.jumlahDibayar / pembayaran.totalBiaya) * 100;
-    
-    switch (pembayaran.status) {
-      case 'lunas':
-        return <Badge className="bg-green-100 text-green-800">Lunas</Badge>;
-      case 'cicil':
-        return <Badge className="bg-yellow-100 text-yellow-800">Cicil ({percentage.toFixed(0)}%)</Badge>;
-      case 'belum-bayar':
-        return <Badge className="bg-red-100 text-red-800">Belum Bayar</Badge>;
-      default:
-        return <Badge variant="secondary">Unknown</Badge>;
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-
   // Calculate summary statistics
   const totalShohibul = filteredData.length;
-  const lunasBayar = filteredData.filter(item => item.pembayaran.status === 'lunas').length;
   const sudahDatang = filteredData.filter(item => item.statusDatang).length;
   const siapSembelih = filteredData.filter(item => item.statusSiapSembelih).length;
   const siapKirim = filteredData.filter(item => item.statusSiapKirim).length;
@@ -95,7 +72,7 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -103,18 +80,6 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
               <div>
                 <div className="text-2xl font-bold">{totalShohibul}</div>
                 <div className="text-xs text-gray-600">Total Shohibul</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              <div>
-                <div className="text-2xl font-bold">{lunasBayar}</div>
-                <div className="text-xs text-gray-600">Lunas Bayar</div>
               </div>
             </div>
           </CardContent>
@@ -190,17 +155,8 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
                 <SelectItem value="all">Semua Jenis</SelectItem>
                 <SelectItem value="sapi-mandiri">Sapi Mandiri</SelectItem>
                 <SelectItem value="kambing-mandiri">Kambing Mandiri</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filterPembayaran} onValueChange={setFilterPembayaran}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter Pembayaran" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="lunas">Lunas</SelectItem>
-                <SelectItem value="cicil">Cicil</SelectItem>
-                <SelectItem value="belum-bayar">Belum Bayar</SelectItem>
+                <SelectItem value="kambing-titip-beli">Kambing (Titip Beli)</SelectItem>
+                <SelectItem value="sapi-patungan">Sapi Patungan</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -219,8 +175,6 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
                     <TableHead>Nama Shohibul</TableHead>
                     <TableHead>Jenis Qurban</TableHead>
                     <TableHead>Jumlah</TableHead>
-                    <TableHead>Pembayaran</TableHead>
-                    <TableHead>Biaya</TableHead>
                     <TableHead>Sudah Datang</TableHead>
                     <TableHead>Siap Sembelih</TableHead>
                     <TableHead>Siap Kirim</TableHead>
@@ -236,17 +190,16 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           item.jenisQurban === 'sapi-mandiri' 
                             ? 'bg-blue-100 text-blue-800'
-                            : 'bg-green-100 text-green-800'
+                            : item.jenisQurban === 'kambing-mandiri'
+                            ? 'bg-green-100 text-green-800'
+                            : item.jenisQurban === 'kambing-titip-beli'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-orange-100 text-orange-800'
                         }`}>
                           {getJenisLabel(item.jenisQurban)}
                         </span>
                       </TableCell>
                       <TableCell>{item.jumlahHewan} ekor</TableCell>
-                      <TableCell>{getPembayaranBadge(item.pembayaran)}</TableCell>
-                      <TableCell className="text-sm">
-                        <div>{formatCurrency(item.pembayaran.jumlahDibayar)}</div>
-                        <div className="text-gray-500">dari {formatCurrency(item.pembayaran.totalBiaya)}</div>
-                      </TableCell>
                       <TableCell>
                         <Button
                           variant={item.statusDatang ? "default" : "outline"}

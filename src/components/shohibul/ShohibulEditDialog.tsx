@@ -33,10 +33,17 @@ const formSchema = z.object({
   nama: z.string().min(1, "Nama harus diisi"),
   alamat: z.string().min(1, "Alamat harus diisi"),
   noTelepon: z.string().min(1, "Nomor telepon harus diisi"),
-  jenisQurban: z.enum(['sapi-mandiri', 'kambing-mandiri'], {
+  jenisQurban: z.enum(['sapi-mandiri', 'kambing-mandiri', 'kambing-titip-beli', 'sapi-patungan'], {
     required_error: "Jenis qurban harus dipilih",
   }),
   jumlahHewan: z.number().min(1, "Jumlah hewan minimal 1"),
+  pembayaran: z.object({
+    status: z.enum(['belum-bayar', 'lunas', 'cicil'], {
+      required_error: "Status pembayaran harus dipilih",
+    }),
+    jumlahDibayar: z.number().min(0, "Jumlah dibayar minimal 0"),
+    totalBiaya: z.number().min(1, "Total biaya minimal 1"),
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -60,6 +67,7 @@ const ShohibulEditDialog: React.FC<ShohibulEditDialogProps> = ({
       noTelepon: item.noTelepon,
       jenisQurban: item.jenisQurban,
       jumlahHewan: item.jumlahHewan,
+      pembayaran: item.pembayaran,
     },
   });
 
@@ -69,7 +77,7 @@ const ShohibulEditDialog: React.FC<ShohibulEditDialogProps> = ({
 
   return (
     <Dialog open={true} onOpenChange={() => onCancel()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Data Shohibul</DialogTitle>
           <DialogDescription>
@@ -120,46 +128,118 @@ const ShohibulEditDialog: React.FC<ShohibulEditDialogProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="jenisQurban"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Jenis Qurban</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih jenis qurban" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="sapi-mandiri">Sapi Mandiri</SelectItem>
-                      <SelectItem value="kambing-mandiri">Kambing Mandiri</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="jenisQurban"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jenis Qurban</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih jenis qurban" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="sapi-mandiri">Sapi Mandiri</SelectItem>
+                        <SelectItem value="kambing-mandiri">Kambing Mandiri</SelectItem>
+                        <SelectItem value="kambing-titip-beli">Kambing (Titip Beli)</SelectItem>
+                        <SelectItem value="sapi-patungan">Sapi Patungan</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="jumlahHewan"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Jumlah Hewan</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="Masukkan jumlah hewan" 
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="jumlahHewan"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jumlah Hewan</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="Masukkan jumlah hewan" 
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-4">Data Pembayaran</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="pembayaran.status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status Pembayaran</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Pilih status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="belum-bayar">Belum Bayar</SelectItem>
+                          <SelectItem value="cicil">Cicil</SelectItem>
+                          <SelectItem value="lunas">Lunas</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="pembayaran.jumlahDibayar"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Jumlah Dibayar</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          min="0"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="pembayaran.totalBiaya"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Total Biaya</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          min="1"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={onCancel}>
