@@ -1,161 +1,150 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import Dashboard from '@/components/dashboard/Dashboard';
+
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Users, Beef, Package, Truck, Settings, BarChart3 } from 'lucide-react';
 
 const Index = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [userRole, setUserRole] = useState('');
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  // User credentials with their roles and redirect paths
-  const validCredentials = {
-    admin: { 
-      password: 'admin123', 
-      role: 'admin',
-      redirectPath: '/admin'
-    },
-    petugasshohibul: { 
-      password: 'petugas123', 
-      role: 'shohibul',
-      redirectPath: '/shohibul/data'
-    },
-    petugashewan: { 
-      password: 'petugas123', 
-      role: 'animal',
-      redirectPath: '/animal/data'
-    },
-    petugaspengemasan: { 
-      password: 'petugas123', 
-      role: 'packaging',
-      redirectPath: '/packaging/data'
-    },
-    petugasdistribusi: { 
-      password: 'petugas123', 
-      role: 'distribution',
-      redirectPath: '/distribution/recipients'
-    }
-  };
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const userCredential = validCredentials[username as keyof typeof validCredentials];
-    
-    if (userCredential && userCredential.password === password) {
-      setIsLoggedIn(true);
-      setUserRole(userCredential.role);
-      
-      toast({
-        title: "Login Berhasil",
-        description: `Selamat datang, ${username}!`,
-      });
-
-      // Redirect to appropriate page based on role
-      if (username === 'admin') {
-        // Admin stays on dashboard
-        return;
-      } else {
-        // Other users redirect to their specific pages
-        navigate(userCredential.redirectPath);
-      }
-    } else {
-      toast({
-        title: "Login Gagal",
-        description: "Username atau password salah!",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUsername('');
-    setPassword('');
-    setUserRole('');
-    navigate('/');
-    toast({
-      title: "Logout Berhasil",
-      description: "Anda telah keluar dari sistem.",
-    });
-  };
-
-  // Only show dashboard for admin users
-  if (isLoggedIn && username === 'admin') {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white shadow-sm border-b px-6 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold">Dashboard Qurban As Sakinah - Admin</h1>
-          <Button onClick={handleLogout} variant="outline">
-            Logout
-          </Button>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Sistem Manajemen Qurban
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Platform terintegrasi untuk mengelola seluruh proses qurban dari registrasi hingga distribusi
+          </p>
         </div>
-        <div className="p-6">
-          <Dashboard />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {/* Admin Dashboard */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="text-center">
+              <div className="mx-auto bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <BarChart3 className="h-8 w-8 text-blue-600" />
+              </div>
+              <CardTitle className="text-xl">Admin Dashboard</CardTitle>
+              <CardDescription>
+                Panel kontrol utama untuk monitoring seluruh aktivitas qurban
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <a href="/admin">Akses Dashboard</a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Shohibul Management */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="text-center">
+              <div className="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <Users className="h-8 w-8 text-green-600" />
+              </div>
+              <CardTitle className="text-xl">Data Shohibul</CardTitle>
+              <CardDescription>
+                Kelola registrasi dan status shohibul qurban
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button asChild className="w-full" variant="default">
+                <a href="/shohibul">Dashboard Shohibul</a>
+              </Button>
+              <Button asChild className="w-full" variant="outline">
+                <a href="/shohibul/data">Input Data</a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Animal Management */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="text-center">
+              <div className="mx-auto bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <Beef className="h-8 w-8 text-orange-600" />
+              </div>
+              <CardTitle className="text-xl">Data Hewan</CardTitle>
+              <CardDescription>
+                Kelola data dan proses hewan qurban
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button asChild className="w-full" variant="default">
+                <a href="/animal">Dashboard Hewan</a>
+              </Button>
+              <Button asChild className="w-full" variant="outline">
+                <a href="/animal/data">Input Data</a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Packaging Management */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="text-center">
+              <div className="mx-auto bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <Package className="h-8 w-8 text-purple-600" />
+              </div>
+              <CardTitle className="text-xl">Pengemasan</CardTitle>
+              <CardDescription>
+                Kelola proses pengemasan daging qurban
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button asChild className="w-full" variant="default">
+                <a href="/packaging">Dashboard Packaging</a>
+              </Button>
+              <Button asChild className="w-full" variant="outline">
+                <a href="/packaging/data">Input Data</a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Distribution Management */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="text-center">
+              <div className="mx-auto bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <Truck className="h-8 w-8 text-teal-600" />
+              </div>
+              <CardTitle className="text-xl">Distribusi</CardTitle>
+              <CardDescription>
+                Kelola distribusi daging kepada penerima
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button asChild className="w-full" variant="default">
+                <a href="/distribution">Dashboard Distribusi</a>
+              </Button>
+              <Button asChild className="w-full" variant="outline">
+                <a href="/distribution/recipients">Data Penerima</a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Settings */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader className="text-center">
+              <div className="mx-auto bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <Settings className="h-8 w-8 text-gray-600" />
+              </div>
+              <CardTitle className="text-xl">Pengaturan</CardTitle>
+              <CardDescription>
+                Konfigurasi sistem dan manajemen pengguna
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full" variant="outline">
+                <a href="/admin/settings">Buka Pengaturan</a>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="text-center mt-12">
+          <p className="text-gray-600">
+            Developed with ❤️ for better qurban management
+          </p>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-green-700">
-            Sistem Qurban As Sakinah
-          </CardTitle>
-          <CardDescription>
-            Masuk ke sistem manajemen qurban
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Masukkan username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Masukkan password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
-              Masuk
-            </Button>
-          </form>
-          
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h3 className="font-medium text-blue-800 mb-2">Akun Demo:</h3>
-            <div className="text-sm text-blue-700 space-y-1">
-              <div><strong>admin</strong> / admin123 (Dashboard utama)</div>
-              <div><strong>petugasshohibul</strong> / petugas123 (Data Shohibul)</div>
-              <div><strong>petugashewan</strong> / petugas123 (Data Hewan)</div>
-              <div><strong>petugaspengemasan</strong> / petugas123 (Data Pengemasan)</div>
-              <div><strong>petugasdistribusi</strong> / petugas123 (Data Penerima)</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
