@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { FileDown } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -14,15 +15,19 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ title }) => {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="flex items-center space-x-4">
-      <h1 className="text-xl font-semibold text-gray-800">{title}</h1>
+    <div className="flex items-center space-x-2 md:space-x-4">
+      <h1 className={`${isMobile ? 'text-sm' : 'text-xl'} font-semibold text-gray-800 truncate`}>
+        {title}
+      </h1>
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="flex items-center gap-2">
-            <FileDown size={16} />
-            <span>Ekspor</span>
+          <Button variant="outline" size={isMobile ? "sm" : "default"} className="flex items-center gap-1 md:gap-2">
+            <FileDown size={isMobile ? 14 : 16} />
+            <span className="hidden sm:inline">Ekspor</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
