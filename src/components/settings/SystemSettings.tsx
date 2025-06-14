@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,11 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Download, Upload, Database, HardDrive, AlertCircle } from 'lucide-react';
+import { Download, Upload, Database, HardDrive, AlertCircle, RotateCcw, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useQurban } from '@/contexts/QurbanContext';
 
 const SystemSettings = () => {
   const { toast } = useToast();
+  const { resetAllData } = useQurban();
   const [systemSettings, setSystemSettings] = useState({
     autoBackup: true,
     dataRetention: '12',
@@ -34,6 +35,14 @@ const SystemSettings = () => {
     });
   };
 
+  const handleReset = () => {
+    resetAllData();
+    toast({
+      title: "Data Berhasil Direset",
+      description: "Semua data qurban telah dikembalikan ke nilai awal.",
+    });
+  };
+
   const toggleSetting = (key: keyof typeof systemSettings) => {
     setSystemSettings(prev => ({
       ...prev,
@@ -43,6 +52,29 @@ const SystemSettings = () => {
 
   return (
     <div className="space-y-6">
+      {/* Master Reset Data */}
+      <Card className="border-red-200 bg-red-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-red-700">
+            <AlertTriangle className="h-5 w-5" />
+            Master Reset Data
+          </CardTitle>
+          <CardDescription className="text-red-600">
+            Reset semua data qurban ke nilai awal. Tindakan ini tidak dapat dibatalkan.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button 
+            onClick={handleReset}
+            variant="destructive"
+            className="w-full"
+          >
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Reset Semua Data
+          </Button>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
