@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,9 +8,22 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="http://assakinahpantaimentari.org/logoyysn.jpg" 
+              alt="Logo Masjid As Sakinah Pantai Mentari"
+              className="h-24 w-auto object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Sistem Manajemen Qurban
           </h1>
+          <h2 className="text-2xl font-semibold text-green-700 mb-4">
+            Masjid As Sakinah Pantai Mentari
+          </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Platform terintegrasi untuk mengelola seluruh proses qurban dari registrasi hingga distribusi
           </p>
