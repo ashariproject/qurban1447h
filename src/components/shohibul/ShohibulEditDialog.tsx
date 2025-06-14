@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -72,7 +71,16 @@ const ShohibulEditDialog: React.FC<ShohibulEditDialogProps> = ({
   });
 
   const onSubmit = (data: FormValues) => {
-    onSave(data);
+    // Ensure pembayaran object has all required properties
+    const updatedData: Partial<ShohibulData> = {
+      ...data,
+      pembayaran: {
+        status: data.pembayaran.status,
+        jumlahDibayar: data.pembayaran.jumlahDibayar,
+        totalBiaya: data.pembayaran.totalBiaya,
+      }
+    };
+    onSave(updatedData);
   };
 
   return (
