@@ -37,6 +37,9 @@ import Recipients from "./pages/distribution/Recipients";
 import DistributionRoutes from "./pages/distribution/Routes";
 import DeliveryStatus from "./pages/distribution/Status";
 
+// Integration Pages
+import GoogleSheetsIntegration from "./pages/integration/GoogleSheets";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -72,6 +75,9 @@ const App = () => (
             <Route path="/distribution/recipients" element={<Recipients />} />
             <Route path="/distribution/routes" element={<DistributionRoutes />} />
             <Route path="/distribution/status" element={<DeliveryStatus />} />
+            
+            {/* Integration Routes */}
+            <Route path="/integration/google-sheets" element={<GoogleSheetsIntegration />} />
             
             {/* Dashboard routes for each role */}
             <Route path="/admin" element={<AdminDashboard />} />
