@@ -18,7 +18,8 @@ import {
   FileCheck,
   ClipboardList,
   Settings,
-  Home
+  Home,
+  RotateCcw
 } from "lucide-react";
 import {
   Tooltip,
@@ -26,6 +27,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useQurban } from '@/contexts/QurbanContext';
+import { useToast } from '@/hooks/use-toast';
 
 // Define user roles for the sidebar
 type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution";
@@ -110,6 +124,16 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange, currentUserRole }) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { resetAllData } = useQurban();
+  const { toast } = useToast();
+
+  const handleResetData = () => {
+    resetAllData();
+    toast({
+      title: "Data Berhasil Direset",
+      description: "Semua data qurban telah dikembalikan ke nilai awal.",
+    });
+  };
 
   // Check if a menu item is active
   const isActive = (path: string) => {
@@ -220,6 +244,54 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange, currentUser
           </nav>
         </TooltipProvider>
       </div>
+
+      {/* Reset Data - Admin Only */}
+      {currentUserRole === 'admin' && (
+        <div className="px-3 pb-4">
+          <AlertDialog>
+            <TooltipProvider>
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700",
+                      )}
+                    >
+                      <RotateCcw className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                      {!collapsed && <span>Reset Data</span>}
+                    </Button>
+                  </AlertDialogTrigger>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="text-xs">
+                    Reset Data
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-red-600">Reset Semua Data?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tindakan ini akan menghapus semua data qurban dan mengembalikan ke nilai awal. 
+                  <span className="font-semibold text-red-600"> Tindakan ini tidak dapat dibatalkan.</span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={handleResetData}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Ya, Reset Semua Data
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
 
       <div className="p-4 border-t border-sidebar-border">
         {!collapsed && (
