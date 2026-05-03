@@ -20,7 +20,8 @@ import {
   Settings,
   Home,
   RotateCcw,
-  QrCode
+  QrCode,
+  HelpCircle
 } from "lucide-react";
 import {
   Tooltip,
