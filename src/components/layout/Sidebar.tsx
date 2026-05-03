@@ -19,7 +19,8 @@ import {
   ClipboardList,
   Settings,
   Home,
-  RotateCcw
+  RotateCcw,
+  QrCode
 } from "lucide-react";
 import {
   Tooltip,
