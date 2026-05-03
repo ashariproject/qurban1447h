@@ -21,7 +21,8 @@ import {
   Home,
   RotateCcw,
   QrCode,
-  HelpCircle
+  HelpCircle,
+  FileSpreadsheet
 } from "lucide-react";
 import {
   Tooltip,
@@ -69,6 +70,7 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Manajemen Pengguna", icon: UserCog, path: "/admin/users" },
       { name: "Monitoring", icon: BarChart3, path: "/admin/monitoring" },
       { name: "Laporan", icon: FileCheck, path: "/admin/reports" },
+      { name: "Database Google Sheets", icon: FileSpreadsheet, path: "/admin/sheets-sync" },
       { name: "Pengaturan", icon: Settings, path: "/admin/settings" }
     ]
   },

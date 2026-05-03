@@ -42,6 +42,7 @@ import GoogleSheetsIntegration from "./pages/integration/GoogleSheets";
 import HewanFotoQR from "./pages/animal/FotoQR";
 import HewanDetail from "./pages/HewanDetail";
 import Help from "./pages/Help";
+import AdminSheetsSync from "./pages/admin/SheetsSync";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/admin/monitoring" element={<Monitoring />} />
             <Route path="/admin/reports" element={<Reports />} />
             <Route path="/admin/settings" element={<Settings />} />
+            <Route path="/admin/sheets-sync" element={<AdminSheetsSync />} />
             
             {/* Shohibul Routes */}
             <Route path="/shohibul/data" element={<ShohibulData />} />
