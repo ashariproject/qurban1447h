@@ -41,6 +41,7 @@ import DeliveryStatus from "./pages/distribution/Status";
 import GoogleSheetsIntegration from "./pages/integration/GoogleSheets";
 import HewanFotoQR from "./pages/animal/FotoQR";
 import HewanDetail from "./pages/HewanDetail";
+import Help from "./pages/Help";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,9 @@ const App = () => (
             
             {/* Integration Routes */}
             <Route path="/integration/google-sheets" element={<GoogleSheetsIntegration />} />
+
+            {/* Help Route */}
+            <Route path="/help" element={<Help />} />
             
             {/* Dashboard routes for each role */}
             <Route path="/admin" element={<AdminDashboard />} />

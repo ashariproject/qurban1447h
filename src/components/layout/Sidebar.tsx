@@ -20,7 +20,8 @@ import {
   Settings,
   Home,
   RotateCcw,
-  QrCode
+  QrCode,
+  HelpCircle
 } from "lucide-react";
 import {
   Tooltip,
@@ -243,6 +244,32 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange, currentUser
                 )}
               </Tooltip>
             ))}
+
+            {/* Help - All roles */}
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start",
+                    isActive("/help")
+                      ? "bg-sidebar-accent text-qurban-600 font-medium"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                  )}
+                  asChild
+                >
+                  <Link to="/help">
+                    <HelpCircle className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                    {!collapsed && <span>Bantuan</span>}
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right" className="text-xs">
+                  Bantuan
+                </TooltipContent>
+              )}
+            </Tooltip>
           </nav>
         </TooltipProvider>
       </div>
