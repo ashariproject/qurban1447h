@@ -1,93 +1,34 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import Layout from '@/components/layout/Layout';
 import QurbanInputForm from '@/components/qurban/QurbanInputForm';
 import ShohibulDataTable from '@/components/shohibul/ShohibulDataTable';
+import { useQurban, ShohibulData as SD } from '@/contexts/QurbanContext';
 
-export interface ShohibulData {
-  id: string;
-  nama: string;
-  alamat: string;
-  noTelepon: string;
-  jenisQurban: 'sapi-mandiri' | 'kambing-mandiri' | 'kambing-titip-beli' | 'sapi-patungan';
-  jumlahHewan: number;
-  pembayaran: {
-    status: 'belum-bayar' | 'lunas' | 'cicil';
-    jumlahDibayar: number;
-    totalBiaya: number;
-  };
-  tanggalDaftar: string;
-}
+export type ShohibulData = SD;
 
-const ShohibulData = () => {
-  const [shohibulList, setShohibulList] = useState<ShohibulData[]>([
-    {
-      id: '1',
-      nama: 'Ahmad Susanto',
-      alamat: 'Jl. Merdeka No. 123, Jakarta',
-      noTelepon: '081234567890',
-      jenisQurban: 'sapi-mandiri',
-      jumlahHewan: 1,
-      pembayaran: {
-        status: 'lunas',
-        jumlahDibayar: 18000000,
-        totalBiaya: 18000000
-      },
-      tanggalDaftar: '2024-01-15'
-    },
-    {
-      id: '2',
-      nama: 'Siti Nurhaliza',
-      alamat: 'Jl. Sudirman No. 456, Bandung',
-      noTelepon: '081987654321',
-      jenisQurban: 'kambing-mandiri',
-      jumlahHewan: 2,
-      pembayaran: {
-        status: 'cicil',
-        jumlahDibayar: 2500000,
-        totalBiaya: 5000000
-      },
-      tanggalDaftar: '2024-01-16'
-    }
-  ]);
-
-  const handleAddShohibul = (newData: Omit<ShohibulData, 'id' | 'tanggalDaftar'>) => {
-    const newShohibul: ShohibulData = {
-      ...newData,
-      id: Date.now().toString(),
-      tanggalDaftar: new Date().toISOString().split('T')[0]
-    };
-    setShohibulList(prev => [...prev, newShohibul]);
-  };
-
-  const handleEditShohibul = (id: string, updatedData: Partial<ShohibulData>) => {
-    setShohibulList(prev => prev.map(item => 
-      item.id === id ? { ...item, ...updatedData } : item
-    ));
-  };
-
-  const handleDeleteShohibul = (id: string) => {
-    setShohibulList(prev => prev.filter(item => item.id !== id));
-  };
+const ShohibulDataPage = () => {
+  const { shohibulList, addShohibul, editShohibul, deleteShohibul } = useQurban();
 
   return (
     <Layout>
       <div className="space-y-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Data Shohibul</h1>
-          <p className="text-gray-500">Kelola data shohibul qurban seperti nama, kontak, alamat, dan pembayaran.</p>
+          <p className="text-gray-500">
+            Kelola data shohibul qurban. Data tersimpan otomatis di perangkat ini (localStorage) dan setiap shohibul baru otomatis menghasilkan data hewan qurban dengan QR code.
+          </p>
         </div>
-        
-        <QurbanInputForm onSubmit={handleAddShohibul} />
 
-        <ShohibulDataTable 
+        <QurbanInputForm onSubmit={addShohibul} />
+
+        <ShohibulDataTable
           data={shohibulList}
-          onEdit={handleEditShohibul}
-          onDelete={handleDeleteShohibul}
+          onEdit={editShohibul}
+          onDelete={deleteShohibul}
         />
       </div>
     </Layout>
   );
 };
 
-export default ShohibulData;
+export default ShohibulDataPage;
