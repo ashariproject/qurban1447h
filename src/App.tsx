@@ -39,6 +39,8 @@ import DeliveryStatus from "./pages/distribution/Status";
 
 // Integration Pages
 import GoogleSheetsIntegration from "./pages/integration/GoogleSheets";
+import HewanFotoQR from "./pages/animal/FotoQR";
+import HewanDetail from "./pages/HewanDetail";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +69,8 @@ const App = () => (
             <Route path="/animal/data" element={<AnimalData />} />
             <Route path="/animal/status" element={<AnimalStatus />} />
             <Route path="/animal/documentation" element={<Documentation />} />
+            <Route path="/animal/foto-qr" element={<HewanFotoQR />} />
+            <Route path="/hewan/:id" element={<HewanDetail />} />
             
             {/* Packaging Routes */}
             <Route path="/packaging/data" element={<PackagingData />} />

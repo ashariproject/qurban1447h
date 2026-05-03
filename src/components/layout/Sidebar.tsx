@@ -19,7 +19,8 @@ import {
   ClipboardList,
   Settings,
   Home,
-  RotateCcw
+  RotateCcw,
+  QrCode
 } from "lucide-react";
 import {
   Tooltip,
@@ -89,7 +90,8 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Dashboard", icon: Home, path: "/animal" },
       { name: "Data Hewan", icon: FileText, path: "/animal/data" },
       { name: "Status Hewan", icon: ClipboardList, path: "/animal/status" },
-      { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" }
+      { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" },
+      { name: "Foto & QR Hewan", icon: QrCode, path: "/animal/foto-qr" }
     ]
   },
   packaging: { 
