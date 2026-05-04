@@ -86,7 +86,6 @@ const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
         <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">
           <strong>✓ Terhubung via Lovable Cloud Connector</strong> — autentikasi OAuth dikelola otomatis, tidak perlu API Key.
         </div>
