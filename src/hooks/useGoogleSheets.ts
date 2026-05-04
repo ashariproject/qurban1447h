@@ -8,14 +8,11 @@ export const useGoogleSheets = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const getSheetService = useCallback(() => {
-    const apiKey = localStorage.getItem('googleSheetsApiKey');
     const spreadsheetId = localStorage.getItem('googleSheetsSpreadsheetId');
-
-    if (!apiKey || !spreadsheetId) {
-      throw new Error('Google Sheets not configured');
+    if (!spreadsheetId) {
+      throw new Error('Spreadsheet ID belum dikonfigurasi');
     }
-
-    return new GoogleSheetsService({ apiKey, spreadsheetId });
+    return new GoogleSheetsService({ spreadsheetId });
   }, []);
 
   const syncShohibulData = useCallback(async (shohibulData: any[]) => {

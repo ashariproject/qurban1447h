@@ -1,84 +1,40 @@
+import { supabase } from '@/integrations/supabase/client';
 
 interface GoogleSheetsConfig {
-  apiKey: string;
+  apiKey?: string;
   spreadsheetId: string;
 }
 
 export class GoogleSheetsService {
-  private apiKey: string;
   private spreadsheetId: string;
-  private baseUrl = 'https://sheets.googleapis.com/v4/spreadsheets';
 
   constructor(config: GoogleSheetsConfig) {
-    this.apiKey = config.apiKey;
     this.spreadsheetId = config.spreadsheetId;
   }
 
-  // Read data from sheet
+  private async invoke(action: string, payload: Record<string, unknown> = {}) {
+    const { data, error } = await supabase.functions.invoke('google-sheets', {
+      body: { action, spreadsheetId: this.spreadsheetId, ...payload },
+    });
+    if (error) throw new Error(error.message);
+    if (data?.error) throw new Error(data.error);
+    return data;
+  }
+
   async readSheet(range: string) {
-    try {
-      const url = `${this.baseUrl}/${this.spreadsheetId}/values/${range}?key=${this.apiKey}`;
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      return data.values || [];
-    } catch (error) {
-      console.error('Error reading from Google Sheets:', error);
-      throw error;
-    }
+    const data = await this.invoke('read', { range });
+    return data?.values || [];
   }
 
-  // Write data to sheet
   async writeSheet(range: string, values: any[][]) {
-    try {
-      const url = `${this.baseUrl}/${this.spreadsheetId}/values/${range}?valueInputOption=RAW&key=${this.apiKey}`;
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          values: values
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error writing to Google Sheets:', error);
-      throw error;
-    }
+    return await this.invoke('write', { range, values });
   }
 
-  // Append data to sheet
   async appendSheet(range: string, values: any[][]) {
-    try {
-      const url = `${this.baseUrl}/${this.spreadsheetId}/values/${range}:append?valueInputOption=RAW&key=${this.apiKey}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          values: values
-        })
-      });
+    return await this.invoke('append', { range, values });
+  }
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error appending to Google Sheets:', error);
-      throw error;
-    }
+  async verify() {
+    return await this.invoke('verify');
   }
 }

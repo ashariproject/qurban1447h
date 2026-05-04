@@ -15,22 +15,22 @@ interface GoogleSheetsConfigProps {
 
 const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }) => {
   const { toast } = useToast();
-  const [apiKey, setApiKey] = useState(localStorage.getItem('googleSheetsApiKey') || '');
+  const [apiKey, setApiKey] = useState('lovable-cloud-connector');
   const [spreadsheetId, setSpreadsheetId] = useState(localStorage.getItem('googleSheetsSpreadsheetId') || '');
   const [isConnected, setIsConnected] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
 
   const handleSaveConfig = () => {
-    if (!apiKey || !spreadsheetId) {
+    if (!spreadsheetId) {
       toast({
         title: "Error",
-        description: "Harap isi API Key dan Spreadsheet ID",
+        description: "Harap isi Spreadsheet ID",
         variant: "destructive",
       });
       return;
     }
 
-    localStorage.setItem('googleSheetsApiKey', apiKey);
+    localStorage.setItem('googleSheetsApiKey', 'lovable-cloud-connector');
     localStorage.setItem('googleSheetsSpreadsheetId', spreadsheetId);
     
     toast({
@@ -42,10 +42,10 @@ const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }
   };
 
   const handleTestConnection = async () => {
-    if (!apiKey || !spreadsheetId) {
+    if (!spreadsheetId) {
       toast({
         title: "Error",
-        description: "Harap isi API Key dan Spreadsheet ID terlebih dahulu",
+        description: "Harap isi Spreadsheet ID terlebih dahulu",
         variant: "destructive",
       });
       return;
@@ -54,8 +54,8 @@ const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }
     setIsTesting(true);
 
     try {
-      const sheetsService = new GoogleSheetsService({ apiKey, spreadsheetId });
-      await sheetsService.readSheet('A1:A1');
+      const sheetsService = new GoogleSheetsService({ spreadsheetId });
+      await sheetsService.verify();
       
       setIsConnected(true);
       toast({
@@ -86,15 +86,8 @@ const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="apiKey">Google Sheets API Key</Label>
-          <Input
-            id="apiKey"
-            type="password"
-            placeholder="Masukkan API Key dari Google Cloud Console"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-          />
+        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-800">
+          <strong>✓ Terhubung via Lovable Cloud Connector</strong> — autentikasi OAuth dikelola otomatis, tidak perlu API Key.
         </div>
 
         <div className="space-y-2">
@@ -133,13 +126,11 @@ const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }
         )}
 
         <div className="space-y-2">
-          <h4 className="font-medium">Panduan Setup:</h4>
+          <h4 className="font-medium">Cara Setup:</h4>
           <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
-            <li>Buka Google Cloud Console dan buat project baru</li>
-            <li>Enable Google Sheets API</li>
-            <li>Buat API Key di Credentials</li>
-            <li>Buat Google Sheet dan share dengan "Anyone with link can view"</li>
-            <li>Copy Spreadsheet ID dari URL</li>
+            <li>Pastikan Google Sheet sudah di-share dengan akun Google yang di-connect</li>
+            <li>Copy Spreadsheet ID dari URL & simpan</li>
+            <li>Klik <strong>Test Koneksi</strong> untuk verifikasi</li>
           </ol>
         </div>
       </CardContent>
