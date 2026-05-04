@@ -15,22 +15,22 @@ interface GoogleSheetsConfigProps {
 
 const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }) => {
   const { toast } = useToast();
-  const [apiKey, setApiKey] = useState(localStorage.getItem('googleSheetsApiKey') || '');
+  const [apiKey, setApiKey] = useState('lovable-cloud-connector');
   const [spreadsheetId, setSpreadsheetId] = useState(localStorage.getItem('googleSheetsSpreadsheetId') || '');
   const [isConnected, setIsConnected] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
 
   const handleSaveConfig = () => {
-    if (!apiKey || !spreadsheetId) {
+    if (!spreadsheetId) {
       toast({
         title: "Error",
-        description: "Harap isi API Key dan Spreadsheet ID",
+        description: "Harap isi Spreadsheet ID",
         variant: "destructive",
       });
       return;
     }
 
-    localStorage.setItem('googleSheetsApiKey', apiKey);
+    localStorage.setItem('googleSheetsApiKey', 'lovable-cloud-connector');
     localStorage.setItem('googleSheetsSpreadsheetId', spreadsheetId);
     
     toast({
@@ -42,10 +42,10 @@ const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }
   };
 
   const handleTestConnection = async () => {
-    if (!apiKey || !spreadsheetId) {
+    if (!spreadsheetId) {
       toast({
         title: "Error",
-        description: "Harap isi API Key dan Spreadsheet ID terlebih dahulu",
+        description: "Harap isi Spreadsheet ID terlebih dahulu",
         variant: "destructive",
       });
       return;
@@ -54,8 +54,8 @@ const GoogleSheetsConfig: React.FC<GoogleSheetsConfigProps> = ({ onConfigSaved }
     setIsTesting(true);
 
     try {
-      const sheetsService = new GoogleSheetsService({ apiKey, spreadsheetId });
-      await sheetsService.readSheet('A1:A1');
+      const sheetsService = new GoogleSheetsService({ spreadsheetId });
+      await sheetsService.verify();
       
       setIsConnected(true);
       toast({
