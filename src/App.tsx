@@ -1,38 +1,107 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, ComponentType } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QurbanProvider } from "@/contexts/QurbanContext";
 import Index from "./pages/Index";
 
-// Lazy-loaded pages for faster initial load
-const NotFound = lazy(() => import("./pages/NotFound"));
-const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
-const UsersManagement = lazy(() => import("./pages/admin/Users"));
-const Monitoring = lazy(() => import("./pages/admin/Monitoring"));
-const Reports = lazy(() => import("./pages/admin/Reports"));
-const Settings = lazy(() => import("./pages/admin/Settings"));
-const AdminSheetsSync = lazy(() => import("./pages/admin/SheetsSync"));
-const ShohibulDashboard = lazy(() => import("./pages/shohibul/Dashboard"));
-const ShohibulData = lazy(() => import("./pages/shohibul/Data"));
-const LocationMap = lazy(() => import("./pages/shohibul/Map"));
-const Payments = lazy(() => import("./pages/shohibul/Payments"));
-const AnimalDashboard = lazy(() => import("./pages/animal/Dashboard"));
-const AnimalData = lazy(() => import("./pages/animal/Data"));
-const AnimalStatus = lazy(() => import("./pages/animal/Status"));
-const Documentation = lazy(() => import("./pages/animal/Documentation"));
-const HewanFotoQR = lazy(() => import("./pages/animal/FotoQR"));
-const HewanDetail = lazy(() => import("./pages/HewanDetail"));
-const PackagingDashboard = lazy(() => import("./pages/packaging/Dashboard"));
-const PackagingData = lazy(() => import("./pages/packaging/Data"));
-const DistributionDashboard = lazy(() => import("./pages/distribution/Dashboard"));
-const Recipients = lazy(() => import("./pages/distribution/Recipients"));
-const DistributionRoutes = lazy(() => import("./pages/distribution/Routes"));
-const DeliveryStatus = lazy(() => import("./pages/distribution/Status"));
-const GoogleSheetsIntegration = lazy(() => import("./pages/integration/GoogleSheets"));
-const Help = lazy(() => import("./pages/Help"));
+// Lazy with prefetch helper — lets us call Component.preload() to warm the chunk
+type Preloadable<T extends ComponentType<any>> = React.LazyExoticComponent<T> & {
+  preload: () => Promise<unknown>;
+};
+
+const lazyWithPreload = <T extends ComponentType<any>>(
+  factory: () => Promise<{ default: T }>
+): Preloadable<T> => {
+  const Component = lazy(factory) as Preloadable<T>;
+  Component.preload = factory;
+  return Component;
+};
+
+const NotFound = lazyWithPreload(() => import("./pages/NotFound"));
+const AdminDashboard = lazyWithPreload(() => import("./pages/admin/Dashboard"));
+const UsersManagement = lazyWithPreload(() => import("./pages/admin/Users"));
+const Monitoring = lazyWithPreload(() => import("./pages/admin/Monitoring"));
+const Reports = lazyWithPreload(() => import("./pages/admin/Reports"));
+const Settings = lazyWithPreload(() => import("./pages/admin/Settings"));
+const AdminSheetsSync = lazyWithPreload(() => import("./pages/admin/SheetsSync"));
+const ShohibulDashboard = lazyWithPreload(() => import("./pages/shohibul/Dashboard"));
+const ShohibulData = lazyWithPreload(() => import("./pages/shohibul/Data"));
+const LocationMap = lazyWithPreload(() => import("./pages/shohibul/Map"));
+const Payments = lazyWithPreload(() => import("./pages/shohibul/Payments"));
+const AnimalDashboard = lazyWithPreload(() => import("./pages/animal/Dashboard"));
+const AnimalData = lazyWithPreload(() => import("./pages/animal/Data"));
+const AnimalStatus = lazyWithPreload(() => import("./pages/animal/Status"));
+const Documentation = lazyWithPreload(() => import("./pages/animal/Documentation"));
+const HewanFotoQR = lazyWithPreload(() => import("./pages/animal/FotoQR"));
+const HewanDetail = lazyWithPreload(() => import("./pages/HewanDetail"));
+const PackagingDashboard = lazyWithPreload(() => import("./pages/packaging/Dashboard"));
+const PackagingData = lazyWithPreload(() => import("./pages/packaging/Data"));
+const DistributionDashboard = lazyWithPreload(() => import("./pages/distribution/Dashboard"));
+const Recipients = lazyWithPreload(() => import("./pages/distribution/Recipients"));
+const DistributionRoutes = lazyWithPreload(() => import("./pages/distribution/Routes"));
+const DeliveryStatus = lazyWithPreload(() => import("./pages/distribution/Status"));
+const GoogleSheetsIntegration = lazyWithPreload(() => import("./pages/integration/GoogleSheets"));
+const Help = lazyWithPreload(() => import("./pages/Help"));
+
+// High-traffic dashboards prefetched on idle after initial load
+const FREQUENT_ROUTES: Preloadable<any>[] = [
+  AdminDashboard,
+  ShohibulDashboard,
+  ShohibulData,
+  AnimalDashboard,
+  AnimalData,
+  PackagingDashboard,
+  DistributionDashboard,
+];
+
+// Likely-next chunks per area, prefetched whenever the user enters that area
+const ROUTE_PREFETCH_MAP: Record<string, Preloadable<any>[]> = {
+  "/admin": [UsersManagement, Monitoring, Reports, Settings, AdminSheetsSync],
+  "/shohibul": [ShohibulData, Payments, LocationMap],
+  "/animal": [AnimalData, AnimalStatus, HewanFotoQR, Documentation],
+  "/packaging": [PackagingData],
+  "/distribution": [Recipients, DistributionRoutes, DeliveryStatus],
+};
+
+const schedule = (cb: () => void) => {
+  const w = window as any;
+  if (typeof w.requestIdleCallback === "function") {
+    w.requestIdleCallback(cb, { timeout: 2000 });
+  } else {
+    setTimeout(cb, 200);
+  }
+};
+
+const prefetch = (components: Preloadable<any>[]) => {
+  components.forEach((c) => {
+    try {
+      c.preload();
+    } catch {
+      /* ignore */
+    }
+  });
+};
+
+const RoutePrefetcher = () => {
+  const { pathname } = useLocation();
+
+  // Warm frequent routes once after initial mount
+  useEffect(() => {
+    schedule(() => prefetch(FREQUENT_ROUTES));
+  }, []);
+
+  // Warm related routes whenever the area changes
+  useEffect(() => {
+    const area = "/" + pathname.split("/")[1];
+    const targets = ROUTE_PREFETCH_MAP[area];
+    if (targets) schedule(() => prefetch(targets));
+  }, [pathname]);
+
+  return null;
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +125,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <RoutePrefetcher />
           <Suspense fallback={<PageFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
