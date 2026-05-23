@@ -19,11 +19,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, XCircle, Clock, Truck, Package, Users } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Truck, Package, Users, Camera, Eye, Image as ImageIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface ShohibulStatusTableProps {
   data: ShohibulStatusData[];
-  onUpdateStatus: (id: string, field: string, value: boolean) => void;
+  onUpdateStatus: (id: string, field: string, value: any) => void;
 }
 
 const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
@@ -41,10 +42,22 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
 
   const getStatusIcon = (status: boolean) => {
     return status ? (
-      <CheckCircle className="h-5 w-5 text-green-600" />
+      <CheckCircle className="h-4 w-4 text-green-600" />
     ) : (
-      <XCircle className="h-5 w-5 text-red-600" />
+      <XCircle className="h-4 w-4 text-gray-300" />
     );
+  };
+
+  const handlePhotoUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onUpdateStatus(id, 'fotoTerima', reader.result as string);
+        onUpdateStatus(id, 'telahTerima', true); // Automatically mark as received when photo uploaded
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const getJenisLabel = (jenis: string) => {
@@ -171,80 +184,153 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>No</TableHead>
-                    <TableHead>Nama Shohibul</TableHead>
-                    <TableHead>Jenis Qurban</TableHead>
-                    <TableHead>Jumlah</TableHead>
-                    <TableHead>Sudah Datang</TableHead>
-                    <TableHead>Siap Sembelih</TableHead>
-                    <TableHead>Siap Kirim</TableHead>
-                    <TableHead>Telah Terima</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">UNIT</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">No</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">Nama Shohibul</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">Jenis</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">Jumlah</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500 text-center">Datang</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500 text-center">Sembelih</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500 text-center">Kirim</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500 text-center">Terima</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500 text-center">Foto</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredData.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-medium">{item.nama}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          item.jenisQurban === 'sapi-mandiri' 
-                            ? 'bg-blue-100 text-blue-800'
-                            : item.jenisQurban === 'kambing-mandiri'
-                            ? 'bg-green-100 text-green-800'
-                            : item.jenisQurban === 'kambing-titip-beli'
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-orange-100 text-orange-800'
-                        }`}>
-                          {getJenisLabel(item.jenisQurban)}
-                        </span>
-                      </TableCell>
-                      <TableCell>{item.jumlahHewan} ekor</TableCell>
-                      <TableCell>
-                        <Button
-                          variant={item.statusDatang ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => onUpdateStatus(item.id, 'statusDatang', !item.statusDatang)}
-                          className="w-8 h-8 p-0"
+                  {(() => {
+                    let patunganCounter = 0;
+                    return filteredData.map((item, index) => {
+                      const isPatungan = item.jenisQurban === 'sapi-patungan';
+                      const pIdx = isPatungan ? patunganCounter++ : -1;
+                      const groupNum = isPatungan ? Math.floor(pIdx / 7) : -1;
+                      const isGroupStart = isPatungan && (pIdx % 7 === 0);
+                      
+                      // Alternating background for groups
+                      const rowBg = isPatungan 
+                        ? (groupNum % 2 === 0 ? 'bg-blue-50/50' : 'bg-indigo-50/30') 
+                        : '';
+                      
+                      return (
+                        <TableRow 
+                          key={item.id} 
+                          className={`${rowBg} hover:bg-gray-100/50 transition-colors ${isGroupStart ? 'border-t-2 border-blue-200' : ''}`}
                         >
-                          {getStatusIcon(item.statusDatang)}
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant={item.statusSiapSembelih ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => onUpdateStatus(item.id, 'statusSiapSembelih', !item.statusSiapSembelih)}
-                          className="w-8 h-8 p-0"
-                          disabled={!item.statusDatang}
-                        >
-                          {getStatusIcon(item.statusSiapSembelih)}
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant={item.statusSiapKirim ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => onUpdateStatus(item.id, 'statusSiapKirim', !item.statusSiapKirim)}
-                          className="w-8 h-8 p-0"
-                          disabled={!item.statusSiapSembelih}
-                        >
-                          {getStatusIcon(item.statusSiapKirim)}
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant={item.statusTelahTerima ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => onUpdateStatus(item.id, 'statusTelahTerima', !item.statusTelahTerima)}
-                          className="w-8 h-8 p-0"
-                          disabled={!item.statusSiapKirim}
-                        >
-                          {getStatusIcon(item.statusTelahTerima)}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                          <TableCell className="py-1 px-2 font-bold text-blue-700 text-[10px]">
+                            {isGroupStart ? `UNIT ${groupNum + 1}` : ''}
+                          </TableCell>
+                          <TableCell className="py-1 px-2 text-xs">{index + 1}</TableCell>
+                          <TableCell className="py-1 px-2 font-semibold text-sm truncate max-w-[150px]">{item.nama}</TableCell>
+                          <TableCell className="py-1 px-2">
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
+                              item.jenisQurban === 'sapi-mandiri' 
+                                ? 'bg-blue-100 text-blue-800'
+                                : item.jenisQurban === 'kambing-mandiri'
+                                ? 'bg-green-100 text-green-800'
+                                : item.jenisQurban === 'kambing-titip-beli'
+                                ? 'bg-purple-100 text-purple-800'
+                                : 'bg-orange-100 text-orange-800'
+                            }`}>
+                              {item.jenisQurban.split('-')[0]}
+                            </span>
+                          </TableCell>
+                          <TableCell className="py-1 px-2 text-xs font-medium">{item.jumlahHewan} ekor</TableCell>
+                          <TableCell className="py-1 px-2 text-center">
+                            <Button
+                              variant={item.statusDatang ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => onUpdateStatus(item.id, 'statusDatang', !item.statusDatang)}
+                              className={`w-6 h-6 p-0 ${item.statusDatang ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                            >
+                              {getStatusIcon(item.statusDatang)}
+                            </Button>
+                          </TableCell>
+                          <TableCell className="py-1 px-2 text-center">
+                            <Button
+                              variant={item.statusSiapSembelih ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => onUpdateStatus(item.id, 'statusSiapSembelih', !item.statusSiapSembelih)}
+                              className={`w-6 h-6 p-0 ${item.statusSiapSembelih ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                              disabled={!item.statusDatang}
+                            >
+                              {getStatusIcon(item.statusSiapSembelih)}
+                            </Button>
+                          </TableCell>
+                          <TableCell className="py-1 px-2 text-center">
+                            <Button
+                              variant={item.statusSiapKirim ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => onUpdateStatus(item.id, 'statusSiapKirim', !item.statusSiapKirim)}
+                              className={`w-6 h-6 p-0 ${item.statusSiapKirim ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                              disabled={!item.statusSiapSembelih}
+                            >
+                              {getStatusIcon(item.statusSiapKirim)}
+                            </Button>
+                          </TableCell>
+                          <TableCell className="py-1 px-2 text-center">
+                            <Button
+                              variant={item.statusTelahTerima ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => onUpdateStatus(item.id, 'statusTelahTerima', !item.statusTelahTerima)}
+                              className={`w-6 h-6 p-0 ${item.statusTelahTerima ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                              disabled={!item.statusSiapKirim}
+                            >
+                              {getStatusIcon(item.statusTelahTerima)}
+                            </Button>
+                          </TableCell>
+                          <TableCell className="py-1 px-2 text-center">
+                            <div className="flex justify-center gap-1">
+                              {item.fotoTerima ? (
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm" className="h-6 w-6 p-0 border-blue-200 bg-blue-50 text-blue-600">
+                                      <Eye className="h-3 w-3" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                      <DialogTitle>Bukti Penerimaan - {item.nama}</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="mt-4">
+                                      <img src={item.fotoTerima} alt="Bukti Terima" className="w-full h-auto rounded-lg shadow-md" />
+                                      <div className="mt-4 flex justify-end">
+                                        <Label htmlFor={`update-photo-${item.id}`} className="cursor-pointer">
+                                          <div className="flex items-center gap-2 text-xs text-blue-600 font-bold hover:underline">
+                                            <Camera className="h-4 w-4" />
+                                            GANTI FOTO
+                                          </div>
+                                          <input 
+                                            id={`update-photo-${item.id}`} 
+                                            type="file" 
+                                            accept="image/*" 
+                                            className="hidden" 
+                                            onChange={(e) => handlePhotoUpload(item.id, e)}
+                                          />
+                                        </Label>
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                              ) : (
+                                <Label htmlFor={`upload-photo-${item.id}`} className="cursor-pointer">
+                                  <div className={`flex items-center justify-center h-6 w-6 rounded-md border border-dashed transition-colors ${item.statusSiapKirim ? 'border-blue-400 bg-blue-50 text-blue-600 hover:bg-blue-100' : 'border-gray-200 bg-gray-50 text-gray-400 opacity-50 pointer-events-none'}`}>
+                                    <Camera className="h-3 w-3" />
+                                  </div>
+                                  <input 
+                                    id={`upload-photo-${item.id}`} 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    disabled={!item.statusSiapKirim}
+                                    onChange={(e) => handlePhotoUpload(item.id, e)}
+                                  />
+                                </Label>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    });
+                  })()}
                 </TableBody>
               </Table>
             </div>

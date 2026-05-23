@@ -3,155 +3,154 @@ import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Beef, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { Beef, CheckCircle, Clock, Plus, BarChart3, Camera, QrCode } from 'lucide-react';
+import { useQurban } from '@/contexts/QurbanContext';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const AnimalDashboard = () => {
-  // Sample data - in real app this would come from context/API
-  const animalStats = {
-    totalSapi: 15,
-    totalKambing: 25,
-    sapiDisembelih: 12,
-    kambingDisembelih: 18,
-    sapiMenunggu: 3,
-    kambingMenunggu: 7,
-    totalDokumentasi: 30
-  };
+  const { hewanList } = useQurban();
 
-  const recentActivities = [
-    { id: 1, type: 'sembelih', animal: 'Sapi #S001', time: '10:30', status: 'completed' },
-    { id: 2, type: 'dokumentasi', animal: 'Kambing #K012', time: '11:15', status: 'completed' },
-    { id: 3, type: 'penerimaan', animal: 'Sapi #S002', time: '12:00', status: 'pending' },
-    { id: 4, type: 'sembelih', animal: 'Kambing #K013', time: '13:30', status: 'in-progress' }
-  ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'text-green-600';
-      case 'in-progress': return 'text-blue-600';
-      case 'pending': return 'text-yellow-600';
-      default: return 'text-gray-600';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'in-progress': return <Clock className="h-4 w-4 text-blue-600" />;
-      case 'pending': return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
-      default: return <Clock className="h-4 w-4 text-gray-600" />;
-    }
+  // REAL DATA FROM CONTEXT
+  const totalSapi = hewanList.filter(h => h.jenis === 'sapi').length;
+  const totalKambing = hewanList.filter(h => h.jenis === 'kambing').length;
+  const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima').length;
+  const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima').length;
+  
+  const stats = {
+    totalSapi,
+    totalKambing,
+    sapiDisembelih,
+    kambingDisembelih,
+    sapiMenunggu: totalSapi - sapiDisembelih,
+    kambingMenunggu: totalKambing - kambingDisembelih,
+    totalDokumentasi: hewanList.reduce((acc, curr) => acc + (curr.fotoUrls?.length || 0), 0)
   };
 
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg p-6">
-          <h1 className="text-3xl font-bold mb-2">Dashboard Hewan</h1>
-          <p className="text-orange-100">Pantau data hewan qurban dan proses penyembelihan secara real-time</p>
+        <div className="bg-gradient-to-br from-orange-600 to-orange-800 text-white rounded-2xl p-6 shadow-xl relative overflow-hidden">
+          <div className="relative z-10">
+            <h1 className="text-3xl font-black mb-2 uppercase tracking-tighter">Panel Operasional Hewan</h1>
+            <p className="text-orange-100 font-medium">Monitoring status penyembelihan dan dokumentasi karkas.</p>
+            
+            <div className="flex flex-wrap gap-2 mt-6">
+              <Button asChild className="bg-white text-orange-700 hover:bg-orange-50 font-bold shadow-lg">
+                <Link to="/animal/data">
+                  <Plus className="h-4 w-4 mr-2" />
+                  INPUT PROSES HEWAN
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-md">
+                <Link to="/animal/documentation">
+                  <Camera className="h-4 w-4 mr-2" />
+                  UPLOAD DOKUMENTASI
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="absolute top-0 right-0 -mr-12 -mt-12 opacity-10">
+            <Beef size={200} />
+          </div>
         </div>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-l-4 border-l-blue-500">
+          <Card className="border-none shadow-md bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Sapi</CardTitle>
+              <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Hewan Sapi</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-blue-600">{animalStats.totalSapi}</span>
-                <Beef className="h-8 w-8 text-blue-500" />
+                <span className="text-3xl font-black text-orange-600">{stats.totalSapi}</span>
+                <Beef className="h-8 w-8 text-orange-200" />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Disembelih: {animalStats.sapiDisembelih}</p>
+              <p className="text-[10px] font-bold text-emerald-600 mt-2 uppercase">Selesai: {stats.sapiDisembelih}</p>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-green-500">
+          <Card className="border-none shadow-md bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Kambing</CardTitle>
+              <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Hewan Kambing</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-green-600">{animalStats.totalKambing}</span>
-                <Beef className="h-8 w-8 text-green-500" />
+                <span className="text-3xl font-black text-green-600">{stats.totalKambing}</span>
+                <Beef className="h-8 w-8 text-green-200" />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Disembelih: {animalStats.kambingDisembelih}</p>
+              <p className="text-[10px] font-bold text-emerald-600 mt-2 uppercase">Selesai: {stats.kambingDisembelih}</p>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-yellow-500">
+          <Card className="border-none shadow-md bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Menunggu Proses</CardTitle>
+              <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sisa Antrian</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-yellow-600">{animalStats.sapiMenunggu + animalStats.kambingMenunggu}</span>
-                <Clock className="h-8 w-8 text-yellow-500" />
+                <span className="text-3xl font-black text-blue-600">{stats.sapiMenunggu + stats.kambingMenunggu}</span>
+                <Clock className="h-8 w-8 text-blue-200" />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Sapi: {animalStats.sapiMenunggu}, Kambing: {animalStats.kambingMenunggu}</p>
+              <p className="text-[10px] font-bold text-blue-500 mt-2 uppercase">Menunggu Proses</p>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-purple-500">
+          <Card className="border-none shadow-md bg-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Dokumentasi</CardTitle>
+              <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dokumentasi</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-purple-600">{animalStats.totalDokumentasi}</span>
-                <CheckCircle className="h-8 w-8 text-purple-500" />
+                <span className="text-3xl font-black text-purple-600">{stats.totalDokumentasi}</span>
+                <Camera className="h-8 w-8 text-purple-200" />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Foto & Video</p>
+              <p className="text-[10px] font-bold text-purple-500 mt-2 uppercase">Foto Terupload</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Progress Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Progress Penyembelihan</CardTitle>
+          <Card className="border-none shadow-lg">
+            <CardHeader className="bg-gray-50 border-b">
+              <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-orange-600" />
+                PROGRES PENYEMBELIHAN
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6 pt-6">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Sapi</span>
-                  <span className="text-sm text-gray-600">{animalStats.sapiDisembelih}/{animalStats.totalSapi}</span>
+                  <span className="text-xs font-bold text-gray-600">HEWAN SAPI</span>
+                  <span className="text-xs font-black text-orange-600">{stats.sapiDisembelih}/{stats.totalSapi}</span>
                 </div>
-                <Progress value={(animalStats.sapiDisembelih / animalStats.totalSapi) * 100} className="h-2" />
+                <Progress value={stats.totalSapi > 0 ? (stats.sapiDisembelih / stats.totalSapi) * 100 : 0} className="h-3 bg-orange-100" />
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Kambing</span>
-                  <span className="text-sm text-gray-600">{animalStats.kambingDisembelih}/{animalStats.totalKambing}</span>
+                  <span className="text-xs font-bold text-gray-600">HEWAN KAMBING</span>
+                  <span className="text-xs font-black text-green-600">{stats.kambingDisembelih}/{stats.totalKambing}</span>
                 </div>
-                <Progress value={(animalStats.kambingDisembelih / animalStats.totalKambing) * 100} className="h-2" />
+                <Progress value={stats.totalKambing > 0 ? (stats.kambingDisembelih / stats.totalKambing) * 100 : 0} className="h-3 bg-green-100" />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Aktivitas Terkini</CardTitle>
+          <Card className="border-none shadow-lg">
+            <CardHeader className="bg-gray-50 border-b">
+              <CardTitle className="text-sm font-black uppercase tracking-wider">Navigasi Cepat</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
-                    <div className="flex items-center space-x-3">
-                      {getStatusIcon(activity.status)}
-                      <div>
-                        <p className="text-sm font-medium">{activity.animal}</p>
-                        <p className="text-xs text-gray-500 capitalize">{activity.type}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs text-gray-500">{activity.time}</p>
-                      <p className={`text-xs capitalize ${getStatusColor(activity.status)}`}>
-                        {activity.status === 'in-progress' ? 'Proses' : activity.status === 'pending' ? 'Menunggu' : 'Selesai'}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 gap-4">
+                <Link to="/animal/foto-qr" className="flex flex-col items-center justify-center p-4 rounded-xl border border-dashed border-gray-200 hover:border-orange-400 hover:bg-orange-50 transition-all group">
+                  <QrCode className="h-8 w-8 text-gray-400 group-hover:text-orange-600 mb-2" />
+                  <span className="text-[10px] font-bold text-gray-500 group-hover:text-orange-700">CETAK QR HEWAN</span>
+                </Link>
+                <Link to="/animal/meat-yield" className="flex flex-col items-center justify-center p-4 rounded-xl border border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-all group">
+                  <BarChart3 className="h-8 w-8 text-gray-400 group-hover:text-blue-600 mb-2" />
+                  <span className="text-[10px] font-bold text-gray-500 group-hover:text-blue-700">ESTIMASI DAGING</span>
+                </Link>
               </div>
             </CardContent>
           </Card>

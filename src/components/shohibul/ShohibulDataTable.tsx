@@ -21,7 +21,17 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import ShohibulEditDialog from './ShohibulEditDialog';
-import { Edit, Trash2, Filter } from 'lucide-react';
+import { Edit, Trash2, Filter, FileText, Share2, Printer, Phone } from 'lucide-react';
+import { generateCertificate, downloadPDF } from '@/utils/certificateGenerator';
+import { useToast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ShohibulDataTableProps {
   data: ShohibulData[];
@@ -37,6 +47,38 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
   const [filterJenis, setFilterJenis] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingItem, setEditingItem] = useState<ShohibulData | null>(null);
+  const { toast } = useToast();
+
+  const handlePrintCertificate = async (shohibul: ShohibulData) => {
+    try {
+      toast({ title: "Generating Certificate...", description: "Mohon tunggu sebentar." });
+      const pdfBytes = await generateCertificate(shohibul.nama, shohibul.jenisQurban);
+      downloadPDF(pdfBytes, `Sertifikat_Qurban_${shohibul.nama.replace(/\s+/g, '_')}.pdf`);
+      toast({ title: "Berhasil!", description: "Sertifikat telah diunduh." });
+    } catch (error) {
+      toast({ variant: "destructive", title: "Gagal", description: "Terjadi kesalahan saat membuat sertifikat." });
+    }
+  };
+
+  const handleSendCertificateWA = async (shohibul: ShohibulData) => {
+    try {
+      // First generate/download so they have it
+      const pdfBytes = await generateCertificate(shohibul.nama, shohibul.jenisQurban);
+      downloadPDF(pdfBytes, `Sertifikat_Qurban_${shohibul.nama.replace(/\s+/g, '_')}.pdf`);
+
+      const message = `Assalamu'alaikum Bapak/Ibu *${shohibul.nama}*,%0A%0A` +
+        `Terima kasih telah menyalurkan hewan Qurban melalui *Masjid As Sakinah Pantai Mentari*.%0A%0A` +
+        `Berikut kami lampirkan *Sertifikat Qurban 1447H* sebagai bentuk apresiasi dan tanda terima dari panitia.%0A%0A` +
+        `_Jazakumullahu Khairan Katsiran._`;
+      
+      const waLink = `https://wa.me/${shohibul.noTelepon.replace(/^0/, '62')}?text=${message}`;
+      window.open(waLink, '_blank');
+      
+      toast({ title: "WhatsApp Dibuka", description: "Silakan lampirkan file sertifikat yang baru saja diunduh." });
+    } catch (error) {
+      toast({ variant: "destructive", title: "Gagal", description: "Terjadi kesalahan saat memproses pendaftaran." });
+    }
+  };
 
   const filteredData = data.filter(item => {
     const matchesJenis = filterJenis === 'all' || item.jenisQurban === filterJenis;
@@ -82,8 +124,10 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
     const percentage = (pembayaran.jumlahDibayar / pembayaran.totalBiaya) * 100;
     
     switch (pembayaran.status) {
-      case 'lunas':
-        return <Badge className="bg-green-100 text-green-800">Lunas</Badge>;
+      case 'lunas-cash':
+        return <Badge className="bg-green-100 text-green-800">Lunas - Cash</Badge>;
+      case 'lunas-transfer':
+        return <Badge className="bg-blue-100 text-blue-800">Lunas - Transfer</Badge>;
       case 'cicil':
         return <Badge className="bg-yellow-100 text-yellow-800">Cicil ({percentage.toFixed(0)}%)</Badge>;
       case 'belum-bayar':
@@ -200,6 +244,27 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
+
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="bg-blue-50 text-blue-700 border-blue-200">
+                              <FileText className="h-4 w-4 mr-1" />
+                              Sertifikat
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                            <DropdownMenuLabel>Opsi Sertifikat</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => handlePrintCertificate(item)} className="cursor-pointer">
+                              <Printer className="mr-2 h-4 w-4" />
+                              <span>Cetak / Unduh PDF</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleSendCertificateWA(item)} className="cursor-pointer">
+                              <Share2 className="mr-2 h-4 w-4 text-green-600" />
+                              <span>Kirim via WhatsApp</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </TableCell>
                   </TableRow>

@@ -38,7 +38,7 @@ const formSchema = z.object({
   }),
   jumlahHewan: z.number().min(1, "Jumlah hewan minimal 1"),
   pembayaran: z.object({
-    status: z.enum(['belum-bayar', 'lunas', 'cicil'], {
+    status: z.enum(['belum-bayar', 'lunas-cash', 'lunas-transfer', 'cicil'], {
       required_error: "Status pembayaran harus dipilih",
     }),
     jumlahDibayar: z.number().min(0, "Jumlah dibayar minimal 0"),
@@ -206,8 +206,9 @@ const QurbanInputForm: React.FC<QurbanInputFormProps> = ({ onSubmit }) => {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="belum-bayar">Belum Bayar</SelectItem>
+                          <SelectItem value="lunas-cash">Lunas - Cash</SelectItem>
+                          <SelectItem value="lunas-transfer">Lunas - Transfer</SelectItem>
                           <SelectItem value="cicil">Cicil</SelectItem>
-                          <SelectItem value="lunas">Lunas</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

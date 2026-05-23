@@ -22,3 +22,28 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Secrets & environment
+.env
+.env.local
+.env*.local
+
+# Large binaries & deployment artifacts
+*.exe
+*.tar.gz
+*.deb
+dist_deploy.tar.gz
+project.tar.gz
+cloudflared.exe
+cloudflared_tmux.log
+
+# Scratch & temporary files
+scratch/
+sync_data_*.json
+20260515dataqueban.csv
+sertifikat2026.pdf
+shohibul.xlsx
+~$*
+
+# Debug files
+public/debug_cert.pdf

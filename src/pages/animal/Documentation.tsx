@@ -28,38 +28,7 @@ interface AnimalDocumentation {
 }
 
 const Documentation = () => {
-  const [documentations, setDocumentations] = useState<AnimalDocumentation[]>([
-    {
-      id: '1',
-      animalCode: 'SP001',
-      animalType: 'sapi',
-      shohibulName: 'Ahmad Susanto',
-      shohibulId: 'SH001',
-      documentationType: 'penyembelihan',
-      mediaType: 'foto',
-      fileName: 'penyembelihan_SP001_01.jpg',
-      fileUrl: '/placeholder.svg',
-      description: 'Dokumentasi proses penyembelihan hewan sapi SP001 milik Ahmad Susanto',
-      uploadDate: '2024-01-15',
-      uploadedBy: 'Petugas Hewan',
-      status: 'diverifikasi'
-    },
-    {
-      id: '2',
-      animalCode: 'KM001',
-      animalType: 'kambing',
-      shohibulName: 'Siti Nurhaliza',
-      shohibulId: 'SH002',
-      documentationType: 'pemotongan',
-      mediaType: 'video',
-      fileName: 'pemotongan_KM001.mp4',
-      fileUrl: '/placeholder.svg',
-      description: 'Video dokumentasi proses pemotongan kambing KM001',
-      uploadDate: '2024-01-16',
-      uploadedBy: 'Petugas Hewan',
-      status: 'tersimpan'
-    }
-  ]);
+  const [documentations, setDocumentations] = useState<AnimalDocumentation[]>([]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('semua');
@@ -261,6 +230,7 @@ const Documentation = () => {
                         id="file"
                         type="file"
                         accept="image/*,video/*"
+                        multiple
                         onChange={handleFileUpload}
                       />
                     </div>

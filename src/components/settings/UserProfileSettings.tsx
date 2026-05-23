@@ -13,11 +13,11 @@ import { useToast } from '@/hooks/use-toast';
 const UserProfileSettings = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    nama: 'Ahmad Susanto',
-    email: 'ahmad.susanto@example.com',
+    nama: 'Administrator Masjid',
+    email: 'admin@assakinahpantaimentari.org',
     telepon: '+62 812-3456-7890',
     jabatan: 'Admin',
-    alamat: 'Jl. Pantai Mentari No. 123, Jakarta',
+    alamat: 'Masjid As Sakinah, Pantai Mentari',
     bio: 'Koordinator utama sistem manajemen qurban'
   });
 

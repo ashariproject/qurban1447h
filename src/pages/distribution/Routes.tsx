@@ -38,33 +38,8 @@ const DistributionRoutes = () => {
     catatan: ''
   });
 
-  // Sample data
-  const [routes, setRoutes] = useState<DistributionRoute[]>([
-    {
-      id: 'RT001',
-      namaRute: 'Rute Pantai Mentari',
-      driver: 'Ahmad Susanto',
-      kendaraan: 'Pickup L300 - B 1234 CD',
-      wilayahTujuan: ['Pantai Mentari Sektor 1', 'Pantai Mentari Sektor 2'],
-      estimasiWaktu: '3 jam',
-      jumlahPaket: 45,
-      status: 'active',
-      tanggalRencana: '2024-01-20',
-      catatan: 'Prioritas pengiriman pagi hari'
-    },
-    {
-      id: 'RT002',
-      namaRute: 'Rute Komplek AL',
-      driver: 'Budi Santoso',
-      kendaraan: 'Motor Box - B 5678 EF',
-      wilayahTujuan: ['Komplek AL Gang 1', 'Komplek AL Gang 2'],
-      estimasiWaktu: '2 jam',
-      jumlahPaket: 25,
-      status: 'planned',
-      tanggalRencana: '2024-01-21',
-      catatan: 'Akses jalan sempit, gunakan motor'
-    }
-  ]);
+  // Sample data - Reset to empty for fresh start
+  const [routes, setRoutes] = useState<DistributionRoute[]>([]);
 
   const wilayahOptions = [
     'Pantai Mentari Sektor 1',

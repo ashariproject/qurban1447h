@@ -1,151 +1,120 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
+import { useQurban, HewanData } from "@/contexts/QurbanContext";
+import { Camera, Trash2, Eye, Plus, CheckCircle2, Beef, Image as ImageIcon } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-
-interface AnimalProcessData {
-  id: string;
-  code: string;
-  type: 'sapi' | 'kambing';
-  status: 'diterima' | 'disembelih' | 'dipotong';
-}
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Scale } from "lucide-react";
 
 const AnimalDataForm = () => {
-  const [animalCounts, setAnimalCounts] = useState({
-    sapi: { total: 12, disembelih: 8 },
-    kambing: { total: 13, dipotong: 7 }
-  });
-
-  // Simulated animal list from shohibul input
-  const [animalList] = useState<AnimalProcessData[]>([
-    { id: '1', code: 'SP001', type: 'sapi', status: 'diterima' },
-    { id: '2', code: 'SP002', type: 'sapi', status: 'diterima' },
-    { id: '3', code: 'SP003', type: 'sapi', status: 'disembelih' },
-    { id: '4', code: 'KM001', type: 'kambing', status: 'diterima' },
-    { id: '5', code: 'KM002', type: 'kambing', status: 'disembelih' },
-    { id: '6', code: 'KM003', type: 'kambing', status: 'dipotong' },
-    { id: '7', code: 'SP004', type: 'sapi', status: 'diterima' },
-    { id: '8', code: 'KM004', type: 'kambing', status: 'diterima' }
-  ]);
-
+  const { shohibulList, hewanList, updateHewanStatus, addFotoToHewan, removeFotoFromHewan, updateHewanMeasurements } = useQurban();
   const [selectedAnimal, setSelectedAnimal] = useState<string>('');
-  const [processAction, setProcessAction] = useState<'sembelih' | 'potong'>('sembelih');
+  const [processAction, setProcessAction] = useState<HewanData['status']>('disembelih');
+  const [bobotInput, setBobotInput] = useState<string>('');
+  const [ldInput, setLdInput] = useState<string>('');
 
-  const updateCount = (type: 'sapi' | 'kambing', action: 'increment' | 'decrement', process: 'disembelih' | 'dipotong') => {
-    setAnimalCounts(prev => {
-      const current = prev[type][process];
-      const total = prev[type].total;
-      
-      let newValue = current;
-      if (action === 'increment' && current < total) {
-        newValue = current + 1;
-      } else if (action === 'decrement' && current > 0) {
-        newValue = current - 1;
-      }
+  const updateStatus = (id: string, status: HewanData['status']) => {
+    updateHewanStatus(id, status);
+  };
 
-      return {
-        ...prev,
-        [type]: {
-          ...prev[type],
-          [process]: newValue
-        }
-      };
-    });
+  const handlePhotoUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          addFotoToHewan(id, reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
   };
 
   const handleProcessAnimal = () => {
     if (selectedAnimal) {
-      console.log(`Processing animal ${selectedAnimal} for ${processAction}`);
-      // Here you would update the animal status and counts
+      updateStatus(selectedAnimal, processAction);
+      
+      const b = parseFloat(bobotInput);
+      const ld = parseFloat(ldInput);
+      if (b > 0 || ld > 0) {
+        updateHewanMeasurements(selectedAnimal, { bobot: b > 0 ? b : undefined, lingkarDada: ld > 0 ? ld : undefined });
+      }
+      
+      setSelectedAnimal('');
+      setBobotInput('');
+      setLdInput('');
     }
   };
+
+  useEffect(() => {
+    if (selectedAnimal) {
+      const animal = hewanList.find(h => h.id === selectedAnimal);
+      if (animal) {
+        setBobotInput(animal.bobot?.toString() || '');
+        setLdInput(animal.lingkarDada?.toString() || '');
+        setProcessAction(animal.status);
+      }
+    }
+  }, [selectedAnimal, hewanList]);
 
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Sapi Card */}
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-center text-xl font-bold text-orange-600">
+        <Card className="shadow-lg border-l-4 border-l-orange-500">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-center text-lg font-bold text-orange-600 flex items-center justify-center gap-2">
+              <Beef className="h-5 w-5" />
               HEWAN SAPI
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg p-4 text-center">
-              <div className="text-3xl font-bold">{animalCounts.sapi.total}</div>
-              <div className="text-orange-100">Total Hewan Sapi</div>
+              <div className="text-3xl font-bold">{hewanList.filter(h => h.jenis === 'sapi').length}</div>
+              <div className="text-orange-100 text-xs uppercase font-bold tracking-wider">Total Hewan Sapi</div>
             </div>
             
-            <div className="space-y-3">
-              <div className="flex items-center justify-between bg-gray-50 p-3 rounded">
-                <span className="font-medium">Disembelih:</span>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => updateCount('sapi', 'decrement', 'disembelih')}
-                    disabled={animalCounts.sapi.disembelih <= 0}
-                  >
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                  <span className="font-bold text-lg w-8 text-center">
-                    {animalCounts.sapi.disembelih}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => updateCount('sapi', 'increment', 'disembelih')}
-                    disabled={animalCounts.sapi.disembelih >= animalCounts.sapi.total}
-                  >
-                    <ChevronUp className="h-4 w-4" />
-                  </Button>
-                </div>
+            <div className="grid grid-cols-2 gap-2 text-center">
+              <div className="bg-gray-50 p-2 rounded border">
+                <div className="text-xl font-bold text-gray-700">{hewanList.filter(h => h.jenis === 'sapi' && h.status === 'diterima').length}</div>
+                <div className="text-[10px] text-gray-500 font-bold">DITERIMA</div>
+              </div>
+              <div className="bg-green-50 p-2 rounded border border-green-100">
+                <div className="text-xl font-bold text-green-600">{hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima').length}</div>
+                <div className="text-[10px] text-green-600 font-bold">DIPROSES</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Kambing Card */}
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-center text-xl font-bold text-green-600">
+        <Card className="shadow-lg border-l-4 border-l-green-500">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-center text-lg font-bold text-green-600 flex items-center justify-center gap-2">
+              <Beef className="h-5 w-5" />
               HEWAN KAMBING
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-4 text-center">
-              <div className="text-3xl font-bold">{animalCounts.kambing.total}</div>
-              <div className="text-green-100">Total Hewan Kambing</div>
+              <div className="text-3xl font-bold">{hewanList.filter(h => h.jenis === 'kambing').length}</div>
+              <div className="text-green-100 text-xs uppercase font-bold tracking-wider">Total Hewan Kambing</div>
             </div>
             
-            <div className="space-y-3">
-              <div className="flex items-center justify-between bg-gray-50 p-3 rounded">
-                <span className="font-medium">Dipotong:</span>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => updateCount('kambing', 'decrement', 'dipotong')}
-                    disabled={animalCounts.kambing.dipotong <= 0}
-                  >
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                  <span className="font-bold text-lg w-8 text-center">
-                    {animalCounts.kambing.dipotong}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => updateCount('kambing', 'increment', 'dipotong')}
-                    disabled={animalCounts.kambing.dipotong >= animalCounts.kambing.total}
-                  >
-                    <ChevronUp className="h-4 w-4" />
-                  </Button>
-                </div>
+            <div className="grid grid-cols-2 gap-2 text-center">
+              <div className="bg-gray-50 p-2 rounded border">
+                <div className="text-xl font-bold text-gray-700">{hewanList.filter(h => h.jenis === 'kambing' && h.status === 'diterima').length}</div>
+                <div className="text-[10px] text-gray-500 font-bold">DITERIMA</div>
+              </div>
+              <div className="bg-green-50 p-2 rounded border border-green-100">
+                <div className="text-xl font-bold text-green-600">{hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima').length}</div>
+                <div className="text-[10px] text-green-600 font-bold">DIPROSES</div>
               </div>
             </div>
           </CardContent>
@@ -165,55 +134,202 @@ const AnimalDataForm = () => {
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-700">Pilih Hewan:</h3>
               <RadioGroup value={selectedAnimal} onValueChange={setSelectedAnimal}>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {animalList.map((animal) => (
-                    <div key={animal.id} className="flex items-center space-x-2 p-2 rounded border">
-                      <RadioGroupItem value={animal.id} id={animal.id} />
-                      <Label htmlFor={animal.id} className="flex-1 cursor-pointer">
-                        <span className="font-medium">{animal.code}</span>
-                        <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-                          animal.type === 'sapi' 
-                            ? 'bg-orange-100 text-orange-600' 
-                            : 'bg-green-100 text-green-600'
-                        }`}>
-                          {animal.type.toUpperCase()}
-                        </span>
-                        <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-                          animal.status === 'diterima' 
-                            ? 'bg-blue-100 text-blue-600'
-                            : animal.status === 'disembelih'
-                            ? 'bg-yellow-100 text-yellow-600'
-                            : 'bg-red-100 text-red-600'
-                        }`}>
-                          {animal.status}
-                        </span>
-                      </Label>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b bg-gray-50">
+                        <th className="text-left py-2 px-2">Hewan</th>
+                        <th className="text-left py-2 px-2">Status</th>
+                        <th className="text-right py-2 px-2">Berat (kg)</th>
+                        <th className="text-center py-2 px-2">Foto</th>
+                        <th className="text-left py-2 px-2">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {hewanList.map((animal) => {
+                        const shohibul = shohibulList.find((s) => s.id === animal.shohibulId) || shohibulList[0];
+                        const qrUrl = `${window.location.origin}/animal/${animal.id}`;
+                        return (
+                          <tr key={animal.id} className="border-b">
+                            <td className="py-3">
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value={animal.id} id={animal.id} />
+                                <Label htmlFor={animal.id} className="cursor-pointer">
+                                  <span className="font-medium text-xs">{animal.kode}</span>
+                                  <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[9px] ${
+                                    animal.jenis === 'sapi' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'
+                                  }`}>
+                                    {animal.jenis.toUpperCase()}
+                                  </span>
+                                </Label>
+                              </div>
+                            </td>
+                            <td className="py-2 px-2">
+                              <Badge variant="outline" className="text-[9px] uppercase px-1 h-4">
+                                {animal.status}
+                              </Badge>
+                            </td>
+                            <td className="py-2 px-2 text-right font-bold text-xs">
+                              {animal.bobot ? `${Math.round(animal.bobot)}` : '-'}
+                            </td>
+                            <td className="py-2 px-2 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                {animal.fotoUrls && animal.fotoUrls.length > 0 ? (
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-blue-600 bg-blue-50">
+                                        <Eye className="h-4 w-4" />
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                      <DialogHeader>
+                                        <DialogTitle>Foto Hewan - {animal.kode}</DialogTitle>
+                                      </DialogHeader>
+                                      <div className="grid grid-cols-2 gap-2 mt-4">
+                                        {animal.fotoUrls.map((url, i) => (
+                                          <div key={i} className="relative group">
+                                            <img src={url} alt="Hewan" className="w-full h-32 object-cover rounded shadow-sm" />
+                                            <Button 
+                                              variant="destructive" 
+                                              size="icon" 
+                                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100"
+                                              onClick={() => removeFotoFromHewan(animal.id, i)}
+                                            >
+                                              <Trash2 className="h-3 w-3" />
+                                            </Button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </DialogContent>
+                                  </Dialog>
+                                ) : (
+                                  <div className="h-8 w-8 rounded bg-gray-50 border border-dashed flex items-center justify-center text-gray-300">
+                                    <ImageIcon className="h-4 w-4" />
+                                  </div>
+                                )}
+                                <Label htmlFor={`photo-${animal.id}`} className="cursor-pointer">
+                                  <div className="h-8 w-8 rounded bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 hover:bg-blue-100">
+                                    <Camera className="h-4 w-4" />
+                                  </div>
+                                  <input 
+                                    id={`photo-${animal.id}`} 
+                                    type="file" 
+                                    accept="image/*" 
+                                    multiple 
+                                    className="hidden" 
+                                    onChange={(e) => handlePhotoUpload(animal.id, e)}
+                                  />
+                                </Label>
+                              </div>
+                            </td>
+                            <td className="py-2 px-2">
+                              <div className="flex gap-1">
+                                <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => {
+                                 const w = window.open('', '_blank', 'width=800,height=600');
+                                 if (w) {
+                                   const owners = shohibulList.filter(s => s.jenisQurban === 'sapi-patungan').map(s => s.nama).join(', ');
+                                   w.document.write(`
+                                     <html><head><title>ID Hewan</title></head><body style='font-family:sans-serif;padding:20px;'>
+                                       <h2 style='margin-bottom:10px;'>${animal.jenis === 'sapi' ? 'Sapi' : 'Kambing'} - ${animal.kode}</h2>
+                                       <p><strong>Nama Kegiatan:</strong> QurbanKu - Masjid As Sakinah</p>
+                                       <p><strong>Nama Shohibul:</strong> ${shohibul ? shohibul.nama : 'Hamba Allah'}</p>
+                                       <p><strong>Alamat:</strong> ${shohibul ? shohibul.alamat : '-'}</p>
+                                       <p><strong>Daftar 7 Orang (Patungan):</strong> ${owners}</p>
+                                       <div style='margin-top:20px;' id='qr'></div>
+                                       <script src='https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js'></script>
+                                       <script src='https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js'></script>
+                                       <script src='https://cdn.jsdelivr.net/npm/qrcode.react@3.1.0/lib/index.min.js'></script>
+                                       <script>
+                                         document.getElementById('qr').innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}" alt="QR Code" />';
+                                       </script>
+                                     </body></html>`);
+                                   w.document.close();
+                                   setTimeout(() => w.print(), 1000);
+                                 }
+                                }}>Cetak</Button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </RadioGroup>
             </div>
 
-            {/* Process Action */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-700">Proses:</h3>
-              <RadioGroup value={processAction} onValueChange={(value: 'sembelih' | 'potong') => setProcessAction(value)}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="sembelih" id="sembelih" />
-                  <Label htmlFor="sembelih">Penyembelihan</Label>
+            {/* Process Action & Measurements */}
+            <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <h3 className="font-bold text-gray-700 text-sm flex items-center gap-2 uppercase tracking-wider">
+                <Scale className="h-4 w-4 text-blue-600" />
+                INPUT BERAT & STATUS:
+              </h3>
+
+              {selectedAnimal && (
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="bobot" className="text-[10px] font-bold text-gray-500 uppercase">Berat Hidup (kg)</Label>
+                    <Input 
+                      id="bobot" 
+                      type="number" 
+                      placeholder="kg" 
+                      value={bobotInput} 
+                      onChange={(e) => setBobotInput(e.target.value)}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                  {hewanList.find(h => h.id === selectedAnimal)?.jenis === 'sapi' && (
+                    <div className="space-y-1">
+                      <Label htmlFor="ld" className="text-[10px] font-bold text-gray-500 uppercase">Lingkar Dada (cm)</Label>
+                      <Input 
+                        id="ld" 
+                        type="number" 
+                        placeholder="cm" 
+                        value={ldInput} 
+                        onChange={(e) => setLdInput(e.target.value)}
+                        className="h-8 text-sm"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="potong" id="potong" />
-                  <Label htmlFor="potong">Pengeletan (Pemotongan)</Label>
+              )}
+
+              <RadioGroup value={processAction} onValueChange={(value: any) => setProcessAction(value)} className="grid grid-cols-2 gap-2">
+                <div className="flex items-center space-x-2 p-2 rounded bg-white border border-gray-200 transition-colors cursor-pointer">
+                  <RadioGroupItem value="disembelih" id="disembelih" />
+                  <Label htmlFor="disembelih" className="text-xs font-bold cursor-pointer">SEMBELIH</Label>
+                </div>
+                <div className="flex items-center space-x-2 p-2 rounded bg-white border border-gray-200 transition-colors cursor-pointer">
+                  <RadioGroupItem value="dipotong" id="dipotong" />
+                  <Label htmlFor="dipotong" className="text-xs font-bold cursor-pointer">KULITI/POTONG</Label>
                 </div>
               </RadioGroup>
+
+              {selectedAnimal && (
+                 <div className="bg-blue-600/10 p-2 rounded flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-blue-700 uppercase">Estimasi Daging:</span>
+                    <span className="text-sm font-black text-blue-700">
+                      {(() => {
+                        const h = hewanList.find(it => it.id === selectedAnimal);
+                        if (!h) return '0 kg';
+                        let b = parseFloat(bobotInput) || 0;
+                        if (b === 0 && h.jenis === 'sapi') {
+                          const ld = parseFloat(ldInput) || 0;
+                          if (ld > 0) b = Math.pow(ld + 22, 2) / 100;
+                        }
+                        const ratio = h.jenis === 'sapi' ? 0.375 : 0.356;
+                        return `${Math.round(b * ratio)} kg`;
+                      })()}
+                    </span>
+                 </div>
+              )}
 
               <Button 
                 onClick={handleProcessAnimal}
                 disabled={!selectedAnimal}
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-blue-600 hover:bg-blue-700 font-bold shadow-md shadow-blue-100"
               >
-                Proses Hewan
+                SIMPAN DATA PROSES
               </Button>
             </div>
           </div>

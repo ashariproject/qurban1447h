@@ -38,33 +38,8 @@ const Recipients = () => {
     catatan: ''
   });
 
-  // Sample data
-  const [recipients, setRecipients] = useState<Recipient[]>([
-    {
-      id: 'R001',
-      nama: 'Ahmad Susanto',
-      alamat: 'Jl. Pantai Mentari Blok A No. 15',
-      wilayah: 'Pantai Mentari',
-      sektor: 'Sektor 1',
-      noHp: '081234567890',
-      jenisKemasan: '2 Kg',
-      jumlahPaket: 1,
-      status: 'delivered',
-      tanggalInput: '2024-01-15'
-    },
-    {
-      id: 'R002',
-      nama: 'Siti Nurhaliza',
-      alamat: 'Komplek AL Gang 2 No. 8',
-      wilayah: 'Komplek AL',
-      sektor: 'Gang 2',
-      noHp: '081234567891',
-      jenisKemasan: '1 Kg',
-      jumlahPaket: 2,
-      status: 'pending',
-      tanggalInput: '2024-01-16'
-    }
-  ]);
+  // Sample data - Reset to empty for fresh start
+  const [recipients, setRecipients] = useState<Recipient[]>([]);
 
   const wilayahOptions = [
     { value: 'pantai_mentari', label: 'Pantai Mentari' },

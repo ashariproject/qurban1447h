@@ -1,170 +1,172 @@
-
 import React from 'react';
 import Layout from '@/components/layout/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { MapPin, Users, Truck, CheckCircle, Clock, Package } from 'lucide-react';
+import { MapPin, Users, Truck, Package, CheckCircle, Activity, LayoutDashboard } from 'lucide-react';
+import { useQurban } from '@/contexts/QurbanContext';
+import DistributionEntryForm from '@/components/dashboard/DistributionEntryForm';
+import DistributionCard from '@/components/dashboard/DistributionCard';
 
 const DistributionDashboard = () => {
-  // Sample data - in real app this would come from context/API
-  const distributionStats = {
-    totalPenerima: 822,
-    penerimaSelesai: 204,
-    totalWilayah: 5,
-    wilayahSelesai: 1,
-    paketSapiTerdistribusi: 95,
-    paketKambingTerdistribusi: 109,
-    rutesAktif: 3
-  };
+  const { shohibulList, distributionList, packagingData } = useQurban();
 
-  const wilayahData = [
-    { nama: 'Shohibul Sapi', total: 21, selesai: 21, progress: 100, type: 'priority' },
-    { nama: 'Shohibul Kambing', total: 12, selesai: 10, progress: 83, type: 'priority' },
-    { nama: 'Pantai Mentari', total: 180, selesai: 45, progress: 25, type: 'residential' },
-    { nama: 'Komplek AL', total: 25, selesai: 18, progress: 72, type: 'residential' },
-    { nama: 'Warga Lain', total: 600, selesai: 110, progress: 18, type: 'general' }
-  ];
+  // REAL DATA CALCULATIONS
+  const shohibulSapi = shohibulList.filter(s => s.jenisQurban.startsWith('sapi')).length;
+  const shohibulKambing = shohibulList.filter(s => s.jenisQurban.startsWith('kambing')).length;
+  
+  const diterimaSapi = shohibulList.filter(s => s.jenisQurban.startsWith('sapi') && s.status?.telahTerima).length;
+  const diterimaKambing = shohibulList.filter(s => !s.jenisQurban.startsWith('sapi') && s.status?.telahTerima).length;
 
-  const activeRoutes = [
-    { id: 1, driver: 'Tim A', area: 'Pantai Mentari', packages: 15, status: 'on-route', eta: '14:30' },
-    { id: 2, driver: 'Tim B', area: 'Komplek AL', packages: 8, status: 'loading', eta: '15:00' },
-    { id: 3, driver: 'Tim C', area: 'Warga Lain', packages: 20, status: 'on-route', eta: '16:15' }
-  ];
-
-  const getWilayahColor = (type: string) => {
-    switch (type) {
-      case 'priority': return 'border-l-red-500';
-      case 'residential': return 'border-l-blue-500';
-      case 'general': return 'border-l-green-500';
-      default: return 'border-l-gray-500';
+  const finalDistributionData = distributionList.map(item => {
+    if (item.id === 'shohibul-sapi') {
+      return { ...item, subtitle: `${shohibulSapi} Shohibul`, current: diterimaSapi, total: shohibulSapi };
     }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'on-route': return 'text-blue-600 bg-blue-100';
-      case 'loading': return 'text-yellow-600 bg-yellow-100';
-      case 'completed': return 'text-green-600 bg-green-100';
-      default: return 'text-gray-600 bg-gray-100';
+    if (item.id === 'shohibul-kambing') {
+      return { ...item, subtitle: `${shohibulKambing} Shohibul`, current: diterimaKambing, total: shohibulKambing };
     }
-  };
+    return item;
+  });
+
+  const totalPacksDistributed = finalDistributionData.reduce((acc, curr) => acc + curr.current, 0);
+  const totalTargetPacks = finalDistributionData.reduce((acc, curr) => acc + curr.total, 0);
+  const totalPenerima = finalDistributionData.reduce((acc, d) => acc + d.total, 0);
+  const penerimaSelesai = finalDistributionData.reduce((acc, d) => acc + d.current, 0);
 
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-lg p-6">
-          <h1 className="text-3xl font-bold mb-2">Dashboard Distribusi</h1>
-          <p className="text-teal-100">Pantau proses distribusi daging qurban ke seluruh penerima</p>
+        {/* Header - Premium Look */}
+        <div className="bg-gradient-to-br from-indigo-700 via-blue-800 to-blue-900 text-white rounded-2xl p-6 shadow-xl relative overflow-hidden">
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="bg-white/20 p-2 rounded-lg backdrop-blur-md">
+                <Truck className="h-6 w-6 text-blue-200" />
+              </div>
+              <h1 className="text-3xl font-black tracking-tight uppercase">Monitoring Distribusi</h1>
+            </div>
+            <p className="text-blue-100 font-medium max-w-xl">
+              Panel kontrol khusus Hari-H untuk memantau penyaluran daging qurban ke Shohibul dan warga sekitar.
+            </p>
+          </div>
+          {/* Decorative element */}
+          <div className="absolute top-0 right-0 p-8 opacity-10">
+            <LayoutDashboard size={120} />
+          </div>
         </div>
 
-        {/* Statistics Cards */}
+        {/* Live Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Penerima</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-blue-600">{distributionStats.totalPenerima}</span>
-                <Users className="h-8 w-8 text-blue-500" />
+          <Card className="border-none shadow-md bg-white hover:shadow-lg transition-shadow">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="bg-blue-100 p-3 rounded-xl">
+                <Users className="h-6 w-6 text-blue-600" />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Selesai: {distributionStats.penerimaSelesai}</p>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Target</p>
+                <p className="text-2xl font-black text-gray-800">{totalPenerima} <span className="text-xs font-normal">KK</span></p>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Wilayah</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-green-600">{distributionStats.totalWilayah}</span>
-                <MapPin className="h-8 w-8 text-green-500" />
+          <Card className="border-none shadow-md bg-white hover:shadow-lg transition-shadow">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="bg-emerald-100 p-3 rounded-xl">
+                <CheckCircle className="h-6 w-6 text-emerald-600" />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Selesai: {distributionStats.wilayahSelesai}</p>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Telah Terkirim</p>
+                <p className="text-2xl font-black text-emerald-600">{penerimaSelesai} <span className="text-xs font-normal">Pkt</span></p>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-orange-500">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Paket Terdistribusi</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-orange-600">{distributionStats.paketSapiTerdistribusi + distributionStats.paketKambingTerdistribusi}</span>
-                <Package className="h-8 w-8 text-orange-500" />
+          <Card className="border-none shadow-md bg-white hover:shadow-lg transition-shadow">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="bg-orange-100 p-3 rounded-xl">
+                <Package className="h-6 w-6 text-orange-600" />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Sapi: {distributionStats.paketSapiTerdistribusi}, Kambing: {distributionStats.paketKambingTerdistribusi}</p>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pkt Dikemas</p>
+                <p className="text-2xl font-black text-orange-600">{packagingData.sapiPacksOutput + packagingData.kambingPacksOutput}</p>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Rute Aktif</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-purple-600">{distributionStats.rutesAktif}</span>
-                <Truck className="h-8 w-8 text-purple-500" />
+          <Card className="border-none shadow-md bg-white hover:shadow-lg transition-shadow">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="bg-purple-100 p-3 rounded-xl">
+                <Activity className="h-6 w-6 text-purple-600" />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Tim distribusi</p>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sisa Belum</p>
+                <p className="text-2xl font-black text-purple-600">{Math.max(0, totalTargetPacks - totalPacksDistributed)}</p>
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Distribution Progress by Area */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Progress Distribusi per Wilayah</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {wilayahData.map((wilayah, index) => (
-                <div key={index} className={`border-l-4 ${getWilayahColor(wilayah.type)} pl-4`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <div>
-                      <span className="font-medium">{wilayah.nama}</span>
-                      <span className="ml-2 text-sm text-gray-500">({wilayah.selesai}/{wilayah.total})</span>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+           {/* Update Form - CRITICAL for Day H */}
+           <div className="lg:col-span-2 space-y-6">
+              <DistributionEntryForm />
+              
+              <Card className="border-none shadow-md bg-white">
+                <CardHeader className="bg-gray-50 border-b">
+                  <CardTitle className="text-lg font-bold flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-indigo-600" />
+                  STATUS PER WILAYAH
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                {finalDistributionData.map((wilayah) => (
+                  <div key={wilayah.id} className="space-y-2 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                         <div className={`h-2 w-2 rounded-full ${wilayah.bgColor.replace('bg-gradient-to-br ', '').split(' ')[0]}`} />
+                         <span className="font-bold text-sm text-gray-700">{wilayah.title}</span>
+                         <span className="text-[10px] font-bold text-gray-400">({wilayah.current}/{wilayah.total})</span>
+                      </div>
+                      <span className="text-xs font-black text-indigo-600">
+                        {wilayah.total > 0 ? Math.round((wilayah.current / wilayah.total) * 100) : 0}%
+                      </span>
                     </div>
-                    <span className="text-sm font-medium">{wilayah.progress}%</span>
+                    <Progress value={wilayah.total > 0 ? (wilayah.current / wilayah.total) * 100 : 0} className="h-1.5" />
                   </div>
-                  <Progress value={wilayah.progress} className="h-2" />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </CardContent>
+            </Card>
+           </div>
 
-        {/* Active Routes */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Rute Distribusi Aktif</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {activeRoutes.map((route) => (
-                <div key={route.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                  <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-full ${getStatusColor(route.status)}`}>
-                      <Truck className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{route.driver}</p>
-                      <p className="text-sm text-gray-600">{route.area}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{route.packages} paket</p>
-                    <p className="text-xs text-gray-500">ETA: {route.eta}</p>
-                    <span className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusColor(route.status)}`}>
-                      {route.status === 'on-route' ? 'Dalam Perjalanan' : route.status === 'loading' ? 'Memuat' : 'Selesai'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+           {/* Quick Status View */}
+           <div className="space-y-4">
+              <h3 className="text-xs font-black text-gray-800 flex items-center gap-2 uppercase tracking-widest px-2">
+                <MapPin className="h-4 w-4 text-blue-600" />
+                RINGKASAN LIVE
+              </h3>
+              <div className="space-y-2">
+                {finalDistributionData.map((item, index) => (
+                  <DistributionCard 
+                    key={index}
+                    title={item.title}
+                    subtitle={item.subtitle}
+                    current={item.current} 
+                    total={item.total}
+                    bgColor={item.bgColor}
+                  />
+                ))}
+              </div>
+
+              <Card className="bg-indigo-50 border border-indigo-100 mt-6">
+                <CardContent className="p-4">
+                  <h4 className="text-xs font-bold text-indigo-700 uppercase mb-2">Petunjuk Petugas</h4>
+                  <p className="text-[10px] text-indigo-600 leading-relaxed italic">
+                    Perbarui data setiap kali tim distribusi kembali dari lapangan atau memberikan laporan melalui grup koordinasi. 
+                    Pastikan angka "Terkirim" tidak melebihi "Target".
+                  </p>
+                </CardContent>
+              </Card>
+           </div>
+        </div>
       </div>
     </Layout>
   );

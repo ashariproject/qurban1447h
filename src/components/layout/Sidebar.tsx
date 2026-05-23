@@ -20,8 +20,10 @@ import {
   Settings,
   Home,
   RotateCcw,
+  Scale,
   QrCode,
   HelpCircle,
+  Database,
   FileSpreadsheet
 } from "lucide-react";
 import {
@@ -42,7 +44,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useQurban } from '@/contexts/QurbanContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { LogOut } from 'lucide-react';
 
 // Define user roles for the sidebar
 type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution";
@@ -67,11 +71,12 @@ const roles: Record<Role, RoleInfo> = {
     description: "Akses penuh seluruh fitur dan data. Mengatur akun petugas. Monitoring progres real-time semua tahapan. Menyusun laporan akhir.",
     menuItems: [
       { name: "Dashboard", icon: Home, path: "/admin" },
-      { name: "Manajemen Pengguna", icon: UserCog, path: "/admin/users" },
       { name: "Monitoring", icon: BarChart3, path: "/admin/monitoring" },
-      { name: "Laporan", icon: FileCheck, path: "/admin/reports" },
-      { name: "Database Google Sheets", icon: FileSpreadsheet, path: "/admin/sheets-sync" },
-      { name: "Pengaturan", icon: Settings, path: "/admin/settings" }
+      { name: "Database JSON", icon: Database, path: "/admin/database" },
+      { name: "Data Hewan", icon: FileText, path: "/animal/data" },
+      { name: "Foto & QR Hewan", icon: QrCode, path: "/animal/foto-qr" },
+      { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" },
+      { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" }
     ]
   },
   shohibul: { 
@@ -94,7 +99,8 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Data Hewan", icon: FileText, path: "/animal/data" },
       { name: "Status Hewan", icon: ClipboardList, path: "/animal/status" },
       { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" },
-      { name: "Foto & QR Hewan", icon: QrCode, path: "/animal/foto-qr" }
+      { name: "Foto & QR Hewan", icon: QrCode, path: "/animal/foto-qr" },
+      { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" }
     ]
   },
   packaging: { 
@@ -123,21 +129,27 @@ const roles: Record<Role, RoleInfo> = {
 interface SidebarProps {
   activeRole: Role;
   onRoleChange: (role: Role) => void;
-  currentUserRole: Role;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange, currentUserRole }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { resetAllData } = useQurban();
+  const { user, logout } = useAuth();
   const { toast } = useToast();
 
-  const handleResetData = () => {
-    resetAllData();
-    toast({
-      title: "Data Berhasil Direset",
-      description: "Semua data qurban telah dikembalikan ke nilai awal.",
-    });
+  const currentUserRole = user?.role || 'admin';
+
+  const handleResetData = async () => {
+    try {
+      await resetAllData();
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Gagal Reset",
+        description: err.message || "Gagal mereset data.",
+      });
+    }
   };
 
   // Check if a menu item is active
@@ -216,11 +228,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange, currentUser
         
         {/* Role-specific menu items */}
         {!collapsed && <div className="px-3 mb-2">
-          <p className="text-xs text-sidebar-foreground/60 mb-2 px-3">Menu</p>
+          <p className="text-xs text-sidebar-foreground/60 mb-2 px-3">Menu {roles[activeRole].name}</p>
         </div>}
         <TooltipProvider>
           <nav className="space-y-1 px-3 flex-1">
-            {roles[currentUserRole].menuItems.map((item, index) => (
+            {roles[activeRole].menuItems.map((item, index) => (
               <Tooltip key={index} delayDuration={300}>
                 <TooltipTrigger asChild>
                   <Button
@@ -269,6 +281,29 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange, currentUser
               {collapsed && (
                 <TooltipContent side="right" className="text-xs">
                   Bantuan
+                </TooltipContent>
+              )}
+            </Tooltip>
+            
+            {/* Website Link */}
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700",
+                  )}
+                  asChild
+                >
+                  <Link to="/">
+                    <Home className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                    {!collapsed && <span>Website Publik</span>}
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right" className="text-xs">
+                  Website Publik
                 </TooltipContent>
               )}
             </Tooltip>
@@ -333,13 +368,28 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange, currentUser
               </span>
             </div>
             <div>
-              <p className="text-sm font-medium">{roles[currentUserRole].name}</p>
+              <p className="text-sm font-medium">{user?.name || roles[currentUserRole].name}</p>
               <p className="text-xs text-sidebar-foreground/60">
                 {currentUserRole === 'admin' ? 'Akses Penuh' : 'Petugas'}
               </p>
             </div>
           </div>
         )}
+        <TooltipProvider>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={logout}
+                className={cn("text-red-500 hover:text-red-600 hover:bg-red-50", !collapsed && "ml-auto")}
+              >
+                <LogOut size={18} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Keluar</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

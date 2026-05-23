@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
@@ -6,35 +5,25 @@ import Header from './Header';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Menu } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth, Role } from "@/contexts/AuthContext";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution";
-
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Determine user role based on current path
-  const getUserRoleFromPath = (): Role => {
-    const path = location.pathname;
-    if (path.startsWith('/admin')) return 'admin';
-    if (path.startsWith('/shohibul')) return 'shohibul';
-    if (path.startsWith('/animal')) return 'animal';
-    if (path.startsWith('/packaging')) return 'packaging';
-    if (path.startsWith('/distribution')) return 'distribution';
-    return 'admin'; // default
-  };
-
-  const [activeRole, setActiveRole] = useState<Role>(getUserRoleFromPath());
-  const currentUserRole = getUserRoleFromPath();
+  const currentUserRole = (user?.role || 'admin') as Role;
+  const [activeRole, setActiveRole] = useState<Role>(currentUserRole);
 
   const handleBackToMain = () => {
-    navigate('/');
+    const rolePath = currentUserRole === 'admin' ? '/admin' : `/${currentUserRole}`;
+    navigate(rolePath);
   };
 
   return (
@@ -52,39 +41,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Sidebar 
           activeRole={activeRole} 
           onRoleChange={setActiveRole}
-          currentUserRole={currentUserRole}
         />
       </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between p-3 md:p-4 border-b bg-white">
+        <div className="flex items-center justify-between p-2 md:px-4 md:py-2 border-b bg-white shadow-sm">
           <div className="flex items-center gap-2">
             {isMobile && (
               <Button 
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 variant="ghost" 
                 size="sm"
-                className="p-2"
+                className="p-1 h-8 w-8"
               >
-                <Menu size={20} />
+                <Menu size={18} />
               </Button>
             )}
             <Button 
               onClick={handleBackToMain}
-              variant="outline" 
-              size={isMobile ? "sm" : "default"}
-              className="flex items-center gap-2"
+              variant="ghost" 
+              size="sm"
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-8"
             >
-              <ArrowLeft size={16} />
-              <span className="hidden sm:inline">Kembali ke Menu Utama</span>
-              <span className="sm:hidden">Menu</span>
+              <ArrowLeft size={14} />
+              <span className="text-xs font-bold uppercase tracking-wider">Beranda</span>
             </Button>
           </div>
           
-          <Header title={isMobile ? "DASHBOARD QURBAN" : "DASHBOARD QURBAN AS SAKINAH PANTAI MENTARI"} />
+          <Header title={isMobile ? "QURBANKU" : "QURBANKU - DASHBOARD PETUGAS"} />
         </div>
         
-        <main className="flex-1 overflow-y-auto p-3 md:p-6">
+        <main className="flex-1 overflow-y-auto p-2 md:p-4">
           {children}
         </main>
       </div>

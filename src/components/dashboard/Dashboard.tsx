@@ -1,14 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import ProgressCard from './ProgressCard';
 import DistributionCard from './DistributionCard';
 import { format } from 'date-fns';
 import { useQurban } from '@/contexts/QurbanContext';
-import { Beef, Zap } from 'lucide-react';
+import { Beef, Zap, Truck, Activity } from 'lucide-react';
+import DistributionEntryForm from './DistributionEntryForm';
+import PackagingEntryForm from './PackagingEntryForm';
 
 const Dashboard: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const { animalData, packagingData } = useQurban();
+  const { animalData, packagingData, hewanList, shohibulList, distributionList } = useQurban();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -18,21 +19,27 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Calculate total values
-  const totalHewan = animalData.totalSapi + animalData.totalKambing;
-  const totalDisembelih = animalData.sapiDisembelih + animalData.kambingDisembelih;
+  // DYNAMIC CALCULATIONS from REAL DATA
+  const totalSapi = hewanList.filter(h => h.jenis === 'sapi').length;
+  const totalKambing = hewanList.filter(h => h.jenis === 'kambing').length;
+  const totalHewan = totalSapi + totalKambing;
+
+  const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima').length;
+  const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima').length;
+  const totalDisembelih = sapiDisembelih + kambingDisembelih;
+
   const totalPacksProduced = packagingData.sapiPacksOutput + packagingData.kambingPacksOutput;
 
   // Progress data for Sapi
   const progressDataSapi = {
     penyembelihan: { 
-      current: animalData.sapiDisembelih, 
-      total: animalData.totalSapi, 
+      current: sapiDisembelih, 
+      total: totalSapi || 1, 
       bgColor: "bg-gradient-to-br from-red-500 to-red-600" 
     },
     pengemasan: { 
       current: packagingData.sapiPacksOutput, 
-      total: packagingData.sapiPacksInput, 
+      total: packagingData.sapiPacksInput || 1, 
       bgColor: "bg-gradient-to-br from-blue-500 to-blue-600" 
     },
   };
@@ -40,114 +47,96 @@ const Dashboard: React.FC = () => {
   // Progress data for Kambing
   const progressDataKambing = {
     penyembelihan: { 
-      current: animalData.kambingDisembelih, 
-      total: animalData.totalKambing, 
+      current: kambingDisembelih, 
+      total: totalKambing || 1, 
       bgColor: "bg-gradient-to-br from-orange-500 to-orange-600" 
     },
     pengemasan: { 
       current: packagingData.kambingPacksOutput, 
-      total: packagingData.kambingPacksInput, 
+      total: packagingData.kambingPacksInput || 1, 
       bgColor: "bg-gradient-to-br from-purple-500 to-purple-600" 
     },
   };
 
-  const distributionData = [
-    { 
-      title: "SHOHIBUL SAPI", 
-      subtitle: "21 Shohibul",
-      current: 16, 
-      total: 21,
-      bgColor: "bg-gradient-to-br from-blue-500 to-blue-600"
-    },
-    { 
-      title: "SHOHIBUL KAMBING", 
-      subtitle: "12 Shohibul",
-      current: 10, 
-      total: 12,
-      bgColor: "bg-gradient-to-br from-indigo-500 to-indigo-600"
-    },
-    { 
-      title: "PANTAI MENTARI", 
-      subtitle: "180 KK",
-      current: 45, 
-      total: 180,
-      bgColor: "bg-gradient-to-br from-green-500 to-green-600"
-    },
-    { 
-      title: "KOMPLEK AL", 
-      subtitle: "25 KK",
-      current: 18, 
-      total: 25,
-      bgColor: "bg-gradient-to-br from-teal-500 to-teal-600"
-    },
-    { 
-      title: "WARGA LAIN", 
-      subtitle: "600 KK",
-      current: 125, 
-      total: 600,
-      bgColor: "bg-gradient-to-br from-purple-500 to-purple-600"
-    },
-  ];
+  const shohibulSapi = shohibulList.filter(s => s.jenisQurban.startsWith('sapi')).length;
+  const shohibulKambing = shohibulList.filter(s => s.jenisQurban.startsWith('kambing')).length;
+  
+  const diterimaSapi = shohibulList.filter(s => s.jenisQurban.startsWith('sapi') && s.status?.telahTerima).length;
+  const diterimaKambing = shohibulList.filter(s => !s.jenisQurban.startsWith('sapi') && s.status?.telahTerima).length;
+
+  const finalDistributionData = distributionList.map(item => {
+    if (item.id === 'shohibul-sapi') {
+      return { ...item, subtitle: `${shohibulSapi} Shohibul`, current: diterimaSapi, total: shohibulSapi };
+    }
+    if (item.id === 'shohibul-kambing') {
+      return { ...item, subtitle: `${shohibulKambing} Shohibul`, current: diterimaKambing, total: shohibulKambing };
+    }
+    return item;
+  });
 
   return (
-    <div className="space-y-4 h-screen overflow-hidden">
-      {/* Date and Time Header */}
-      <div className="bg-gradient-to-r from-white to-gray-50 rounded-lg shadow-lg p-4 border border-gray-200">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+    <div className="space-y-4">
+      {/* Compact Date and Time Header */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-sm px-4 py-2 border border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-1 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.4)]" />
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Dashboard Qurban Real-Time</h1>
-            <p className="text-gray-600 text-sm">Monitoring langsung dari input petugas lapangan</p>
+            <h1 className="text-sm font-black text-gray-900 leading-tight flex items-center gap-2">
+              DASHBOARD REAL-TIME
+              <Activity className="h-3 w-3 text-blue-600 animate-pulse" />
+            </h1>
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">Monitoring Terpusat Panitia Qurban</p>
           </div>
-          <div className="mt-2 md:mt-0 text-right">
-            <div className="text-sm font-semibold text-gray-900">
-              {format(currentTime, 'EEEE, dd MMMM yyyy')}
-            </div>
-            <div className="text-lg font-bold text-blue-600">
-              {format(currentTime, 'HH:mm:ss')}
-            </div>
+        </div>
+        <div className="text-right">
+          <div className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
+            {format(currentTime, 'EEEE, dd MMM yyyy')}
+          </div>
+          <div className="text-sm font-black text-blue-600 leading-none">
+            {format(currentTime, 'HH:mm:ss')}
           </div>
         </div>
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-180px)]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Left Column - Animal Summary & Progress */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Animal Summary */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-3 shadow-lg">
-              <h3 className="text-sm font-semibold mb-1">TOTAL HEWAN</h3>
-              <div className="text-2xl font-bold">{totalHewan}</div>
-              <div className="text-blue-100 text-xs">Sapi + Kambing</div>
+          {/* Compact Animal Summary */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 group hover:border-blue-200 transition-colors">
+              <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">TOTAL HEWAN</h3>
+              <div className="text-2xl font-black text-blue-600 leading-none">{totalHewan}</div>
+              <div className="text-[9px] font-bold text-gray-400 mt-1 uppercase">Ekor Masuk</div>
             </div>
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-3 shadow-lg">
-              <h3 className="text-sm font-semibold mb-1 flex items-center gap-1">
-                <Beef className="h-4 w-4" />
+            <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 group hover:border-orange-200 transition-colors">
+              <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                <Beef className="h-3 w-3 text-orange-500" />
                 SAPI
               </h3>
-              <div className="text-2xl font-bold">{animalData.totalSapi}</div>
-              <div className="text-orange-100 text-xs">Ekor Sapi</div>
+              <div className="text-2xl font-black text-orange-600 leading-none">{totalSapi}</div>
+              <div className="text-[9px] font-bold text-gray-400 mt-1 uppercase">Tersedia</div>
             </div>
-            <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-3 shadow-lg">
-              <h3 className="text-sm font-semibold mb-1 flex items-center gap-1">
-                <Zap className="h-4 w-4" />
+            <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 group hover:border-green-200 transition-colors">
+              <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                <Zap className="h-3 w-3 text-green-500" />
                 KAMBING
               </h3>
-              <div className="text-2xl font-bold">{animalData.totalKambing}</div>
-              <div className="text-green-100 text-xs">Ekor Kambing</div>
+              <div className="text-2xl font-black text-green-600 leading-none">{totalKambing}</div>
+              <div className="text-[9px] font-bold text-gray-400 mt-1 uppercase">Tersedia</div>
             </div>
           </div>
 
           {/* Progress Cards - Sapi & Kambing */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Sapi Progress */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-1">
-                <Beef className="h-4 w-4" />
+            <div className="space-y-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="text-xs font-black text-gray-800 flex items-center gap-2 uppercase tracking-wider">
+                <div className="h-1.5 w-1.5 bg-orange-500 rounded-full" />
                 PROGRES SAPI
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <ProgressCard 
                   title="SEMBELIH" 
                   current={progressDataSapi.penyembelihan.current} 
@@ -168,12 +157,12 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Kambing Progress */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-1">
-                <Zap className="h-4 w-4" />
+            <div className="space-y-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="text-xs font-black text-gray-800 flex items-center gap-2 uppercase tracking-wider">
+                <div className="h-1.5 w-1.5 bg-green-500 rounded-full" />
                 PROGRES KAMBING
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <ProgressCard 
                   title="SEMBELIH" 
                   current={progressDataKambing.penyembelihan.current} 
@@ -195,42 +184,54 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Summary Statistics */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-3">
-            <h3 className="text-sm font-semibold mb-2 text-gray-800">RINGKASAN STATISTIK</h3>
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-4 shadow-xl border border-gray-700">
+            <h3 className="text-[10px] font-black mb-4 text-blue-400 uppercase tracking-widest flex items-center gap-2">
+              <Activity className="h-3 w-3" />
+              STATISTIK OPERASIONAL LIVE
+            </h3>
             <div className="grid grid-cols-5 gap-2 text-center">
               <div>
-                <div className="text-lg font-bold text-blue-600">{totalHewan}</div>
-                <div className="text-xs text-gray-600">Total Hewan</div>
+                <div className="text-xl font-black text-white">{totalHewan}</div>
+                <div className="text-[8px] font-bold text-gray-400 uppercase">Input</div>
               </div>
               <div>
-                <div className="text-lg font-bold text-green-600">
+                <div className="text-xl font-black text-blue-400">
                   {totalHewan > 0 ? Math.round((totalDisembelih / totalHewan) * 100) : 0}%
                 </div>
-                <div className="text-xs text-gray-600">Diproses</div>
+                <div className="text-[8px] font-bold text-gray-400 uppercase">Progres</div>
               </div>
               <div>
-                <div className="text-lg font-bold text-orange-600">{totalDisembelih}</div>
-                <div className="text-xs text-gray-600">Disembelih</div>
+                <div className="text-xl font-black text-orange-400">{totalDisembelih}</div>
+                <div className="text-[8px] font-bold text-gray-400 uppercase">Sembelih</div>
               </div>
               <div>
-                <div className="text-lg font-bold text-purple-600">{totalPacksProduced}</div>
-                <div className="text-xs text-gray-600">Dikemas</div>
+                <div className="text-xl font-black text-purple-400">{totalPacksProduced}</div>
+                <div className="text-[8px] font-bold text-gray-400 uppercase">Kemas</div>
               </div>
               <div>
-                <div className="text-lg font-bold text-red-600">
-                  {distributionData.reduce((acc, curr) => acc + curr.current, 0)}
+                <div className="text-xl font-black text-emerald-400">
+                  {finalDistributionData.reduce((acc, curr) => acc + curr.current, 0)}
                 </div>
-                <div className="text-xs text-gray-600">Terdistribusi</div>
+                <div className="text-[8px] font-bold text-gray-400 uppercase">Kirim</div>
               </div>
             </div>
           </div>
+
+          {/* New Distribution Entry Form */}
+          <DistributionEntryForm />
+
+          {/* New Packaging Entry Form */}
+          <PackagingEntryForm />
         </div>
 
         {/* Right Column - Distribution */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-gray-800">DISTRIBUSI QURBAN</h3>
-          <div className="space-y-2 h-full overflow-y-auto">
-            {distributionData.map((item, index) => (
+        <div className="space-y-3">
+          <h3 className="text-xs font-black text-gray-800 flex items-center gap-2 uppercase tracking-wider bg-gray-50 p-2 rounded-lg border border-gray-100">
+            <Truck className="h-4 w-4 text-blue-600" />
+            LIVE DISTRIBUSI
+          </h3>
+          <div className="space-y-2">
+            {finalDistributionData.map((item, index) => (
               <DistributionCard 
                 key={index}
                 title={item.title}
