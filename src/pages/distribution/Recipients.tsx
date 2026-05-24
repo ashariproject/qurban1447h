@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Users, Plus, Search, MapPin, Phone } from 'lucide-react';
+import penerimaData from '@/data/penerima.json';
 
 interface Recipient {
   id: string;
@@ -38,8 +39,15 @@ const Recipients = () => {
     catatan: ''
   });
 
-  // Sample data - Reset to empty for fresh start
-  const [recipients, setRecipients] = useState<Recipient[]>([]);
+  // Load initial data from JSON
+  const [recipients, setRecipients] = useState<Recipient[]>(() => {
+    try {
+      return penerimaData as Recipient[];
+    } catch (e) {
+      console.log('No initial data found');
+      return [];
+    }
+  });
 
   const wilayahOptions = [
     { value: 'pantai_mentari', label: 'Pantai Mentari' },
