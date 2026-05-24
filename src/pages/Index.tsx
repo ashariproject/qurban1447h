@@ -35,87 +35,87 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 md:py-6">
         {/* Header Section - Compact */}
-        <header className="mb-8 relative">
-          <div className="flex justify-between items-center mb-6">
+        <header className="mb-4 relative">
+          <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3">
               <div className="bg-white p-2 rounded-xl shadow-md border border-green-100">
                 <img 
                   src="/images/logo.png" 
                   alt="Logo"
-                  className="h-10 w-auto"
+                  className="h-8 w-auto"
                 />
               </div>
               <div>
                 <h1 className="text-lg font-bold text-gray-900 leading-tight">QurbanKu Dashboard</h1>
-                <p className="text-xs text-gray-500">Masjid As Sakinah Pantai Mentari</p>
+                <p className="text-[10px] text-gray-500">Masjid As Sakinah Pantai Mentari</p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
               {isAuthenticated ? (
                 <div className="flex items-center gap-2">
-                  <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-blue-200 text-blue-700 font-bold">
+                  <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-blue-200 text-blue-700 font-bold h-7 text-xs">
                     <a href="/admin">MENU ADMIN</a>
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={logout} className="text-red-500 hover:text-red-600 hover:bg-red-50 font-medium">
+                  <Button variant="ghost" size="sm" onClick={logout} className="text-red-500 hover:text-red-600 hover:bg-red-50 font-medium h-7 text-xs">
                     LOGOUT
                   </Button>
                 </div>
               ) : (
-                <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-200 transition-all hover:scale-105 active:scale-95">
+                <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-200 transition-all hover:scale-105 active:scale-95 h-7 text-xs">
                   <a href="/login">LOGIN PETUGAS</a>
                 </Button>
               )}
             </div>
           </div>
           
-          <div className="flex items-center gap-3 mb-2">
-            <Badge variant="secondary" className="bg-green-100 text-green-700 border-none px-3 py-1 rounded-full text-xs font-bold uppercase">
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="secondary" className="bg-green-100 text-green-700 border-none px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">
               1447H / 2026
             </Badge>
-            <div className="flex items-center gap-2 text-gray-500 text-sm font-medium bg-white/50 px-3 py-1 rounded-full backdrop-blur-sm border border-white/50">
-              <Calendar className="h-4 w-4 text-blue-500" />
+            <div className="flex items-center gap-1.5 text-gray-500 text-[11px] font-medium bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-sm border border-white/50">
+              <Calendar className="h-3 w-3 text-blue-500" />
               {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 tracking-tight">Rekapitulasi Perolehan Hewan</h2>
+          <h2 className="text-xl font-bold text-gray-800 tracking-tight">Rekapitulasi Perolehan Hewan</h2>
         </header>
 
         {/* Simple Perolehan Summary - Real Numbers */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <Card className="bg-gradient-to-br from-blue-600 to-blue-700 text-white border-none shadow-lg">
-            <CardContent className="p-6 flex justify-between items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+          <Card className="bg-gradient-to-br from-blue-600 to-blue-700 text-white border-none shadow-md">
+            <CardContent className="p-4 flex justify-between items-center">
               <div>
-                <p className="text-blue-100 text-xs font-medium uppercase tracking-wider mb-1">Perolehan Sapi</p>
-                <h3 className="text-4xl font-bold">{animalData.totalSapi} <span className="text-lg font-normal text-blue-200">Ekor</span></h3>
+                <p className="text-blue-100 text-[10px] font-medium uppercase tracking-wider mb-0.5">Perolehan Sapi</p>
+                <h3 className="text-3xl font-bold">{animalData.totalSapi} <span className="text-sm font-normal text-blue-200">Ekor</span></h3>
               </div>
-              <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md">
-                <Beef className="h-8 w-8" />
+              <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-md">
+                <Beef className="h-6 w-6" />
               </div>
             </CardContent>
           </Card>
           
-          <Card className="bg-gradient-to-br from-green-600 to-green-700 text-white border-none shadow-lg">
-            <CardContent className="p-6 flex justify-between items-center">
+          <Card className="bg-gradient-to-br from-green-600 to-green-700 text-white border-none shadow-md">
+            <CardContent className="p-4 flex justify-between items-center">
               <div>
-                <p className="text-green-100 text-xs font-medium uppercase tracking-wider mb-1">Perolehan Kambing</p>
-                <h3 className="text-4xl font-bold">{animalData.totalKambing} <span className="text-lg font-normal text-green-200">Ekor</span></h3>
+                <p className="text-green-100 text-[10px] font-medium uppercase tracking-wider mb-0.5">Perolehan Kambing</p>
+                <h3 className="text-3xl font-bold">{animalData.totalKambing} <span className="text-sm font-normal text-green-200">Ekor</span></h3>
               </div>
-              <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md">
-                <div className="h-8 w-8 flex items-center justify-center font-bold text-2xl">🐐</div>
+              <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-md">
+                <div className="h-6 w-6 flex items-center justify-center font-bold text-xl">🐐</div>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Live Operational Monitoring Section */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-8 w-1.5 bg-emerald-600 rounded-full" />
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-6 w-1.5 bg-emerald-600 rounded-full" />
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-gray-900">Monitoring Progress Operasional (Live)</h2>
+              <h2 className="text-xl font-bold text-gray-900">Monitoring Progress Operasional (Live)</h2>
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -123,17 +123,17 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Selesai Dipotong */}
-            <Card className="border-none shadow-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
-              <CardContent className="p-6 relative">
-                <div className="absolute top-0 right-0 p-4 opacity-15">
-                  <Beef className="h-20 w-20" />
+            <Card className="border-none shadow-md bg-gradient-to-br from-amber-500 to-orange-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+              <CardContent className="p-4 relative">
+                <div className="absolute top-0 right-0 p-3 opacity-15">
+                  <Beef className="h-16 w-16" />
                 </div>
-                <div className="space-y-1">
-                  <p className="text-amber-100 text-xs font-bold uppercase tracking-wider">Hewan Selesai Dipotong</p>
-                  <h3 className="text-4xl font-black">{totalDipotong} <span className="text-sm font-bold">EKOR</span></h3>
-                  <div className="pt-2 text-xs font-semibold text-amber-50">
+                <div className="space-y-0.5">
+                  <p className="text-amber-100 text-[10px] font-bold uppercase tracking-wider">Hewan Selesai Dipotong</p>
+                  <h3 className="text-3xl font-black">{totalDipotong} <span className="text-[10px] font-bold">EKOR</span></h3>
+                  <div className="pt-1 text-[10px] font-semibold text-amber-50">
                     Dari total {hewanList.length} ekor hewan diterima
                   </div>
                 </div>
@@ -141,15 +141,15 @@ const Index = () => {
             </Card>
 
             {/* Terpackaging */}
-            <Card className="border-none shadow-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
-              <CardContent className="p-6 relative">
-                <div className="absolute top-0 right-0 p-4 opacity-15">
-                  <Package className="h-20 w-20" />
+            <Card className="border-none shadow-md bg-gradient-to-br from-blue-500 to-indigo-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+              <CardContent className="p-4 relative">
+                <div className="absolute top-0 right-0 p-3 opacity-15">
+                  <Package className="h-16 w-16" />
                 </div>
-                <div className="space-y-1">
-                  <p className="text-blue-100 text-xs font-bold uppercase tracking-wider">Pack yang Terpackaging</p>
-                  <h3 className="text-4xl font-black">{totalPacksPackaging} <span className="text-sm font-bold">PACK</span></h3>
-                  <div className="pt-2 text-xs font-semibold text-blue-50">
+                <div className="space-y-0.5">
+                  <p className="text-blue-100 text-[10px] font-bold uppercase tracking-wider">Pack yang Terpackaging</p>
+                  <h3 className="text-3xl font-black">{totalPacksPackaging} <span className="text-[10px] font-bold">PACK</span></h3>
+                  <div className="pt-1 text-[10px] font-semibold text-blue-50">
                     Siap untuk didistribusikan ke penerima
                   </div>
                 </div>
@@ -157,15 +157,15 @@ const Index = () => {
             </Card>
 
             {/* Terdistribusi */}
-            <Card className="border-none shadow-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
-              <CardContent className="p-6 relative">
-                <div className="absolute top-0 right-0 p-4 opacity-15">
-                  <Truck className="h-20 w-20" />
+            <Card className="border-none shadow-md bg-gradient-to-br from-emerald-500 to-teal-600 text-white overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+              <CardContent className="p-4 relative">
+                <div className="absolute top-0 right-0 p-3 opacity-15">
+                  <Truck className="h-16 w-16" />
                 </div>
-                <div className="space-y-1">
-                  <p className="text-emerald-100 text-xs font-bold uppercase tracking-wider">Pack yang Terdistribusi</p>
-                  <h3 className="text-4xl font-black">{totalPacksDistributed} <span className="text-sm font-bold">PACK</span></h3>
-                  <div className="pt-2 text-xs font-semibold text-emerald-50">
+                <div className="space-y-0.5">
+                  <p className="text-emerald-100 text-[10px] font-bold uppercase tracking-wider">Pack yang Terdistribusi</p>
+                  <h3 className="text-3xl font-black">{totalPacksDistributed} <span className="text-[10px] font-bold">PACK</span></h3>
+                  <div className="pt-1 text-[10px] font-semibold text-emerald-50">
                     Penyaluran daging qurban real-time
                   </div>
                 </div>
@@ -175,13 +175,13 @@ const Index = () => {
         </div>
 
         {/* Public Rekap Table Section - Mirrored from Physical Board */}
-        <section id="rekap-data" className="relative mb-20">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-8 w-1.5 bg-blue-600 rounded-full" />
-            <h2 className="text-2xl font-bold text-gray-900">Daftar Shohibul Qurban</h2>
+        <section id="rekap-data" className="relative mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-6 w-1.5 bg-blue-600 rounded-full" />
+            <h2 className="text-xl font-bold text-gray-900">Daftar Shohibul Qurban</h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Sapi Mandiri Section */}
             <Card className="border-none shadow-xl bg-white/80 backdrop-blur-md overflow-hidden">
               <div className="bg-orange-600 p-3 text-white font-bold text-center flex items-center justify-center gap-2">
