@@ -223,8 +223,18 @@ const AnimalDataForm = () => {
                                   </Dialog>
                                 ) : (
                                   <Label htmlFor={`photo-${animal.id}`} className="cursor-pointer">
-                                    <div className="h-10 w-10 rounded bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 transition-colors shadow-sm">
-                                      <Camera className="h-5 w-5" />
+                                    <div className="relative group h-10 w-10 rounded overflow-hidden border border-gray-200 shadow-sm">
+                                      <img 
+                                        src={animal.jenis === 'sapi' 
+                                          ? "https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&q=80&w=150" 
+                                          : "https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&q=80&w=150"
+                                        } 
+                                        alt={`Dummy ${animal.jenis}`} 
+                                        className="w-full h-full object-cover opacity-80 group-hover:opacity-40 transition-opacity" 
+                                      />
+                                      <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                        <Camera className="h-4 w-4 text-white" />
+                                      </div>
                                     </div>
                                     <input 
                                       id={`photo-${animal.id}`} 
