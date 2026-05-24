@@ -36,6 +36,7 @@ const DistributionDashboard = lazy(() => import("./pages/distribution/Dashboard"
 const Recipients = lazy(() => import("./pages/distribution/Recipients"));
 const DistributionRoutes = lazy(() => import("./pages/distribution/Routes"));
 const DeliveryStatus = lazy(() => import("./pages/distribution/Status"));
+const ShohibulDistribution = lazy(() => import("./pages/distribution/ShohibulDistribution"));
 const GoogleSheetsIntegration = lazy(() => import("./pages/integration/GoogleSheets"));
 const Help = lazy(() => import("./pages/Help"));
 
@@ -120,6 +121,7 @@ const AppRoutes = () => {
         <Route path="/distribution/recipients" element={<ProtectedRoute allowedRoles={['admin', 'distribution']}><Recipients /></ProtectedRoute>} />
         <Route path="/distribution/routes" element={<ProtectedRoute allowedRoles={['admin', 'distribution']}><DistributionRoutes /></ProtectedRoute>} />
         <Route path="/distribution/status" element={<ProtectedRoute allowedRoles={['admin', 'distribution']}><DeliveryStatus /></ProtectedRoute>} />
+        <Route path="/distribution/shohibul" element={<ProtectedRoute allowedRoles={['admin', 'distribution', 'shohibul']}><ShohibulDistribution /></ProtectedRoute>} />
 
         {/* Integration Routes */}
         <Route path="/integration/google-sheets" element={<ProtectedRoute allowedRoles={['admin']}><GoogleSheetsIntegration /></ProtectedRoute>} />

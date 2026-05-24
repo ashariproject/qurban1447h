@@ -13,7 +13,9 @@ export interface ShohibulData {
     datang: boolean;
     siapSembelih: boolean;
     siapKirim: boolean;
+    pengiriman?: boolean;
     telahTerima: boolean;
+    requestIsian?: string;
   };
   pembayaran: {
     status: 'lunas' | 'lunas-sebagian' | 'belum-lunas' | 'lunas-cash';

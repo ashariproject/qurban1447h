@@ -87,7 +87,8 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Dashboard", icon: Home, path: "/shohibul" },
       { name: "Data Shohibul", icon: FileText, path: "/shohibul/data" },
       { name: "Peta Lokasi", icon: MapPin, path: "/shohibul/map" },
-      { name: "Pembayaran", icon: FileCheck, path: "/shohibul/payments" }
+      { name: "Pembayaran", icon: FileCheck, path: "/shohibul/payments" },
+      { name: "Distribusi Shohibul", icon: Package, path: "/distribution/shohibul" }
     ]
   },
   animal: { 
@@ -119,6 +120,7 @@ const roles: Record<Role, RoleInfo> = {
     description: "Input data penerima: nama, alamat, kluster wilayah. Jenis paket diterima: sapi/kambing. Status distribusi: terkirim / belum. Bukti terima: tanda tangan digital, foto.",
     menuItems: [
       { name: "Dashboard", icon: Home, path: "/distribution" },
+      { name: "Distribusi Shohibul", icon: Package, path: "/distribution/shohibul" },
       { name: "Data Penerima", icon: FileText, path: "/distribution/recipients" },
       { name: "Rute Distribusi", icon: Truck, path: "/distribution/routes" },
       { name: "Status Pengiriman", icon: ClipboardList, path: "/distribution/status" }
