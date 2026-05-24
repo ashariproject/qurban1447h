@@ -344,6 +344,7 @@ const LandingPage = () => {
                   frameBorder="0" 
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                   allowFullScreen
+                  loading="lazy"
                 ></iframe>
               </div>
               <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-2 md:p-4 rounded-xl md:rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2 md:gap-3">

@@ -86,7 +86,6 @@ const roles: Record<Role, RoleInfo> = {
     menuItems: [
       { name: "Dashboard", icon: Home, path: "/shohibul" },
       { name: "Data Shohibul", icon: FileText, path: "/shohibul/data" },
-      { name: "Peta Lokasi", icon: MapPin, path: "/shohibul/map" },
       { name: "Pembayaran", icon: FileCheck, path: "/shohibul/payments" },
       { name: "Distribusi Shohibul", icon: Package, path: "/distribution/shohibul" }
     ]

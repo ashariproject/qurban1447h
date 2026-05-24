@@ -21,7 +21,6 @@ const AdminDatabase = lazy(() => import("./pages/admin/Database"));
 const AdminSheetsSync = lazy(() => import("./pages/admin/SheetsSync"));
 const ShohibulDashboard = lazy(() => import("./pages/shohibul/Dashboard"));
 const ShohibulData = lazy(() => import("./pages/shohibul/Data"));
-const LocationMap = lazy(() => import("./pages/shohibul/Map"));
 const Payments = lazy(() => import("./pages/shohibul/Payments"));
 const AnimalDashboard = lazy(() => import("./pages/animal/Dashboard"));
 const AnimalData = lazy(() => import("./pages/animal/Data"));
@@ -100,7 +99,6 @@ const AppRoutes = () => {
         {/* Shohibul Routes */}
         <Route path="/shohibul" element={<ProtectedRoute allowedRoles={['admin', 'shohibul']}><ShohibulDashboard /></ProtectedRoute>} />
         <Route path="/shohibul/data" element={<ProtectedRoute allowedRoles={['admin', 'shohibul']}><ShohibulData /></ProtectedRoute>} />
-        <Route path="/shohibul/map" element={<ProtectedRoute allowedRoles={['admin', 'shohibul']}><LocationMap /></ProtectedRoute>} />
         <Route path="/shohibul/payments" element={<ProtectedRoute allowedRoles={['admin', 'shohibul']}><Payments /></ProtectedRoute>} />
 
         {/* Animal Routes */}
