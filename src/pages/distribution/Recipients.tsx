@@ -24,6 +24,7 @@ interface Recipient {
   jumlahPaket: number;
   status: 'pending' | 'delivered' | 'confirmed';
   tanggalInput: string;
+  rt?: string;
 }
 
 const Recipients = () => {
@@ -58,7 +59,7 @@ const Recipients = () => {
 
   const getSektorOptions = (wilayah: string) => {
     if (wilayah === 'pantai_mentari') {
-      return ['Sektor 1', 'Sektor 2', 'Sektor 3', 'Sektor 4', 'Sektor 5', 'Sektor 6'];
+      return ['RT 01', 'RT 02', 'RT 03', 'RT 04', 'RT 05', 'RT 06', 'RT 07'];
     } else if (wilayah === 'komplek_al') {
       return [
         'Jl. Sadikin', 
@@ -81,6 +82,7 @@ const Recipients = () => {
       alamat: formData.alamat,
       wilayah: wilayahOptions.find(w => w.value === formData.wilayah)?.label || '',
       sektor: formData.sektor,
+      rt: formData.wilayah === 'pantai_mentari' ? formData.sektor : undefined,
       noHp: formData.noHp,
       jenisKemasan: formData.jenisKemasan,
       jumlahPaket: formData.jumlahPaket,
@@ -329,7 +331,69 @@ const Recipients = () => {
               
               {["Pantai Mentari", "Komplek AL", "Warga Lain"].map(wilayahTab => (
                 <TabsContent key={wilayahTab} value={wilayahTab}>
-                  {wilayahTab === "Komplek AL" ? (
+                  {wilayahTab === "Pantai Mentari" ? (
+                    <Tabs defaultValue="Semua" className="w-full mb-4">
+                      <div className="overflow-x-auto pb-2">
+                        <TabsList className="min-w-max">
+                          <TabsTrigger value="Semua">Semua RT</TabsTrigger>
+                          <TabsTrigger value="RT 01">RT 01</TabsTrigger>
+                          <TabsTrigger value="RT 02">RT 02</TabsTrigger>
+                          <TabsTrigger value="RT 03">RT 03</TabsTrigger>
+                          <TabsTrigger value="RT 04">RT 04</TabsTrigger>
+                          <TabsTrigger value="RT 05">RT 05</TabsTrigger>
+                          <TabsTrigger value="RT 06">RT 06</TabsTrigger>
+                          <TabsTrigger value="RT 07">RT 07</TabsTrigger>
+                        </TabsList>
+                      </div>
+                      
+                      {["Semua", "RT 01", "RT 02", "RT 03", "RT 04", "RT 05", "RT 06", "RT 07"].map(rtTab => (
+                        <TabsContent key={rtTab} value={rtTab}>
+                          <div className="overflow-x-auto border rounded-md">
+                            <Table>
+                              <TableHeader className="bg-gray-50">
+                                <TableRow>
+                                  <TableHead>ID</TableHead>
+                                  <TableHead>Nama</TableHead>
+                                  <TableHead>Blok/Nomor</TableHead>
+                                  <TableHead>No. HP</TableHead>
+                                  <TableHead>Kemasan</TableHead>
+                                  <TableHead>Jumlah</TableHead>
+                                  <TableHead>Status</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {filteredRecipients
+                                  .filter(r => r.wilayah === "Pantai Mentari")
+                                  .filter(r => rtTab === "Semua" || r.rt === rtTab)
+                                  .length > 0 ? (
+                                  filteredRecipients
+                                    .filter(r => r.wilayah === "Pantai Mentari")
+                                    .filter(r => rtTab === "Semua" || r.rt === rtTab)
+                                    .map((recipient) => (
+                                    <TableRow key={recipient.id}>
+                                      <TableCell className="font-medium text-xs">{recipient.id}</TableCell>
+                                      <TableCell className="font-bold">{recipient.nama}</TableCell>
+                                      <TableCell>{recipient.sektor}</TableCell>
+                                      <TableCell>{recipient.noHp || '-'}</TableCell>
+                                      <TableCell>{recipient.jenisKemasan}</TableCell>
+                                      <TableCell>{recipient.jumlahPaket}</TableCell>
+                                      <TableCell>{getStatusBadge(recipient.status)}</TableCell>
+                                    </TableRow>
+                                  ))
+                                ) : (
+                                  <TableRow>
+                                    <TableCell colSpan={7} className="text-center py-6 text-gray-500">
+                                      Belum ada data penerima untuk lokasi ini.
+                                    </TableCell>
+                                  </TableRow>
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  ) : wilayahTab === "Komplek AL" ? (
                     <Tabs defaultValue="Semua" className="w-full mb-4">
                       <div className="overflow-x-auto pb-2">
                         <TabsList className="min-w-max">
