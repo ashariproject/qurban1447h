@@ -47,43 +47,61 @@ const MeatYieldCalculator = () => {
       live: Math.round(live * 10) / 10, 
       carcass: Math.round(carcass * 10) / 10,
       meat: Math.round(meat * 10) / 10 
-    });
+  };
+
+  const { updateHewanMeasurements } = useQurban();
+
+  const handleBobotChange = (id: string, newBobot: string) => {
+    const bobot = parseFloat(newBobot);
+    if (!isNaN(bobot) && bobot > 0) {
+      updateHewanMeasurements(id, { bobot });
+    }
   };
 
   const totalLiveWeight = hewanList.reduce((acc, h) => acc + (h.bobot || 0), 0);
   const totalCarcass = hewanList.reduce((acc, h) => acc + (h.beratKarkas || 0), 0);
-  const totalMeat = hewanList.reduce((acc, h) => acc + (h.beratDaging || 0), 0);
+  const totalMeatSapi = hewanList.filter(h => h.jenis === 'sapi').reduce((acc, h) => acc + (h.beratDaging || 0), 0);
+  const totalMeatKambing = hewanList.filter(h => h.jenis === 'kambing').reduce((acc, h) => acc + (h.beratDaging || 0), 0);
 
   return (
     <Layout>
       <div className="space-y-6 max-w-5xl mx-auto py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Summary Cards */}
           <Card className="bg-blue-600 text-white border-none shadow-lg">
             <CardContent className="p-4 flex justify-between items-center">
               <div>
-                <p className="text-blue-100 text-xs font-bold uppercase">Total Berat Hidup</p>
-                <h3 className="text-2xl font-black">{Math.round(totalLiveWeight)} kg</h3>
+                <p className="text-blue-100 text-[10px] font-bold uppercase">Total Berat Hidup</p>
+                <h3 className="text-xl font-black">{Math.round(totalLiveWeight)} kg</h3>
               </div>
-              <Scale className="opacity-20 h-10 w-10" />
+              <Scale className="opacity-20 h-8 w-8" />
             </CardContent>
           </Card>
           <Card className="bg-orange-600 text-white border-none shadow-lg">
             <CardContent className="p-4 flex justify-between items-center">
               <div>
-                <p className="text-orange-100 text-xs font-bold uppercase">Total Estimasi Karkas</p>
-                <h3 className="text-2xl font-black">{Math.round(totalCarcass)} kg</h3>
+                <p className="text-orange-100 text-[10px] font-bold uppercase">Total Karkas</p>
+                <h3 className="text-xl font-black">{Math.round(totalCarcass)} kg</h3>
               </div>
-              <Beef className="opacity-20 h-10 w-10" />
+              <Beef className="opacity-20 h-8 w-8" />
             </CardContent>
           </Card>
           <Card className="bg-emerald-600 text-white border-none shadow-lg">
             <CardContent className="p-4 flex justify-between items-center">
               <div>
-                <p className="text-emerald-100 text-xs font-bold uppercase">Total Daging Bersih</p>
-                <h3 className="text-2xl font-black">{Math.round(totalMeat)} kg</h3>
+                <p className="text-emerald-100 text-[10px] font-bold uppercase">Daging Sapi</p>
+                <h3 className="text-xl font-black">{Math.round(totalMeatSapi)} kg</h3>
               </div>
-              <div className="text-3xl opacity-20">🍖</div>
+              <div className="text-2xl opacity-20">🥩</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-emerald-700 text-white border-none shadow-lg">
+            <CardContent className="p-4 flex justify-between items-center">
+              <div>
+                <p className="text-emerald-100 text-[10px] font-bold uppercase">Daging Kambing</p>
+                <h3 className="text-xl font-black">{Math.round(totalMeatKambing)} kg</h3>
+              </div>
+              <div className="text-2xl opacity-20">🍖</div>
             </CardContent>
           </Card>
         </div>
@@ -208,7 +226,15 @@ const MeatYieldCalculator = () => {
                             </span>
                           </TableCell>
                           <TableCell className="py-2 text-right font-medium text-xs">
-                            {h.bobot ? `${h.bobot} kg` : '-'}
+                            <div className="flex items-center justify-end gap-1">
+                              <Input 
+                                type="number" 
+                                className="w-20 h-7 text-xs text-right" 
+                                defaultValue={h.bobot || ''}
+                                placeholder="0"
+                                onBlur={(e) => handleBobotChange(h.id, e.target.value)}
+                              />
+                            </div>
                           </TableCell>
                           <TableCell className="py-2 text-right font-black text-xs text-blue-600">
                             {h.beratDaging ? `${h.beratDaging} kg` : '-'}
