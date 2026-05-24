@@ -46,6 +46,8 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
 }) => {
   const [filterJenis, setFilterJenis] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'tanggal' | 'nama' | 'kelompok'>('tanggal');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [editingItem, setEditingItem] = useState<ShohibulData | null>(null);
   const { toast } = useToast();
 
@@ -86,6 +88,19 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
                          item.alamat.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.noTelepon.includes(searchTerm);
     return matchesJenis && matchesSearch;
+  });
+
+  const sortedAndFilteredData = [...filteredData].sort((a, b) => {
+    let comparison = 0;
+    if (sortBy === 'tanggal') {
+      comparison = new Date(a.tanggalDaftar).getTime() - new Date(b.tanggalDaftar).getTime();
+    } else if (sortBy === 'nama') {
+      comparison = a.nama.localeCompare(b.nama);
+    } else if (sortBy === 'kelompok') {
+      comparison = a.jenisQurban.localeCompare(b.jenisQurban);
+    }
+    
+    return sortOrder === 'asc' ? comparison : -comparison;
   });
 
   const handleEdit = (item: ShohibulData) => {
@@ -152,31 +167,52 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
           <Filter className="h-5 w-5" />
           Data Shohibul Qurban
         </CardTitle>
-        <div className="flex gap-4 items-center">
-          <div className="flex-1">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex-1 w-full">
             <Input
               placeholder="Cari nama, alamat, atau nomor telepon..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
+              className="w-full"
             />
           </div>
-          <Select value={filterJenis} onValueChange={setFilterJenis}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter Jenis Qurban" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Jenis</SelectItem>
-              <SelectItem value="sapi-mandiri">Sapi Mandiri</SelectItem>
-              <SelectItem value="kambing-mandiri">Kambing Mandiri</SelectItem>
-              <SelectItem value="kambing-titip-beli">Kambing (Titip Beli)</SelectItem>
-              <SelectItem value="sapi-patungan">Sapi Patungan</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Select value={filterJenis} onValueChange={setFilterJenis}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter Jenis Qurban" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Jenis</SelectItem>
+                <SelectItem value="sapi-mandiri">Sapi Mandiri</SelectItem>
+                <SelectItem value="kambing-mandiri">Kambing Mandiri</SelectItem>
+                <SelectItem value="kambing-titip-beli">Kambing (Titip Beli)</SelectItem>
+                <SelectItem value="sapi-patungan">Sapi Patungan</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Urutkan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tanggal">Tanggal Daftar</SelectItem>
+                <SelectItem value="nama">Nama Shohibul</SelectItem>
+                <SelectItem value="kelompok">Kelompok (Jenis)</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button 
+              variant="outline" 
+              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              title={`Urutan ${sortOrder === 'asc' ? 'Menaik (A-Z/Lama-Baru)' : 'Menurun (Z-A/Baru-Lama)'}`}
+            >
+              {sortOrder === 'asc' ? '↑' : '↓'}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        {filteredData.length === 0 ? (
+        {sortedAndFilteredData.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             {data.length === 0 
               ? 'Belum ada data shohibul. Tambahkan data baru menggunakan form di atas.'
@@ -201,7 +237,7 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredData.map((item, index) => (
+                {sortedAndFilteredData.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">{item.nama}</TableCell>
