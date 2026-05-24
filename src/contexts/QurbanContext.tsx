@@ -69,7 +69,7 @@ interface QurbanContextType {
   packagingData: PackagingData;
   distributionList: DistributionData[];
   isLoading: boolean;
-  addShohibul: (s: Omit<ShohibulData, 'id' | 'tanggalDaftar'>) => Promise<void>;
+  addShohibul: (s: Omit<ShohibulData, 'id'> & { tanggalDaftar?: string }) => Promise<void>;
   editShohibul: (id: string, s: Partial<ShohibulData>) => Promise<void>;
   deleteShohibul: (id: string) => Promise<void>;
   updateShohibulStatus: (id: string, field: string, value: any) => Promise<void>;
@@ -186,9 +186,9 @@ export const QurbanProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }));
   }, [shohibulList, hewanList]);
 
-  const addShohibul = async (s: Omit<ShohibulData, 'id' | 'tanggalDaftar'>) => {
+  const addShohibul = async (s: Omit<ShohibulData, 'id'> & { tanggalDaftar?: string }) => {
     const newId = crypto.randomUUID();
-    const newS = { ...s, id: newId, tanggalDaftar: new Date().toISOString().split('T')[0] };
+    const newS = { ...s, id: newId, tanggalDaftar: s.tanggalDaftar || new Date().toISOString().split('T')[0] };
     
     // Optimistic Update
     setShohibulList(prev => [...prev, newS as ShohibulData]);

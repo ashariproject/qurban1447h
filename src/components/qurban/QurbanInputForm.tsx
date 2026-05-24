@@ -44,12 +44,13 @@ const formSchema = z.object({
     jumlahDibayar: z.number().min(0, "Jumlah dibayar minimal 0"),
     totalBiaya: z.number().min(1, "Total biaya minimal 1"),
   }),
+  tanggalDaftar: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 interface QurbanInputFormProps {
-  onSubmit: (data: Omit<FormValues, 'id' | 'tanggalDaftar'>) => void;
+  onSubmit: (data: Omit<FormValues, 'id'>) => void;
 }
 
 const QurbanInputForm: React.FC<QurbanInputFormProps> = ({ onSubmit }) => {
@@ -65,6 +66,7 @@ const QurbanInputForm: React.FC<QurbanInputFormProps> = ({ onSubmit }) => {
         jumlahDibayar: 0,
         totalBiaya: 0,
       },
+      tanggalDaftar: new Date().toISOString().split('T')[0],
     },
   });
 
@@ -102,6 +104,25 @@ const QurbanInputForm: React.FC<QurbanInputFormProps> = ({ onSubmit }) => {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="tanggalDaftar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tanggal Daftar</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Tanggal pendaftaran shohibul.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="noTelepon"
