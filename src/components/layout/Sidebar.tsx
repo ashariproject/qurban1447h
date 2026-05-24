@@ -73,6 +73,7 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Dashboard", icon: Home, path: "/admin" },
       { name: "Monitoring", icon: BarChart3, path: "/admin/monitoring" },
       { name: "Database JSON", icon: Database, path: "/admin/database" },
+      { name: "Data Penerima", icon: FileText, path: "/distribution/recipients" },
       { name: "Data Hewan", icon: FileText, path: "/animal/data" },
       { name: "Foto & QR Hewan", icon: QrCode, path: "/animal/foto-qr" },
       { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" },
@@ -87,7 +88,8 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Dashboard", icon: Home, path: "/shohibul" },
       { name: "Data Shohibul", icon: FileText, path: "/shohibul/data" },
       { name: "Pembayaran", icon: FileCheck, path: "/shohibul/payments" },
-      { name: "Distribusi Shohibul", icon: Package, path: "/distribution/shohibul" }
+      { name: "Distribusi Shohibul", icon: Package, path: "/distribution/shohibul" },
+      { name: "Data Penerima", icon: FileText, path: "/distribution/recipients" }
     ]
   },
   animal: { 
