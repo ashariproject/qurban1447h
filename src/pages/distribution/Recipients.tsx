@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { Users, Plus, Search, MapPin, Phone } from 'lucide-react';
-import penerimaData from '@/data/penerima.json';
+import { supabase } from '@/lib/supabase';
 
 interface Recipient {
   id: string;
@@ -41,15 +41,31 @@ const Recipients = () => {
     catatan: ''
   });
 
-  // Load initial data from JSON
-  const [recipients, setRecipients] = useState<Recipient[]>(() => {
+  const [recipients, setRecipients] = useState<Recipient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchRecipients();
+  }, []);
+
+  const fetchRecipients = async () => {
+    setIsLoading(true);
     try {
-      return penerimaData as Recipient[];
-    } catch (e) {
-      console.log('No initial data found');
-      return [];
+      const { data, error } = await supabase
+        .from('recipients')
+        .select('*');
+      
+      if (error) throw error;
+      
+      if (data) {
+        setRecipients(data as Recipient[]);
+      }
+    } catch (error) {
+      console.error('Error fetching recipients:', error);
+    } finally {
+      setIsLoading(false);
     }
-  });
+  };
 
   const wilayahOptions = [
     { value: 'pantai_mentari', label: 'Pantai Mentari' },
@@ -74,10 +90,11 @@ const Recipients = () => {
     return ['Area Umum'];
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newId = `R${String(recipients.length + 1).padStart(3, '0')}`;
     const newRecipient: Recipient = {
-      id: `R${String(recipients.length + 1).padStart(3, '0')}`,
+      id: newId,
       nama: formData.nama,
       alamat: formData.alamat,
       wilayah: wilayahOptions.find(w => w.value === formData.wilayah)?.label || '',
@@ -90,19 +107,53 @@ const Recipients = () => {
       tanggalInput: new Date().toISOString().split('T')[0]
     };
     
-    setRecipients([...recipients, newRecipient]);
-    setFormData({
-      nama: '',
-      alamat: '',
-      wilayah: '',
-      sektor: '',
-      noHp: '',
-      jenisKemasan: '',
-      jumlahPaket: 1,
-      catatan: ''
-    });
-    setShowForm(false);
-    alert('Data penerima berhasil ditambahkan!');
+    try {
+      const { error } = await supabase
+        .from('recipients')
+        .insert([newRecipient]);
+        
+      if (error) throw error;
+      
+      setRecipients([...recipients, newRecipient]);
+      setFormData({
+        nama: '',
+        alamat: '',
+        wilayah: '',
+        sektor: '',
+        noHp: '',
+        jenisKemasan: '',
+        jumlahPaket: 1,
+        catatan: ''
+      });
+      setShowForm(false);
+      alert('Data penerima berhasil ditambahkan!');
+    } catch (error) {
+      console.error('Error adding recipient:', error);
+      alert('Gagal menambahkan data. Pastikan tabel Supabase sudah dibuat.');
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'delivered' ? 'pending' : 'delivered';
+    
+    // Optimistic update
+    setRecipients(recipients.map(r => r.id === id ? { ...r, status: newStatus } : r));
+    
+    try {
+      const { error } = await supabase
+        .from('recipients')
+        .update({ status: newStatus })
+        .eq('id', id);
+        
+      if (error) {
+        // Revert on error
+        setRecipients(recipients.map(r => r.id === id ? { ...r, status: currentStatus as any } : r));
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Gagal mengubah status.');
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -377,7 +428,18 @@ const Recipients = () => {
                                       <TableCell>{recipient.noHp || '-'}</TableCell>
                                       <TableCell>{recipient.jenisKemasan}</TableCell>
                                       <TableCell>{recipient.jumlahPaket}</TableCell>
-                                      <TableCell>{getStatusBadge(recipient.status)}</TableCell>
+                                      <TableCell>
+  <div className="flex items-center space-x-2">
+    <Switch 
+      checked={recipient.status === 'delivered'}
+      onCheckedChange={() => handleToggleStatus(recipient.id, recipient.status)}
+      className={recipient.status === 'delivered' ? "bg-green-500" : ""}
+    />
+    <span className={`text-xs font-medium ${recipient.status === 'delivered' ? 'text-green-600' : 'text-yellow-600'}`}>
+      {recipient.status === 'delivered' ? 'Terkirim' : 'Pending'}
+    </span>
+  </div>
+</TableCell>
                                     </TableRow>
                                   ))
                                 ) : (
@@ -439,7 +501,18 @@ const Recipients = () => {
                                       <TableCell>{recipient.noHp || '-'}</TableCell>
                                       <TableCell>{recipient.jenisKemasan}</TableCell>
                                       <TableCell>{recipient.jumlahPaket}</TableCell>
-                                      <TableCell>{getStatusBadge(recipient.status)}</TableCell>
+                                      <TableCell>
+  <div className="flex items-center space-x-2">
+    <Switch 
+      checked={recipient.status === 'delivered'}
+      onCheckedChange={() => handleToggleStatus(recipient.id, recipient.status)}
+      className={recipient.status === 'delivered' ? "bg-green-500" : ""}
+    />
+    <span className={`text-xs font-medium ${recipient.status === 'delivered' ? 'text-green-600' : 'text-yellow-600'}`}>
+      {recipient.status === 'delivered' ? 'Terkirim' : 'Pending'}
+    </span>
+  </div>
+</TableCell>
                                     </TableRow>
                                   ))
                                 ) : (
@@ -479,7 +552,18 @@ const Recipients = () => {
                                 <TableCell>{recipient.noHp || '-'}</TableCell>
                                 <TableCell>{recipient.jenisKemasan}</TableCell>
                                 <TableCell>{recipient.jumlahPaket}</TableCell>
-                                <TableCell>{getStatusBadge(recipient.status)}</TableCell>
+                                <TableCell>
+  <div className="flex items-center space-x-2">
+    <Switch 
+      checked={recipient.status === 'delivered'}
+      onCheckedChange={() => handleToggleStatus(recipient.id, recipient.status)}
+      className={recipient.status === 'delivered' ? "bg-green-500" : ""}
+    />
+    <span className={`text-xs font-medium ${recipient.status === 'delivered' ? 'text-green-600' : 'text-yellow-600'}`}>
+      {recipient.status === 'delivered' ? 'Terkirim' : 'Pending'}
+    </span>
+  </div>
+</TableCell>
                               </TableRow>
                             ))
                           ) : (
