@@ -142,17 +142,17 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-10 md:pt-32 md:pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+      <section className="relative pt-20 pb-8 md:pt-28 md:pb-12 lg:pt-32 lg:pb-16 overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-emerald-50/50 -z-10 rounded-l-[100px] hidden lg:block" />
         <div className="container mx-auto px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-            <div className="lg:w-1/2 space-y-4 md:space-y-8">
+          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
+            <div className="lg:w-1/2 space-y-4 md:space-y-5">
               <Badge className="bg-emerald-100 text-emerald-700 border-none px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest animate-bounce">
                 Idul Adha 1447H / 2026
               </Badge>
 
               {/* Thin Animal Stats Banner at the Top */}
-              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 space-y-3 shadow-xl relative overflow-hidden">
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-3 space-y-2 shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl" />
                 
                 <div className="flex items-center justify-between border-b border-slate-700/40 pb-2">
@@ -170,12 +170,12 @@ const LandingPage = () => {
                   </span>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {/* Sapi Box */}
-                  <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-3 flex items-center gap-3 hover:bg-slate-800 transition-all duration-300">
-                    <div className="h-10 w-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shrink-0">
+                  <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-2.5 flex items-center gap-3 hover:bg-slate-800 transition-all duration-300">
+                    <div className="h-8 w-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shrink-0">
                       {/* Sapi Icon */}
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                         <path d="M6 18c0 1.5 1 2.5 2.5 2.5h7c1.5 0 2.5-1 2.5-2.5V11H6v7z" />
                         <path d="M5 8c0-2.5 3-4 7-4s7 1.5 7 4v3H5V8z" />
                         <path d="M4.5 9c-.5-.5-1.5-1-1.5-2s1-.5 2 0" />
@@ -189,17 +189,17 @@ const LandingPage = () => {
                     </div>
                     <div>
                       <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">SAPI</div>
-                      <div className="text-xl font-black text-white mt-0.5">
-                        {animalData.totalSapi} <span className="text-[10px] font-bold text-slate-400">EKOR</span>
+                      <div className="text-lg font-black text-white leading-tight">
+                        {animalData.totalSapi} <span className="text-[9px] font-bold text-slate-400">EKOR</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Kambing Box */}
-                  <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-3 flex items-center gap-3 hover:bg-slate-800 transition-all duration-300">
-                    <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                  <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-2.5 flex items-center gap-3 hover:bg-slate-800 transition-all duration-300">
+                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
                       {/* Kambing Icon */}
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                         <path d="M7 16V9l5-5 5 5v7l-2.5 3.5h-5L7 16z" />
                         <path d="M9 5C7.5 4 6 2 6 1" />
                         <path d="M15 5C16.5 4 18 2 18 1" />
@@ -212,37 +212,37 @@ const LandingPage = () => {
                     </div>
                     <div>
                       <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">KAMBING</div>
-                      <div className="text-xl font-black text-white mt-0.5">
-                        {animalData.totalKambing} <span className="text-[10px] font-bold text-slate-400">EKOR</span>
+                      <div className="text-lg font-black text-white leading-tight">
+                        {animalData.totalKambing} <span className="text-[9px] font-bold text-slate-400">EKOR</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Clock / Time */}
-                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300 bg-slate-800/70 py-1.5 px-3 rounded-lg border border-slate-700/40">
-                  <Calendar className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-300 bg-slate-800/70 py-1.5 px-3 rounded-lg border border-slate-700/40">
+                  <Calendar className="h-3 w-3 text-emerald-400 shrink-0" />
                   <span className="truncate">{currentDateTime || 'Memuat waktu...'}</span>
                 </div>
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight">
                 Sempurnakan <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-700">Ibadah Qurban</span> <br />
                 Bersama Kami.
               </h1>
-              <p className="text-lg text-slate-500 max-w-lg leading-relaxed font-medium">
+              <p className="text-base text-slate-500 max-w-lg leading-relaxed font-medium">
                 Masjid As Sakinah Pantai Mentari Surabaya memfasilitasi pelaksanaan ibadah Qurban Anda dengan amanah, transparan, dan profesional.
               </p>
 
               <div className="flex flex-wrap gap-3 pt-2">
-                <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-12 md:h-14 px-6 md:px-8 rounded-2xl shadow-xl shadow-slate-200 group">
+                <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-12 md:h-12 px-6 rounded-xl shadow-xl shadow-slate-200 group">
                   <Link to="/portal">
                     LIHAT PROGRESS LIVE
-                    <LayoutDashboard className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                    <LayoutDashboard className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 md:h-14 px-6 md:px-8 rounded-2xl border-slate-200 font-bold hover:bg-slate-50 text-slate-600">
+                <Button asChild variant="outline" size="lg" className="h-12 md:h-12 px-6 rounded-xl border-slate-200 font-bold hover:bg-slate-50 text-slate-600">
                   <a href="#about">Pelajari Lebih Lanjut</a>
                 </Button>
               </div>
