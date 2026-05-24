@@ -189,7 +189,7 @@ const LandingPage = () => {
                     </div>
                     <div>
                       <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">SAPI</div>
-                      <div className="text-lg font-black text-white leading-tight">
+                      <div className="text-3xl md:text-4xl font-black text-white leading-tight">
                         {animalData.totalSapi} <span className="text-[9px] font-bold text-slate-400">EKOR</span>
                       </div>
                     </div>
@@ -212,7 +212,7 @@ const LandingPage = () => {
                     </div>
                     <div>
                       <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">KAMBING</div>
-                      <div className="text-lg font-black text-white leading-tight">
+                      <div className="text-3xl md:text-4xl font-black text-white leading-tight">
                         {animalData.totalKambing} <span className="text-[9px] font-bold text-slate-400">EKOR</span>
                       </div>
                     </div>
@@ -242,9 +242,6 @@ const LandingPage = () => {
                     <LayoutDashboard className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 md:h-12 px-6 rounded-xl border-slate-200 font-bold hover:bg-slate-50 text-slate-600">
-                  <a href="#about">Pelajari Lebih Lanjut</a>
-                </Button>
               </div>
             </div>
             
@@ -270,12 +267,12 @@ const LandingPage = () => {
       </section>
 
       {/* Verse Section */}
-      <section id="ayat" className="py-12 md:py-24 bg-slate-900 text-white relative overflow-hidden">
+      <section id="ayat" className="py-8 md:py-12 bg-slate-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/20 via-transparent to-transparent" />
         </div>
         <div className="container mx-auto px-6 text-center relative z-10">
-          <div className="max-w-4xl mx-auto space-y-6 md:space-y-12">
+          <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
             <div className="space-y-4">
               <p className="text-emerald-400 font-black uppercase tracking-[0.3em] text-sm">Firman Allah SWT</p>
               <h2 className="text-3xl font-black tracking-tight lg:text-4xl">Daging dan darah itu tidak akan sampai kepada Allah...</h2>
@@ -310,8 +307,61 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Documentation 2025 */}
+      <section id="documentation" className="py-8 md:py-12 bg-white relative overflow-hidden">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+            <div className="lg:w-1/3 space-y-4 w-full">
+              <Badge className="bg-blue-100 text-blue-700 border-none px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
+                Flashback Qurban 1446H
+              </Badge>
+              <h2 className="text-4xl font-black tracking-tight text-slate-900 uppercase leading-tight">
+                Dokumentasi <br />
+                <span className="text-blue-600">Tahun Lalu (2025)</span>
+              </h2>
+              <p className="text-slate-500 font-medium leading-relaxed">
+                Kilasan proses pelaksanaan Qurban tahun lalu di Masjid As Sakinah. Komitmen kami terhadap transparansi dan amanah telah berjalan dari tahun ke tahun.
+              </p>
+              <div className="flex items-center gap-4 pt-2">
+                <div className="flex -space-x-4">
+                  {[1,2,3,4].map(i => (
+                    <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-slate-200 overflow-hidden">
+                      <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="avatar" />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Dilihat oleh 1,000+ Warga</p>
+              </div>
+            </div>
+
+            <div className="lg:w-2/3 relative group w-full">
+              <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-[40px] opacity-20 blur-2xl group-hover:opacity-30 transition-opacity duration-700" />
+              <div className="relative w-full rounded-[20px] md:rounded-[30px] overflow-hidden shadow-2xl border-4 md:border-8 border-white bg-slate-900" style={{paddingBottom: '56.25%', height: 0}}>
+                <iframe 
+                  className="absolute top-0 left-0 w-full h-full"
+                  src="https://www.youtube.com/embed/n-7nowHaBgY?playsinline=1" 
+                  title="Dokumentasi Qurban 2025" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+              <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-2 md:p-4 rounded-xl md:rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2 md:gap-3">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <Play className="h-5 w-5 text-red-600 fill-red-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Video Official</p>
+                  <p className="text-xs font-bold text-slate-900">Highlights Qurban 2025</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Info Sections */}
-      <section id="features" className="py-12 md:py-20 bg-slate-50">
+      <section id="features" className="py-8 md:py-12 bg-slate-50">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-14 space-y-3">
             <h2 className="text-4xl font-black tracking-tight text-slate-900 uppercase">Keunggulan Layanan Kami</h2>
@@ -363,7 +413,7 @@ const LandingPage = () => {
       </section>
 
       {/* Pricing Section */}
-      <section id="paket" className="py-12 md:py-20 bg-white relative overflow-hidden">
+      <section id="paket" className="py-8 md:py-12 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-14 space-y-3">
             <Badge className="bg-orange-100 text-orange-700 border-none px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
@@ -501,59 +551,6 @@ const LandingPage = () => {
               >
                 Daftar
               </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Documentation 2025 */}
-      <section id="documentation" className="py-12 md:py-20 bg-white relative overflow-hidden">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-            <div className="lg:w-1/3 space-y-4 w-full">
-              <Badge className="bg-blue-100 text-blue-700 border-none px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
-                Flashback Qurban 1446H
-              </Badge>
-              <h2 className="text-4xl font-black tracking-tight text-slate-900 uppercase leading-tight">
-                Dokumentasi <br />
-                <span className="text-blue-600">Tahun Lalu (2025)</span>
-              </h2>
-              <p className="text-slate-500 font-medium leading-relaxed">
-                Kilasan proses pelaksanaan Qurban tahun lalu di Masjid As Sakinah. Komitmen kami terhadap transparansi dan amanah telah berjalan dari tahun ke tahun.
-              </p>
-              <div className="flex items-center gap-4 pt-2">
-                <div className="flex -space-x-4">
-                  {[1,2,3,4].map(i => (
-                    <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-slate-200 overflow-hidden">
-                      <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="avatar" />
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Dilihat oleh 1,000+ Warga</p>
-              </div>
-            </div>
-
-            <div className="lg:w-2/3 relative group w-full">
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-[40px] opacity-20 blur-2xl group-hover:opacity-30 transition-opacity duration-700" />
-              <div className="relative w-full rounded-[20px] md:rounded-[30px] overflow-hidden shadow-2xl border-4 md:border-8 border-white bg-slate-900" style={{paddingBottom: '56.25%', height: 0}}>
-                <iframe 
-                  className="absolute top-0 left-0 w-full h-full"
-                  src="https://www.youtube.com/embed/n-7nowHaBgY?playsinline=1" 
-                  title="Dokumentasi Qurban 2025" 
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                  allowFullScreen
-                ></iframe>
-              </div>
-              <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-2 md:p-4 rounded-xl md:rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2 md:gap-3">
-                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                  <Play className="h-5 w-5 text-red-600 fill-red-600" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Video Official</p>
-                  <p className="text-xs font-bold text-slate-900">Highlights Qurban 2025</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
