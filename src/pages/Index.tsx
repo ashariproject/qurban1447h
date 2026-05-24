@@ -189,48 +189,48 @@ const Index = () => {
                 SAPI MANDIRI
               </div>
               <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-gray-50">
-                    <TableRow>
-                      <TableHead className="w-12">NO</TableHead>
-                      <TableHead>NAMA PENGQURBAN</TableHead>
-                      <TableHead>ALAMAT</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {shohibulList.filter(s => s.jenisQurban === 'sapi-mandiri').length > 0 ? (
-                      shohibulList.filter(s => s.jenisQurban === 'sapi-mandiri').map((s, idx) => (
-                        <TableRow key={s.id} className="hover:bg-gray-50/50 border-b border-gray-100">
-                          <TableCell className="py-1.5 px-3 text-xs">{idx + 1}</TableCell>
-                          <TableCell className="py-1.5 px-3 font-semibold text-sm">{s.nama}</TableCell>
-                          <TableCell className="py-1.5 px-3 text-[11px] text-gray-500">{s.alamat}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={3} className="text-center py-4 text-gray-400 italic text-sm">Belum ada data</TableCell>
+                  <Table>
+                    <TableHeader className="bg-gray-50">
+                      <TableRow className="h-8">
+                        <TableHead className="w-12 text-xs py-1">NO</TableHead>
+                        <TableHead className="text-xs py-1">NAMA PENGQURBAN</TableHead>
+                        <TableHead className="text-xs py-1">ALAMAT</TableHead>
                       </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {shohibulList.filter(s => s.jenisQurban === 'sapi-mandiri').length > 0 ? (
+                        shohibulList.filter(s => s.jenisQurban === 'sapi-mandiri').map((s, idx) => (
+                          <TableRow key={s.id} className="hover:bg-gray-50/50 border-b border-gray-100 h-7">
+                            <TableCell className="py-1 px-2 text-xs">{idx + 1}</TableCell>
+                            <TableCell className="py-1 px-2 font-semibold text-xs">{s.nama}</TableCell>
+                            <TableCell className="py-1 px-2 text-[10px] text-gray-500 truncate max-w-[100px]">{s.alamat}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={3} className="text-center py-2 text-gray-400 italic text-xs">Belum ada data</TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
               </CardContent>
             </Card>
 
             {/* Sapi Kolektif Section */}
             <Card className="border-none shadow-xl bg-white/80 backdrop-blur-md overflow-hidden">
-              <div className="bg-blue-600 p-3 text-white font-bold text-center flex items-center justify-center gap-2">
-                <Users className="h-5 w-5" />
+              <div className="bg-blue-600 p-2 text-white font-bold text-center flex items-center justify-center gap-2 text-sm">
+                <Users className="h-4 w-4" />
                 SAPI KOLEKTIF (PATUNGAN)
               </div>
               <CardContent className="p-0">
-                <div className="max-h-[400px] overflow-y-auto">
+                <div className="max-h-[350px] overflow-y-auto scrollbar-hide">
                   <Table>
-                    <TableHeader className="bg-gray-50">
-                      <TableRow>
-                        <TableHead className="w-16 text-blue-600 font-bold text-[10px]">UNIT</TableHead>
-                        <TableHead className="w-12">NO</TableHead>
-                        <TableHead>NAMA PENGQURBAN</TableHead>
-                        <TableHead>ALAMAT</TableHead>
+                    <TableHeader className="bg-gray-50 sticky top-0 z-10">
+                      <TableRow className="h-8">
+                        <TableHead className="w-14 text-blue-600 font-bold text-[9px] py-1">UNIT</TableHead>
+                        <TableHead className="w-10 text-xs py-1">NO</TableHead>
+                        <TableHead className="text-xs py-1">NAMA PENGQURBAN</TableHead>
+                        <TableHead className="text-xs py-1">ALAMAT</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -242,14 +242,14 @@ const Index = () => {
                         return (
                           <TableRow 
                             key={s.id} 
-                            className={`${rowBg} hover:bg-blue-100/30 transition-colors border-b border-gray-100 ${isGroupStart ? 'border-t-2 border-blue-200' : ''}`}
+                            className={`${rowBg} hover:bg-blue-100/30 transition-colors border-b border-gray-100 h-7 ${isGroupStart ? 'border-t-2 border-blue-200' : ''}`}
                           >
-                            <TableCell className="py-1.5 px-3 text-[10px] font-bold text-blue-700">
+                            <TableCell className="py-1 px-2 text-[9px] font-bold text-blue-700">
                               {isGroupStart ? `UNIT ${groupNum}` : ''}
                             </TableCell>
-                            <TableCell className="py-1.5 px-2 text-xs text-gray-400">{idx + 1}</TableCell>
-                            <TableCell className="py-1.5 px-2 font-bold text-sm text-gray-800">{s.nama}</TableCell>
-                            <TableCell className="py-1.5 px-2 text-[10px] text-gray-500 truncate max-w-[120px]">{s.alamat}</TableCell>
+                            <TableCell className="py-1 px-2 text-[10px] text-gray-400">{idx + 1}</TableCell>
+                            <TableCell className="py-1 px-2 font-bold text-xs text-gray-800 truncate max-w-[140px]">{s.nama}</TableCell>
+                            <TableCell className="py-1 px-2 text-[9px] text-gray-500 truncate max-w-[90px]">{s.alamat}</TableCell>
                           </TableRow>
                         );
                       })}
@@ -261,36 +261,51 @@ const Index = () => {
 
             {/* Kambing/Domba Section */}
             <Card className="border-none shadow-xl bg-white/80 backdrop-blur-md overflow-hidden lg:col-span-2">
-              <div className="bg-green-600 p-3 text-white font-bold text-center flex items-center justify-center gap-2">
-                <div className="text-xl">🐐</div>
+              <div className="bg-green-600 p-2 text-white font-bold text-center flex items-center justify-center gap-2 text-sm">
+                <div className="text-lg">🐐</div>
                 DOMBA / KAMBING
               </div>
               <CardContent className="p-0">
-                <div className="grid grid-cols-1 md:grid-cols-2">
-                  <Table>
-                    <TableHeader className="bg-gray-50">
-                      <TableRow>
-                        <TableHead className="w-12">NO</TableHead>
-                        <TableHead>NAMA PENGQURBAN</TableHead>
-                        <TableHead>ALAMAT</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {shohibulList.filter(s => !s.jenisQurban.startsWith('sapi')).length > 0 ? (
-                        shohibulList.filter(s => !s.jenisQurban.startsWith('sapi')).map((s, idx) => (
-                          <TableRow key={s.id} className="hover:bg-green-50/30 border-b border-gray-100">
-                            <TableCell className="py-1.5 px-3 text-xs">{idx + 1}</TableCell>
-                            <TableCell className="py-1.5 px-3 font-semibold text-sm">{s.nama}</TableCell>
-                            <TableCell className="py-1.5 px-3 text-[10px] text-gray-500">{s.alamat}</TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={3} className="text-center py-4 text-gray-400 italic text-sm">Belum ada data</TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 p-2 bg-gray-50/30">
+                  {/* We split the kambing list into two halves for a more compact view */}
+                  {[0, 1].map((colIndex) => {
+                    const kambingList = shohibulList.filter(s => !s.jenisQurban.startsWith('sapi'));
+                    const half = Math.ceil(kambingList.length / 2);
+                    const listPart = colIndex === 0 ? kambingList.slice(0, half) : kambingList.slice(half);
+                    
+                    if (kambingList.length === 0 && colIndex === 1) return null;
+                    
+                    return (
+                      <div key={colIndex} className="overflow-hidden">
+                        <Table>
+                          <TableHeader className="bg-gray-100/50">
+                            <TableRow className="h-8">
+                              <TableHead className="w-10 text-[10px] py-1">NO</TableHead>
+                              <TableHead className="text-[10px] py-1">NAMA</TableHead>
+                              <TableHead className="text-[10px] py-1">ALAMAT</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {listPart.length > 0 ? (
+                              listPart.map((s, idx) => (
+                                <TableRow key={s.id} className="hover:bg-green-50/50 border-b border-gray-100 h-7">
+                                  <TableCell className="py-1 px-2 text-[10px] text-gray-500">{colIndex * half + idx + 1}</TableCell>
+                                  <TableCell className="py-1 px-2 font-semibold text-xs truncate max-w-[120px]">{s.nama}</TableCell>
+                                  <TableCell className="py-1 px-2 text-[9px] text-gray-400 truncate max-w-[80px]">{s.alamat}</TableCell>
+                                </TableRow>
+                              ))
+                            ) : (
+                              colIndex === 0 && (
+                                <TableRow>
+                                  <TableCell colSpan={3} className="text-center py-2 text-gray-400 italic text-xs">Belum ada data</TableCell>
+                                </TableRow>
+                              )
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
