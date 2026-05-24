@@ -173,13 +173,16 @@ const AnimalDataForm = () => {
                               {animal.bobot ? `${Math.round(animal.bobot)}` : '-'}
                             </td>
                             <td className="py-2 px-2 text-center">
-                              <div className="flex items-center justify-center gap-1">
+                              <div className="flex items-center justify-center gap-2">
                                 {animal.fotoUrls && animal.fotoUrls.length > 0 ? (
                                   <Dialog>
                                     <DialogTrigger asChild>
-                                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-blue-600 bg-blue-50">
-                                        <Eye className="h-4 w-4" />
-                                      </Button>
+                                      <div className="relative cursor-pointer group rounded overflow-hidden h-10 w-10 border border-gray-200">
+                                        <img src={animal.fotoUrls[0]} alt="Thumbnail" className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                          <Eye className="h-4 w-4 text-white" />
+                                        </div>
+                                      </div>
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-[425px]">
                                       <DialogHeader>
@@ -200,26 +203,38 @@ const AnimalDataForm = () => {
                                           </div>
                                         ))}
                                       </div>
+                                      
+                                      <div className="mt-4">
+                                        <Label htmlFor={`photo-add-${animal.id}`} className="cursor-pointer w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-600 p-2 rounded-md hover:bg-blue-100 font-semibold border border-blue-200">
+                                          <Camera className="h-5 w-5" />
+                                          Tambah Foto Lagi
+                                        </Label>
+                                        <input 
+                                          id={`photo-add-${animal.id}`} 
+                                          type="file" 
+                                          accept="image/*" 
+                                          capture="environment"
+                                          className="hidden" 
+                                          onChange={(e) => handlePhotoUpload(animal.id, e)}
+                                        />
+                                      </div>
                                     </DialogContent>
                                   </Dialog>
                                 ) : (
-                                  <div className="h-8 w-8 rounded bg-gray-50 border border-dashed flex items-center justify-center text-gray-300">
-                                    <ImageIcon className="h-4 w-4" />
-                                  </div>
+                                  <Label htmlFor={`photo-${animal.id}`} className="cursor-pointer">
+                                    <div className="h-10 w-10 rounded bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 transition-colors shadow-sm">
+                                      <Camera className="h-5 w-5" />
+                                    </div>
+                                    <input 
+                                      id={`photo-${animal.id}`} 
+                                      type="file" 
+                                      accept="image/*" 
+                                      capture="environment"
+                                      className="hidden" 
+                                      onChange={(e) => handlePhotoUpload(animal.id, e)}
+                                    />
+                                  </Label>
                                 )}
-                                <Label htmlFor={`photo-${animal.id}`} className="cursor-pointer">
-                                  <div className="h-8 w-8 rounded bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 hover:bg-blue-100">
-                                    <Camera className="h-4 w-4" />
-                                  </div>
-                                  <input 
-                                    id={`photo-${animal.id}`} 
-                                    type="file" 
-                                    accept="image/*" 
-                                    multiple 
-                                    className="hidden" 
-                                    onChange={(e) => handlePhotoUpload(animal.id, e)}
-                                  />
-                                </Label>
                               </div>
                             </td>
                             <td className="py-2 px-2">
