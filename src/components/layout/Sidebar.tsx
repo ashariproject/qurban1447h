@@ -75,7 +75,6 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Database JSON", icon: Database, path: "/admin/database" },
       { name: "Data Penerima", icon: FileText, path: "/distribution/recipients" },
       { name: "Data Hewan", icon: FileText, path: "/animal/data" },
-      { name: "Foto & QR Hewan", icon: QrCode, path: "/animal/foto-qr" },
       { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" },
       { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" }
     ]
@@ -98,11 +97,10 @@ const roles: Record<Role, RoleInfo> = {
     description: "Input data hewan: jenis, identitas/tag. Update status hewan: diterima → disembelih → dipotong. Dokumentasi: foto/video penyembelihan.",
     menuItems: [
       { name: "Dashboard", icon: Home, path: "/animal" },
-      { name: "Data Hewan", icon: FileText, path: "/animal/data" },
-      { name: "Status Hewan", icon: ClipboardList, path: "/animal/status" },
-      { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" },
-      { name: "Foto & QR Hewan", icon: QrCode, path: "/animal/foto-qr" },
-      { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" }
+      { name: "Data Hewan", icon: ClipboardList, path: "/animal/data" },
+      { name: "Status Pemotongan", icon: RotateCcw, path: "/animal/status" },
+      { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" },
+      { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" }
     ]
   },
   packaging: { 

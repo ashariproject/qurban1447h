@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QRCodeSVG } from "qrcode.react";
 import { useQurban, HewanData } from "@/contexts/QurbanContext";
-import { Camera, Trash2, Eye, Plus, CheckCircle2, Beef, Image as ImageIcon } from "lucide-react";
+import { Camera, Trash2, Eye, Plus, CheckCircle2, Beef, Image as ImageIcon, QrCode } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -141,7 +141,8 @@ const AnimalDataForm = () => {
                         <th className="text-left py-2 px-2">Hewan</th>
                         <th className="text-left py-2 px-2">Status</th>
                         <th className="text-right py-2 px-2">Berat (kg)</th>
-                        <th className="text-center py-2 px-2">Foto</th>
+                        <th className="text-right py-2 px-2">Berat (kg)</th>
+                        <th className="text-center py-2 px-2">Foto & QR</th>
                         <th className="text-left py-2 px-2">Aksi</th>
                       </tr>
                     </thead>
@@ -235,6 +236,23 @@ const AnimalDataForm = () => {
                                     />
                                   </Label>
                                 )}
+                                
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <div className="cursor-pointer h-10 w-10 rounded bg-gray-50 border border-gray-300 flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 transition-colors shadow-sm" title="Tampilkan QR Code">
+                                      <QrCode className="h-5 w-5" />
+                                    </div>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[300px]">
+                                    <DialogHeader>
+                                      <DialogTitle className="text-center">QR Hewan - {animal.kode}</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border mt-4">
+                                      <QRCodeSVG value={qrUrl} size={200} />
+                                    </div>
+                                    <p className="text-sm text-center text-gray-500 mt-2">Scan untuk detail hewan</p>
+                                  </DialogContent>
+                                </Dialog>
                               </div>
                             </td>
                             <td className="py-2 px-2">
