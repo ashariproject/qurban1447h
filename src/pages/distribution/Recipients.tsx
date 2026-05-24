@@ -223,7 +223,20 @@ const Recipients = () => {
     }
   };
 
-  const filteredRecipients = recipients.filter(recipient =>
+  const sortedRecipients = [...recipients].sort((a, b) => {
+    // 1. Sort by sektor (which contains Blok/Nomor for Pantai Mentari)
+    const sektorA = (a.sektor || '').toLowerCase();
+    const sektorB = (b.sektor || '').toLowerCase();
+    
+    // Natural sort approach to handle numbers correctly (e.g. "No 2" before "No 10")
+    const sektorCompare = sektorA.localeCompare(sektorB, undefined, { numeric: true, sensitivity: 'base' });
+    if (sektorCompare !== 0) return sektorCompare;
+    
+    // 2. Sort by name alphabetically
+    return (a.nama || '').localeCompare((b.nama || ''), undefined, { numeric: true, sensitivity: 'base' });
+  });
+
+  const filteredRecipients = sortedRecipients.filter(recipient =>
     recipient.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
     recipient.wilayah.toLowerCase().includes(searchTerm.toLowerCase()) ||
     recipient.alamat.toLowerCase().includes(searchTerm.toLowerCase())
