@@ -42,7 +42,7 @@ const Index = () => {
             <div className="flex items-center gap-3">
               <div className="bg-white p-2 rounded-xl shadow-md border border-green-100">
                 <img 
-                  src="http://assakinahpantaimentari.org/logoyysn.jpg" 
+                  src="/images/logo.png" 
                   alt="Logo"
                   className="h-10 w-auto"
                 />

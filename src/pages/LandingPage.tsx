@@ -103,7 +103,7 @@ const LandingPage = () => {
         <div className="container mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img 
-              src="http://assakinahpantaimentari.org/logoyysn.jpg" 
+              src="/images/logo.png" 
               alt="Logo"
               className="h-10 w-auto"
             />
@@ -566,7 +566,7 @@ const LandingPage = () => {
             <div className="col-span-2 space-y-6">
               <div className="flex items-center gap-3">
                 <img 
-                  src="http://assakinahpantaimentari.org/logoyysn.jpg" 
+                  src="/images/logo.png" 
                   alt="Logo"
                   className="h-12 w-auto"
                 />
