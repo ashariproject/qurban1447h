@@ -11,7 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Plus, Search, MapPin, Phone } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Users, Plus, Search, MapPin, Phone, Edit2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface Recipient {
@@ -44,6 +45,17 @@ const Recipients = () => {
 
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Edit State
+  const [editingRecipient, setEditingRecipient] = useState<Recipient | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    nama: '',
+    alamat: '',
+    sektor: '',
+    rt: '',
+    noHp: ''
+  });
 
   useEffect(() => {
     fetchRecipients();
@@ -154,6 +166,49 @@ const Recipients = () => {
     } catch (error) {
       console.error('Error updating status:', error);
       alert('Gagal mengubah status.');
+    }
+  };
+
+  const handleEditClick = (recipient: Recipient) => {
+    setEditingRecipient(recipient);
+    setEditFormData({
+      nama: recipient.nama,
+      alamat: recipient.alamat || '',
+      sektor: recipient.sektor || '',
+      rt: recipient.rt || '',
+      noHp: recipient.noHp || ''
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRecipient) return;
+
+    try {
+      const { error } = await supabase
+        .from('recipients')
+        .update({
+          nama: editFormData.nama,
+          alamat: editFormData.alamat,
+          sektor: editFormData.sektor,
+          rt: editFormData.rt,
+          noHp: editFormData.noHp
+        })
+        .eq('id', editingRecipient.id);
+
+      if (error) throw error;
+
+      setRecipients(recipients.map(r => 
+        r.id === editingRecipient.id 
+          ? { ...r, ...editFormData } 
+          : r
+      ));
+      
+      setIsEditDialogOpen(false);
+    } catch (error) {
+      console.error('Error updating recipient:', error);
+      alert('Gagal memperbarui data.');
     }
   };
 
@@ -411,6 +466,7 @@ const Recipients = () => {
                                   <TableHead>Kemasan</TableHead>
                                   <TableHead>Jumlah</TableHead>
                                   <TableHead>Status</TableHead>
+<TableHead>Aksi</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -440,6 +496,11 @@ const Recipients = () => {
       {recipient.status === 'delivered' ? 'Terkirim' : 'Pending'}
     </span>
   </div>
+</TableCell>
+<TableCell>
+  <Button variant="ghost" size="icon" onClick={() => handleEditClick(recipient)}>
+    <Edit2 className="h-4 w-4 text-blue-500" />
+  </Button>
 </TableCell>
                                     </TableRow>
                                   ))
@@ -484,6 +545,7 @@ const Recipients = () => {
                                   <TableHead>Kemasan</TableHead>
                                   <TableHead>Jumlah</TableHead>
                                   <TableHead>Status</TableHead>
+<TableHead>Aksi</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -514,6 +576,11 @@ const Recipients = () => {
     </span>
   </div>
 </TableCell>
+<TableCell>
+  <Button variant="ghost" size="icon" onClick={() => handleEditClick(recipient)}>
+    <Edit2 className="h-4 w-4 text-blue-500" />
+  </Button>
+</TableCell>
                                     </TableRow>
                                   ))
                                 ) : (
@@ -541,6 +608,7 @@ const Recipients = () => {
                             <TableHead>Kemasan</TableHead>
                             <TableHead>Jumlah</TableHead>
                             <TableHead>Status</TableHead>
+<TableHead>Aksi</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -565,6 +633,11 @@ const Recipients = () => {
     </span>
   </div>
 </TableCell>
+<TableCell>
+  <Button variant="ghost" size="icon" onClick={() => handleEditClick(recipient)}>
+    <Edit2 className="h-4 w-4 text-blue-500" />
+  </Button>
+</TableCell>
                               </TableRow>
                             ))
                           ) : (
@@ -584,6 +657,64 @@ const Recipients = () => {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Data Penerima</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-nama">Nama</Label>
+              <Input
+                id="edit-nama"
+                value={editFormData.nama}
+                onChange={(e) => setEditFormData({...editFormData, nama: e.target.value})}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-alamat">Alamat / Blok / Jalan</Label>
+              <Input
+                id="edit-alamat"
+                value={editFormData.alamat}
+                onChange={(e) => setEditFormData({...editFormData, alamat: e.target.value})}
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-sektor">Sektor/Jalan Khusus</Label>
+                <Input
+                  id="edit-sektor"
+                  value={editFormData.sektor}
+                  onChange={(e) => setEditFormData({...editFormData, sektor: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-rt">RT</Label>
+                <Input
+                  id="edit-rt"
+                  value={editFormData.rt}
+                  onChange={(e) => setEditFormData({...editFormData, rt: e.target.value})}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-nohp">No. HP (Opsional)</Label>
+              <Input
+                id="edit-nohp"
+                value={editFormData.noHp}
+                onChange={(e) => setEditFormData({...editFormData, noHp: e.target.value})}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>Batal</Button>
+              <Button type="submit">Simpan Perubahan</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
