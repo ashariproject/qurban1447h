@@ -26,7 +26,7 @@ const AnimalDashboard = lazy(() => import("./pages/animal/Dashboard"));
 const AnimalData = lazy(() => import("./pages/animal/Data"));
 const MeatYieldCalculator = lazy(() => import("./pages/animal/MeatYieldCalculator"));
 const AnimalStatus = lazy(() => import("./pages/animal/Status"));
-const Documentation = lazy(() => import("./pages/animal/Documentation"));
+
 const HewanFotoQR = lazy(() => import("./pages/animal/FotoQR"));
 const HewanDetail = lazy(() => import("./pages/HewanDetail"));
 const PackagingDashboard = lazy(() => import("./pages/packaging/Dashboard"));
@@ -105,7 +105,7 @@ const AppRoutes = () => {
         <Route path="/animal" element={<ProtectedRoute allowedRoles={['admin', 'animal']}><AnimalDashboard /></ProtectedRoute>} />
         <Route path="/animal/data" element={<ProtectedRoute allowedRoles={['admin', 'animal']}><AnimalData /></ProtectedRoute>} />
         <Route path="/animal/status" element={<ProtectedRoute allowedRoles={['admin', 'animal']}><AnimalStatus /></ProtectedRoute>} />
-        <Route path="/animal/documentation" element={<ProtectedRoute allowedRoles={['admin', 'animal']}><Documentation /></ProtectedRoute>} />
+
         <Route path="/animal/foto-qr" element={<ProtectedRoute allowedRoles={['admin', 'animal']}><HewanFotoQR /></ProtectedRoute>} />
         <Route path="/animal/meat-yield" element={<ProtectedRoute allowedRoles={['admin', 'animal']}><MeatYieldCalculator /></ProtectedRoute>} />
         <Route path="/hewan/:id" element={<ProtectedRoute><HewanDetail /></ProtectedRoute>} />

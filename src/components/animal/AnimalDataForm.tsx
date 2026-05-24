@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QRCodeSVG } from "qrcode.react";
 import { useQurban, HewanData } from "@/contexts/QurbanContext";
-import { Camera, Trash2, Eye, Plus, CheckCircle2, Beef, Image as ImageIcon, QrCode } from "lucide-react";
+import { Camera, Trash2, Eye, Plus, CheckCircle2, Beef, Image as ImageIcon, QrCode, Video } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -178,8 +178,12 @@ const AnimalDataForm = () => {
                                 {animal.fotoUrls && animal.fotoUrls.length > 0 ? (
                                   <Dialog>
                                     <DialogTrigger asChild>
-                                      <div className="relative cursor-pointer group rounded overflow-hidden h-10 w-10 border border-gray-200">
-                                        <img src={animal.fotoUrls[0]} alt="Thumbnail" className="w-full h-full object-cover" />
+                                      <div className="relative cursor-pointer group rounded overflow-hidden h-10 w-10 border border-gray-200 bg-black flex items-center justify-center">
+                                        {animal.fotoUrls[0].startsWith('data:video/') ? (
+                                          <Video className="h-5 w-5 text-gray-300" />
+                                        ) : (
+                                          <img src={animal.fotoUrls[0]} alt="Thumbnail" className="w-full h-full object-cover" />
+                                        )}
                                         <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
                                           <Eye className="h-4 w-4 text-white" />
                                         </div>
@@ -187,16 +191,20 @@ const AnimalDataForm = () => {
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-[425px]">
                                       <DialogHeader>
-                                        <DialogTitle>Foto Hewan - {animal.kode}</DialogTitle>
+                                        <DialogTitle>Dokumentasi Media - {animal.kode}</DialogTitle>
                                       </DialogHeader>
                                       <div className="grid grid-cols-2 gap-2 mt-4">
                                         {animal.fotoUrls.map((url, i) => (
-                                          <div key={i} className="relative group">
-                                            <img src={url} alt="Hewan" className="w-full h-32 object-cover rounded shadow-sm" />
+                                          <div key={i} className="relative group bg-black rounded shadow-sm flex items-center justify-center overflow-hidden">
+                                            {url.startsWith('data:video/') ? (
+                                              <video src={url} className="w-full h-32 object-cover" controls preload="metadata" />
+                                            ) : (
+                                              <img src={url} alt="Hewan" className="w-full h-32 object-cover" />
+                                            )}
                                             <Button 
                                               variant="destructive" 
                                               size="icon" 
-                                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100"
+                                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
                                               onClick={() => removeFotoFromHewan(animal.id, i)}
                                             >
                                               <Trash2 className="h-3 w-3" />
@@ -208,12 +216,12 @@ const AnimalDataForm = () => {
                                       <div className="mt-4">
                                         <Label htmlFor={`photo-add-${animal.id}`} className="cursor-pointer w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-600 p-2 rounded-md hover:bg-blue-100 font-semibold border border-blue-200">
                                           <Camera className="h-5 w-5" />
-                                          Tambah Foto Lagi
+                                          Tambah Foto / Video Lagi
                                         </Label>
                                         <input 
                                           id={`photo-add-${animal.id}`} 
                                           type="file" 
-                                          accept="image/*" 
+                                          accept="image/*,video/*" 
                                           capture="environment"
                                           className="hidden" 
                                           onChange={(e) => handlePhotoUpload(animal.id, e)}
@@ -239,7 +247,7 @@ const AnimalDataForm = () => {
                                     <input 
                                       id={`photo-${animal.id}`} 
                                       type="file" 
-                                      accept="image/*" 
+                                      accept="image/*,video/*" 
                                       capture="environment"
                                       className="hidden" 
                                       onChange={(e) => handlePhotoUpload(animal.id, e)}

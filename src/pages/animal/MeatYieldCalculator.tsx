@@ -9,7 +9,7 @@ import { useQurban } from '@/contexts/QurbanContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const MeatYieldCalculator = () => {
-  const { hewanList } = useQurban();
+  const { hewanList, updateHewanMeasurements } = useQurban();
   const [animalType, setAnimalType] = useState<'sapi' | 'kambing'>('sapi');
   const [girth, setGirth] = useState(''); // cm
   const [liveWeightInput, setLiveWeightInput] = useState(''); // kg
@@ -47,9 +47,8 @@ const MeatYieldCalculator = () => {
       live: Math.round(live * 10) / 10, 
       carcass: Math.round(carcass * 10) / 10,
       meat: Math.round(meat * 10) / 10 
+    });
   };
-
-  const { updateHewanMeasurements } = useQurban();
 
   const handleBobotChange = (id: string, newBobot: string) => {
     const bobot = parseFloat(newBobot);

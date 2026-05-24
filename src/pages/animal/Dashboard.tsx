@@ -42,12 +42,7 @@ const AnimalDashboard = () => {
                   INPUT PROSES HEWAN
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-md">
-                <Link to="/animal/documentation">
-                  <Camera className="h-4 w-4 mr-2" />
-                  UPLOAD DOKUMENTASI
-                </Link>
-              </Button>
+
             </div>
           </div>
           <div className="absolute top-0 right-0 -mr-12 -mt-12 opacity-10">

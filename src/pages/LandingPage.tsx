@@ -31,10 +31,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useQurban } from '@/contexts/QurbanContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LandingPage = () => {
   const { toast } = useToast();
   const { animalData } = useQurban();
+  const { isAuthenticated, user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<string>('');
   const [formData, setFormData] = useState({
@@ -122,15 +124,31 @@ const LandingPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" className="hidden md:flex text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
-              <Link to="/login">
-                <LogIn className="h-4 w-4 mr-2" />
-                Login Petugas
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" size="icon" className="md:hidden text-slate-500">
-              <Link to="/login"><LogIn className="h-5 w-5" /></Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button asChild variant="ghost" className="hidden md:flex text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
+                <Link to={user?.role === 'admin' ? '/admin' : `/${user?.role}`}>
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Link>
+              </Button>
+            ) : (
+              <Button asChild variant="ghost" className="hidden md:flex text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
+                <Link to="/login">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Login Petugas
+                </Link>
+              </Button>
+            )}
+            
+            {isAuthenticated ? (
+              <Button asChild variant="ghost" size="icon" className="md:hidden text-slate-500">
+                <Link to={user?.role === 'admin' ? '/admin' : `/${user?.role}`}><LayoutDashboard className="h-5 w-5" /></Link>
+              </Button>
+            ) : (
+              <Button asChild variant="ghost" size="icon" className="md:hidden text-slate-500">
+                <Link to="/login"><LogIn className="h-5 w-5" /></Link>
+              </Button>
+            )}
             <Button 
               onClick={() => setIsDialogOpen(true)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 md:px-6 text-sm rounded-full shadow-lg shadow-emerald-200"

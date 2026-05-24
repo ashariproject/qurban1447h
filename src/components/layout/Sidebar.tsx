@@ -75,7 +75,7 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Database JSON", icon: Database, path: "/admin/database" },
       { name: "Data Penerima", icon: FileText, path: "/distribution/recipients" },
       { name: "Data Hewan", icon: FileText, path: "/animal/data" },
-      { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" },
+
       { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" }
     ]
   },
@@ -100,7 +100,7 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Data Hewan", icon: ClipboardList, path: "/animal/data" },
       { name: "Status Pemotongan", icon: RotateCcw, path: "/animal/status" },
       { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" },
-      { name: "Dokumentasi", icon: Camera, path: "/animal/documentation" }
+
     ]
   },
   packaging: { 

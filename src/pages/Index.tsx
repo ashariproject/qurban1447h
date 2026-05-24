@@ -7,6 +7,7 @@ import { Users, Beef, Package, Info, Heart, ShieldCheck, Calendar, Truck, Activi
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQurban } from '@/contexts/QurbanContext';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -57,7 +58,7 @@ const Index = () => {
               {isAuthenticated ? (
                 <div className="flex items-center gap-2">
                   <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-blue-200 text-blue-700 font-bold h-7 text-xs">
-                    <a href="/admin">MENU ADMIN</a>
+                    <Link to="/admin">MENU ADMIN</Link>
                   </Button>
                   <Button variant="ghost" size="sm" onClick={logout} className="text-red-500 hover:text-red-600 hover:bg-red-50 font-medium h-7 text-xs">
                     LOGOUT
@@ -65,7 +66,7 @@ const Index = () => {
                 </div>
               ) : (
                 <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-200 transition-all hover:scale-105 active:scale-95 h-7 text-xs">
-                  <a href="/login">LOGIN PETUGAS</a>
+                  <Link to="/login">LOGIN PETUGAS</Link>
                 </Button>
               )}
             </div>
