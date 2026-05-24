@@ -11,9 +11,22 @@ export const generateCertificate = async (nama: string, jenisQurban?: string) =>
     // Load a PDFDocument from the existing PDF bytes
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
-    // Embed the standard Helvetica fonts
+    // Embed the standard Helvetica fonts as fallback
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    // Try loading custom Cinzel font
+    let customFont = helveticaFont;
+    try {
+      // Import fontkit dynamically or assuming it's imported globally. But for Vite we can use a dynamic import.
+      const fontkit = await import('@pdf-lib/fontkit');
+      pdfDoc.registerFontkit(fontkit.default || fontkit);
+      const fontUrl = '/fonts/Cinzel.ttf';
+      const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
+      customFont = await pdfDoc.embedFont(fontBytes);
+    } catch (e) {
+      console.warn("Failed to load Cinzel font, falling back to Helvetica", e);
+    }
 
     // Get the first page of the document
     const pages = pdfDoc.getPages();
@@ -23,44 +36,55 @@ export const generateCertificate = async (nama: string, jenisQurban?: string) =>
     const { width, height } = firstPage.getSize();
 
     // Adjust font size dynamically based on length for a clean and modern look
-    let fontSize = 26;
+    let fontSize = 28;
     if (nama.length > 25) {
-      fontSize = 16;
+      fontSize = 18;
     } else if (nama.length > 18) {
-      fontSize = 20;
+      fontSize = 22;
     }
 
-    const textWidth = helveticaFont.widthOfTextAtSize(nama, fontSize);
+    const textWidth = customFont.widthOfTextAtSize(nama, fontSize);
     
     // Draw the name with a thinner font and higher Y coordinate (208 instead of 190) to prevent overlap
     firstPage.drawText(nama, {
       x: (width - textWidth) / 2,
-      y: 208,
+      y: 206, // Slight adjustment for Cinzel baseline
       size: fontSize,
-      font: helveticaFont,
+      font: customFont,
       color: rgb(0.1, 0.1, 0.1),
     });
 
     // Draw the checkmark (V) inside the correct checkbox box
     if (jenisQurban) {
       let checkX = 0;
-      const checkY = 164.5; // Precise height matching the checkbox visual on the template
+      let boxWidth = 12;
+      let boxHeight = 12;
+      const checkY = 165; // Precise height matching the checkbox visual on the template
       
       if (jenisQurban === 'sapi-mandiri') {
-        checkX = 212.5;
+        checkX = 208; // Adjusted X for box
       } else if (jenisQurban === 'sapi-patungan') {
-        checkX = 289.5;
+        checkX = 285; // Adjusted X for box
       } else if (jenisQurban.startsWith('kambing')) {
-        checkX = 375.5;
+        checkX = 371; // Adjusted X for box
       }
 
       if (checkX > 0) {
-        firstPage.drawText('V', {
+        // Draw a solid red square to fill the checkbox
+        firstPage.drawRectangle({
           x: checkX,
+          y: checkY - 2, // Slight adjustment for exact box placement
+          width: boxWidth,
+          height: boxHeight,
+          color: rgb(0.8, 0.15, 0.15), // Red color
+        });
+        // Also draw a white checkmark inside the red box for better aesthetics
+        firstPage.drawText('v', {
+          x: checkX + 3,
           y: checkY,
-          size: 11,
+          size: 10,
           font: helveticaBoldFont,
-          color: rgb(0.1, 0.1, 0.1),
+          color: rgb(1, 1, 1),
         });
       }
     }
