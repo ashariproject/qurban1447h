@@ -34,13 +34,13 @@ const AdminSheetsSync = lazyWithPreload(() => import("./pages/admin/SheetsSync")
 const PanitiaDashboard = lazyWithPreload(() => import("./pages/panitia/Dashboard"));
 const ShohibulDashboard = lazyWithPreload(() => import("./pages/shohibul/Dashboard"));
 const ShohibulData = lazyWithPreload(() => import("./pages/shohibul/Data"));
-const LocationMap = lazyWithPreload(() => import("./pages/shohibul/Map"));
+// LocationMap removed - file does not exist
 const Payments = lazyWithPreload(() => import("./pages/shohibul/Payments"));
 const AnimalDashboard = lazyWithPreload(() => import("./pages/animal/Dashboard"));
 const AnimalData = lazyWithPreload(() => import("./pages/animal/Data"));
 const MeatYieldCalculator = lazyWithPreload(() => import("./pages/animal/MeatYieldCalculator"));
 const AnimalStatus = lazyWithPreload(() => import("./pages/animal/Status"));
-const Documentation = lazyWithPreload(() => import("./pages/animal/Documentation"));
+// Documentation removed - file does not exist
 const HewanFotoQR = lazyWithPreload(() => import("./pages/animal/FotoQR"));
 const HewanDetail = lazyWithPreload(() => import("./pages/HewanDetail"));
 const PackagingDashboard = lazyWithPreload(() => import("./pages/packaging/Dashboard"));
@@ -67,8 +67,8 @@ const FREQUENT_ROUTES: Preloadable<any>[] = [
 // Likely-next chunks per area, prefetched whenever the user enters that area
 const ROUTE_PREFETCH_MAP: Record<string, Preloadable<any>[]> = {
   "/admin": [UsersManagement, Monitoring, Reports, Settings, AdminDatabase, AdminSheetsSync],
-  "/shohibul": [ShohibulData, Payments, LocationMap],
-  "/animal": [AnimalData, AnimalStatus, HewanFotoQR, Documentation, MeatYieldCalculator],
+  "/shohibul": [ShohibulData, Payments],
+  "/animal": [AnimalData, AnimalStatus, HewanFotoQR, MeatYieldCalculator],
   "/packaging": [PackagingData],
   "/distribution": [Recipients, DistributionRoutes, DeliveryStatus, ShohibulDistribution],
 };
@@ -173,14 +173,12 @@ const AppRoutes = () => {
         {/* Shohibul Routes */}
         <Route path="/shohibul" element={<ProtectedRoute allowedRoles={['admin', 'shohibul', 'panitia']}><ShohibulDashboard /></ProtectedRoute>} />
         <Route path="/shohibul/data" element={<ProtectedRoute allowedRoles={['admin', 'shohibul', 'panitia']}><ShohibulData /></ProtectedRoute>} />
-        <Route path="/shohibul/map" element={<ProtectedRoute allowedRoles={['admin', 'shohibul', 'panitia']}><LocationMap /></ProtectedRoute>} />
         <Route path="/shohibul/payments" element={<ProtectedRoute allowedRoles={['admin', 'shohibul']}><Payments /></ProtectedRoute>} />
 
         {/* Animal Routes */}
         <Route path="/animal" element={<ProtectedRoute allowedRoles={['admin', 'animal', 'panitia']}><AnimalDashboard /></ProtectedRoute>} />
         <Route path="/animal/data" element={<ProtectedRoute allowedRoles={['admin', 'animal', 'panitia']}><AnimalData /></ProtectedRoute>} />
         <Route path="/animal/status" element={<ProtectedRoute allowedRoles={['admin', 'animal', 'panitia']}><AnimalStatus /></ProtectedRoute>} />
-        <Route path="/animal/documentation" element={<ProtectedRoute allowedRoles={['admin', 'animal', 'panitia']}><Documentation /></ProtectedRoute>} />
 
         <Route path="/animal/foto-qr" element={<ProtectedRoute allowedRoles={['admin', 'animal', 'panitia']}><HewanFotoQR /></ProtectedRoute>} />
         <Route path="/animal/meat-yield" element={<ProtectedRoute allowedRoles={['admin', 'animal', 'panitia']}><MeatYieldCalculator /></ProtectedRoute>} />
