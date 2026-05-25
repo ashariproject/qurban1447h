@@ -157,6 +157,7 @@ const Login = () => {
         <p>Admin: admin/admin123</p>
         <p>Shohibul: shohibul/shohibul123</p>
         <p>Hewan: hewan/hewan123</p>
+        <p>Panitia: panitia/panitia123</p>
       </div>
     </div>
   );

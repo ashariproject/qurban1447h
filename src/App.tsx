@@ -144,13 +144,13 @@ const PageFallback = () => (
 );
 
 const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <Suspense fallback={<PageFallback />}>
       <Routes>
         {/* Public Route */}
-        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
+        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to={`/${user?.role === 'admin' ? 'admin' : user?.role || ''}`} replace />} />
         
         {/* Home Route - Landing Page */}
         <Route path="/" element={<LandingPage />} />

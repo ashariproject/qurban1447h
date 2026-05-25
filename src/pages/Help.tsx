@@ -17,6 +17,7 @@ const credentials = [
   { role: 'Petugas Hewan', username: 'hewan', password: 'hewan123', desc: 'Input data hewan, update status (diterima → disembelih → dipotong), foto & QR.' },
   { role: 'Petugas Pengemasan', username: 'pengemasan', password: 'pengemasan123', desc: 'Input hasil pengemasan paket sapi/kambing, status siap distribusi.' },
   { role: 'Petugas Distribusi', username: 'distribusi', password: 'distribusi123', desc: 'Input data penerima, rute distribusi, bukti terima.' },
+  { role: 'Panitia', username: 'panitia', password: 'panitia123', desc: 'Akses monitoring terpusat: pantau progres hewan, pengemasan, distribusi, shohibul, dan status pengiriman.' },
 ];
 
 const guides = [

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -20,6 +20,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const currentUserRole = (user?.role || 'admin') as Role;
   const [activeRole, setActiveRole] = useState<Role>(currentUserRole);
+
+  // Sync activeRole setiap kali user berubah (fix: saat login, user bisa null di render pertama)
+  useEffect(() => {
+    if (user?.role) {
+      setActiveRole(user.role as Role);
+    }
+  }, [user]);
 
   const handleBackToMain = () => {
     const rolePath = currentUserRole === 'admin' ? '/admin' : `/${currentUserRole}`;
