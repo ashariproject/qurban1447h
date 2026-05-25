@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, XCircle, Clock, Truck, Package, Users, Camera, Eye, Image as ImageIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 
 interface ShohibulStatusTableProps {
   data: ShohibulStatusData[];
@@ -184,7 +185,7 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">UNIT</TableHead>
+                    <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">PATUNGAN</TableHead>
                     <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">No</TableHead>
                     <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">Nama Shohibul</TableHead>
                     <TableHead className="py-2 text-[10px] uppercase font-bold text-gray-500">Jenis</TableHead>
@@ -216,7 +217,7 @@ const ShohibulStatusTable: React.FC<ShohibulStatusTableProps> = ({
                           className={`${rowBg} hover:bg-gray-100/50 transition-colors ${isGroupStart ? 'border-t-2 border-blue-200' : ''}`}
                         >
                           <TableCell className="py-1 px-2 font-bold text-blue-700 text-[10px]">
-                            {isGroupStart ? `UNIT ${groupNum + 1}` : ''}
+                            {isGroupStart ? `PATUNGAN ${groupNum + 1}` : ''}
                           </TableCell>
                           <TableCell className="py-1 px-2 text-xs">{index + 1}</TableCell>
                           <TableCell className="py-1 px-2 font-semibold text-sm truncate max-w-[150px]">{item.nama}</TableCell>

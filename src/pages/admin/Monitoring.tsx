@@ -28,6 +28,15 @@ const Monitoring = () => {
       return { ...item, subtitle: `${shohibulKambing} Shohibul`, current: diterimaKambing, total: shohibulKambing };
     }
     return item;
+  }).sort((a, b) => {
+    const orderMap: Record<string, number> = {
+      'pantai-mentari': 1,
+      'kompleks-al': 2,
+      'warga-lain': 3,
+      'shohibul-sapi': 4,
+      'shohibul-kambing': 5
+    };
+    return (orderMap[a.id] || 99) - (orderMap[b.id] || 99);
   });
 
   // 1. Calculate Progress Stage Data from REAL Context

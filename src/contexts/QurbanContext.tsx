@@ -30,7 +30,7 @@ export interface HewanData {
   kode: string;
   jenis: 'sapi' | 'kambing';
   shohibulId: string;
-  status: 'diterima' | 'disembelih' | 'dipotong';
+  status: 'daftar' | 'diterima' | 'disembelih' | 'dipotong' | 'distribusi';
   bobot?: number;
   lingkarDada?: number;
   beratKarkas?: number;
@@ -118,7 +118,7 @@ export const QurbanProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setIsLoading(true);
     try {
       const [shohibulRes, hewanRes, packagingRes, distRes] = await Promise.all([
-        supabase.from('shohibul').select('*'),
+        supabase.from('shohibul').select('*').order('tanggalDaftar', { ascending: true }),
         supabase.from('hewan').select('*'),
         supabase.from('packaging').select('*').eq('id', 'main').single(),
         supabase.from('distribution').select('*').order('id')
@@ -170,8 +170,8 @@ export const QurbanProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const totalSapiCount = sapiMandiri + Math.ceil(sapiPatungan / 7);
     const totalKambingCount = shohibulList.filter(s => s.jenisQurban.startsWith('kambing')).reduce((acc, curr) => acc + curr.jumlahHewan, 0);
 
-    const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima').length;
-    const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima').length;
+    const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima' && h.status !== 'daftar').length;
+    const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima' && h.status !== 'daftar').length;
 
     setAnimalData({
       totalSapi: totalSapiCount,

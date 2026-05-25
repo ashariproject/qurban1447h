@@ -72,10 +72,8 @@ const roles: Record<Role, RoleInfo> = {
     menuItems: [
       { name: "Dashboard", icon: Home, path: "/admin" },
       { name: "Monitoring", icon: BarChart3, path: "/admin/monitoring" },
-      { name: "Database JSON", icon: Database, path: "/admin/database" },
       { name: "Data Penerima", icon: FileText, path: "/distribution/recipients" },
       { name: "Data Hewan", icon: FileText, path: "/animal/data" },
-
       { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" }
     ]
   },
@@ -98,7 +96,6 @@ const roles: Record<Role, RoleInfo> = {
     menuItems: [
       { name: "Dashboard", icon: Home, path: "/animal" },
       { name: "Data Hewan", icon: ClipboardList, path: "/animal/data" },
-      { name: "Status Pemotongan", icon: RotateCcw, path: "/animal/status" },
       { name: "Estimasi Daging", icon: Scale, path: "/animal/meat-yield" },
 
     ]
@@ -109,8 +106,7 @@ const roles: Record<Role, RoleInfo> = {
     description: "Input hasil pengemasan daging: paket sapi dan kambing. Jumlah kemasan & estimasi berat per paket. Status: dikemas / siap distribusi.",
     menuItems: [
       { name: "Dashboard", icon: Home, path: "/packaging" },
-      { name: "Data Pengemasan", icon: FileText, path: "/packaging/data" },
-      { name: "Status Paket", icon: ClipboardList, path: "/packaging/status" }
+      { name: "Data Pengemasan", icon: FileText, path: "/packaging/data" }
     ]
   },
   distribution: { 
@@ -121,8 +117,7 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Dashboard", icon: Home, path: "/distribution" },
       { name: "Distribusi Shohibul", icon: Package, path: "/distribution/shohibul" },
       { name: "Data Penerima", icon: FileText, path: "/distribution/recipients" },
-      { name: "Rute Distribusi", icon: Truck, path: "/distribution/routes" },
-      { name: "Status Pengiriman", icon: ClipboardList, path: "/distribution/status" }
+      { name: "Rute Distribusi", icon: Truck, path: "/distribution/routes" }
     ]
   },
   panitia: {
@@ -131,12 +126,11 @@ const roles: Record<Role, RoleInfo> = {
     description: "Akses pemantauan panitia. Monitoring progres hewan, pengemasan, distribusi, shohibul, dan status pengiriman secara terpusat.",
     menuItems: [
       { name: "Dashboard", icon: Home, path: "/panitia" },
-      { name: "Progres & Foto Hewan", icon: Beef, path: "/animal/data" },
-      { name: "Status Sembelih", icon: RotateCcw, path: "/animal/status" },
-      { name: "Hasil Pengemasan", icon: Package, path: "/packaging/data" },
-      { name: "Distribusi Shohibul", icon: Truck, path: "/distribution/shohibul" },
       { name: "Data Shohibul", icon: Users, path: "/shohibul/data" },
-      { name: "Status Pengiriman", icon: ClipboardList, path: "/distribution/status" }
+      { name: "Penerimaan Hewan", icon: Beef, path: "/animal/data" },
+      { name: "Distribusi Shohibul", icon: Truck, path: "/distribution/shohibul" },
+      { name: "Pengemasan", icon: Package, path: "/packaging/data" },
+      { name: "Website Publik", icon: Home, path: "/" }
     ]
   }
 };
@@ -274,105 +268,167 @@ const Sidebar: React.FC<SidebarProps> = ({ activeRole, onRoleChange }) => {
               </Tooltip>
             ))}
 
-            {/* Help - All roles */}
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start",
-                    isActive("/help")
-                      ? "bg-sidebar-accent text-qurban-600 font-medium"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                  )}
-                  asChild
-                >
-                  <Link to="/help">
-                    <HelpCircle className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
-                    {!collapsed && <span>Bantuan</span>}
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              {collapsed && (
-                <TooltipContent side="right" className="text-xs">
-                  Bantuan
-                </TooltipContent>
-              )}
-            </Tooltip>
-            
-            {/* Website Link */}
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700",
-                  )}
-                  asChild
-                >
-                  <Link to="/">
-                    <Home className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
-                    {!collapsed && <span>Website Publik</span>}
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              {collapsed && (
-                <TooltipContent side="right" className="text-xs">
-                  Website Publik
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </nav>
-        </TooltipProvider>
-      </div>
-
-      {/* Reset Data - Admin Only */}
-      {currentUserRole === 'admin' && (
-        <div className="px-3 pb-4">
-          <AlertDialog>
-            <TooltipProvider>
+            {/* Help - All roles except packaging */}
+            {activeRole !== 'packaging' && (
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className={cn(
-                        "w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700",
-                      )}
-                    >
-                      <RotateCcw className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
-                      {!collapsed && <span>Reset Data</span>}
-                    </Button>
-                  </AlertDialogTrigger>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start",
+                      isActive("/help")
+                        ? "bg-sidebar-accent text-qurban-600 font-medium"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                    )}
+                    asChild
+                  >
+                    <Link to="/help">
+                      <HelpCircle className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                      {!collapsed && <span>Bantuan</span>}
+                    </Link>
+                  </Button>
                 </TooltipTrigger>
                 {collapsed && (
                   <TooltipContent side="right" className="text-xs">
-                    Reset Data
+                    Bantuan
                   </TooltipContent>
                 )}
               </Tooltip>
-            </TooltipProvider>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-red-600">Reset Semua Data?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Tindakan ini akan menghapus semua data qurban dan mengembalikan ke nilai awal. 
-                  <span className="font-semibold text-red-600"> Tindakan ini tidak dapat dibatalkan.</span>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction 
-                  onClick={handleResetData}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  Ya, Reset Semua Data
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      )}
+            )}
+            
+            {/* Website Link */}
+            {activeRole !== 'panitia' && activeRole !== 'packaging' && (
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700",
+                    )}
+                    asChild
+                  >
+                    <Link to="/">
+                      <Home className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                      {!collapsed && <span>Website Publik</span>}
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="text-xs">
+                    Website Publik
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            )}
+            {/* Kelola Data for Admin only */}
+            {activeRole === 'admin' && (
+              <>
+                {!collapsed ? (
+                  <div className="px-3 mt-4 mb-2">
+                    <p className="text-[10px] font-bold text-sidebar-foreground/60 uppercase tracking-widest">Kelola Data</p>
+                  </div>
+                ) : (
+                  <div className="border-t border-sidebar-border my-2" />
+                )}
+
+                {/* Backup Data */}
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start",
+                        isActive("/admin/database")
+                          ? "bg-sidebar-accent text-qurban-600 font-medium"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                      )}
+                      asChild
+                    >
+                      <Link to="/admin/database">
+                        <Database className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                        {!collapsed && <span>Backup Data</span>}
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  {collapsed && (
+                    <TooltipContent side="right" className="text-xs">
+                      Backup Data
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+
+                {/* Buat Laporan */}
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start",
+                        isActive("/admin/reports")
+                          ? "bg-sidebar-accent text-qurban-600 font-medium"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                      )}
+                      asChild
+                    >
+                      <Link to="/admin/reports">
+                        <FileSpreadsheet className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                        {!collapsed && <span>Buat Laporan</span>}
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  {collapsed && (
+                    <TooltipContent side="right" className="text-xs">
+                      Buat Laporan
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+
+                {/* Reset Data */}
+                <AlertDialog>
+                  <Tooltip delayDuration={300}>
+                    <TooltipTrigger asChild>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className={cn(
+                            "w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700",
+                          )}
+                        >
+                          <RotateCcw className={cn("h-5 w-5", collapsed ? "mx-auto" : "mr-2")} />
+                          {!collapsed && <span>Reset Data</span>}
+                        </Button>
+                      </AlertDialogTrigger>
+                    </TooltipTrigger>
+                    {collapsed && (
+                      <TooltipContent side="right" className="text-xs">
+                        Reset Data
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="text-red-600">Reset Semua Data?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Tindakan ini akan menghapus semua data qurban dan mengembalikan ke nilai awal. 
+                        <span className="font-semibold text-red-600"> Tindakan ini tidak dapat dibatalkan.</span>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Batal</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleResetData}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Ya, Reset Semua Data
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
+          </nav>
+        </TooltipProvider>
+      </div>
 
       <div className="p-4 border-t border-sidebar-border">
         {!collapsed && (

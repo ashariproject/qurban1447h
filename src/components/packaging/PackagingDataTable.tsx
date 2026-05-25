@@ -7,8 +7,9 @@ import { useQurban } from '@/contexts/QurbanContext';
 const PackagingDataTable = () => {
   const { packagingData, updatePackagingData } = useQurban();
 
-  // Calculate total packs produced
-  const totalPacksProduced = (packagingData.sapiPacksOutput || 0) + (packagingData.kambingPacksOutput || 0);
+  // Calculate total packs produced (input) and distributed (output)
+  const totalPacksProduced = (packagingData.sapiPacksInput || 0) + (packagingData.kambingPacksInput || 0);
+  const totalPacksDistributed = (packagingData.sapiPacksOutput || 0) + (packagingData.kambingPacksOutput || 0);
 
   const updateValue = (type: 'sapi' | 'kambing', operation: 'input' | 'output', action: 'increment' | 'decrement') => {
     const field = `${type}Packs${operation.charAt(0).toUpperCase() + operation.slice(1)}` as keyof typeof packagingData;
@@ -164,7 +165,7 @@ const PackagingDataTable = () => {
                 <div className="text-sm text-gray-600">Total Input</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-red-600">{totalPacksProduced}</div>
+                <div className="text-2xl font-bold text-red-600">{totalPacksDistributed}</div>
                 <div className="text-sm text-gray-600">Total Output</div>
               </div>
               <div>
@@ -177,7 +178,7 @@ const PackagingDataTable = () => {
               <div>
                 <div className="text-2xl font-bold text-purple-600">
                   {(packagingData.sapiPacksInput || 0) + (packagingData.kambingPacksInput || 0) > 0 ? 
-                    Math.round((totalPacksProduced / ((packagingData.sapiPacksInput || 0) + (packagingData.kambingPacksInput || 0))) * 100) : 0}%
+                    Math.round((totalPacksDistributed / ((packagingData.sapiPacksInput || 0) + (packagingData.kambingPacksInput || 0))) * 100) : 0}%
                 </div>
                 <div className="text-sm text-gray-600">Persentase Keluar</div>
               </div>

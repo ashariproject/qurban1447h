@@ -13,7 +13,7 @@ const SapiKolektifGroups: React.FC<SapiKolektifGroupsProps> = ({ shohibulList })
   const patunganList = shohibulList
     .filter(s => s.jenisQurban === 'sapi-patungan')
     .sort((a, b) => {
-      const dateCompare = a.tanggalDaftar.localeCompare(b.tanggalDaftar);
+      const dateCompare = (a.tanggalDaftar || '').localeCompare(b.tanggalDaftar || '');
       if (dateCompare !== 0) return dateCompare;
       return a.nama.localeCompare(b.nama);
     });

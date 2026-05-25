@@ -69,8 +69,9 @@ const Login = () => {
               <ShieldCheck className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-3xl font-bold">QurbanKu</CardTitle>
-            <CardDescription className="text-qurban-100 mt-2">
-              Sistem Informasi Manajemen Qurban Terintegrasi
+            <CardDescription className="text-qurban-100 mt-2 font-medium">
+              Sistem Informasi Manajemen Qurban Terintegrasi<br/>
+              <span className="text-white/90 font-bold mt-1 inline-block">Masjid As Sakinah Pantai Mentari Surabaya</span>
             </CardDescription>
           </div>
         </div>
@@ -151,14 +152,6 @@ const Login = () => {
         </CardFooter>
       </Card>
       
-      {/* Quick Help / Info for Demo */}
-      <div className="fixed bottom-4 right-4 max-w-xs bg-white p-3 rounded-lg shadow-lg border border-gray-100 text-[10px] text-gray-400 hidden md:block">
-        <p className="font-bold mb-1 uppercase tracking-wider">Demo Kredensial:</p>
-        <p>Admin: admin/admin123</p>
-        <p>Shohibul: shohibul/shohibul123</p>
-        <p>Hewan: hewan/hewan123</p>
-        <p>Panitia: panitia/panitia123</p>
-      </div>
     </div>
   );
 };

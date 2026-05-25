@@ -24,8 +24,8 @@ const Dashboard: React.FC = () => {
   const totalKambing = hewanList.filter(h => h.jenis === 'kambing').length;
   const totalHewan = totalSapi + totalKambing;
 
-  const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima').length;
-  const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima').length;
+  const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima' && h.status !== 'daftar').length;
+  const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima' && h.status !== 'daftar').length;
   const totalDisembelih = sapiDisembelih + kambingDisembelih;
 
   const totalPacksProduced = packagingData.sapiPacksOutput + packagingData.kambingPacksOutput;
@@ -72,6 +72,15 @@ const Dashboard: React.FC = () => {
       return { ...item, subtitle: `${shohibulKambing} Shohibul`, current: diterimaKambing, total: shohibulKambing };
     }
     return item;
+  }).sort((a, b) => {
+    const orderMap: Record<string, number> = {
+      'pantai-mentari': 1,
+      'kompleks-al': 2,
+      'warga-lain': 3,
+      'shohibul-sapi': 4,
+      'shohibul-kambing': 5
+    };
+    return (orderMap[a.id] || 99) - (orderMap[b.id] || 99);
   });
 
   return (

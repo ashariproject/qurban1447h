@@ -25,10 +25,23 @@ const Index = () => {
       return { ...item, current: diterimaSapi, total: shohibulSapi };
     }
     if (item.id === 'shohibul-kambing') {
-      return { ...item, current: diterimaKambing, total: shohibulKambing };
+      return { ...item, current: diterimaKambing, total: diterimaKambing };
     }
     return item;
+  }).sort((a, b) => {
+    const orderMap: Record<string, number> = {
+      'pantai-mentari': 1,
+      'kompleks-al': 2,
+      'warga-lain': 3,
+      'shohibul-sapi': 4,
+      'shohibul-kambing': 5
+    };
+    return (orderMap[a.id] || 99) - (orderMap[b.id] || 99);
   });
+
+  // Data AKTUAL dari hewanList (sama dengan tampilan halaman Animal & Panitia)
+  const hewanSapiAktual = hewanList.filter(h => h.jenis === 'sapi').length;
+  const hewanKambingAktual = hewanList.filter(h => h.jenis === 'kambing').length;
 
   const totalDipotong = hewanList.filter(h => h.status === 'dipotong').length;
   const totalPacksPackaging = packagingData.sapiPacksOutput + packagingData.kambingPacksOutput;
@@ -91,6 +104,7 @@ const Index = () => {
               <div>
                 <p className="text-blue-100 text-[10px] font-medium uppercase tracking-wider mb-0.5">Perolehan Sapi</p>
                 <h3 className="text-3xl font-bold">{animalData.totalSapi} <span className="text-sm font-normal text-blue-200">Ekor</span></h3>
+                <p className="text-blue-200 text-[10px] mt-0.5">Diterima di posko: <span className="font-bold text-white">{hewanSapiAktual} ekor</span></p>
               </div>
               <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-md">
                 <Beef className="h-6 w-6" />
@@ -103,6 +117,7 @@ const Index = () => {
               <div>
                 <p className="text-green-100 text-[10px] font-medium uppercase tracking-wider mb-0.5">Perolehan Kambing</p>
                 <h3 className="text-3xl font-bold">{animalData.totalKambing} <span className="text-sm font-normal text-green-200">Ekor</span></h3>
+                <p className="text-green-200 text-[10px] mt-0.5">Diterima di posko: <span className="font-bold text-white">{hewanKambingAktual} ekor</span></p>
               </div>
               <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-md">
                 <div className="h-6 w-6 flex items-center justify-center font-bold text-xl">🐐</div>
@@ -228,7 +243,7 @@ const Index = () => {
                   <Table>
                     <TableHeader className="bg-gray-50 sticky top-0 z-10">
                       <TableRow className="h-8">
-                        <TableHead className="w-14 text-blue-600 font-bold text-[9px] py-1">UNIT</TableHead>
+                        <TableHead className="w-14 text-blue-600 font-bold text-[9px] py-1">PATUNGAN</TableHead>
                         <TableHead className="w-10 text-xs py-1">NO</TableHead>
                         <TableHead className="text-xs py-1">NAMA PENGQURBAN</TableHead>
                         <TableHead className="text-xs py-1">ALAMAT</TableHead>
@@ -246,7 +261,7 @@ const Index = () => {
                             className={`${rowBg} hover:bg-blue-100/30 transition-colors border-b border-gray-100 h-7 ${isGroupStart ? 'border-t-2 border-blue-200' : ''}`}
                           >
                             <TableCell className="py-1 px-2 text-[9px] font-bold text-blue-700">
-                              {isGroupStart ? `UNIT ${groupNum}` : ''}
+                              {isGroupStart ? `PATUNGAN ${groupNum}` : ''}
                             </TableCell>
                             <TableCell className="py-1 px-2 text-[10px] text-gray-400">{idx + 1}</TableCell>
                             <TableCell className="py-1 px-2 font-bold text-xs text-gray-800 truncate max-w-[140px]">{s.nama}</TableCell>

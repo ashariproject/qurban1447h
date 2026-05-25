@@ -46,8 +46,6 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
 }) => {
   const [filterJenis, setFilterJenis] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'tanggal' | 'nama' | 'kelompok'>('tanggal');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [editingItem, setEditingItem] = useState<ShohibulData | null>(null);
   const { toast } = useToast();
 
@@ -90,18 +88,10 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
     return matchesJenis && matchesSearch;
   });
 
-  const sortedAndFilteredData = [...filteredData].sort((a, b) => {
-    let comparison = 0;
-    if (sortBy === 'tanggal') {
-      comparison = new Date(a.tanggalDaftar).getTime() - new Date(b.tanggalDaftar).getTime();
-    } else if (sortBy === 'nama') {
-      comparison = a.nama.localeCompare(b.nama);
-    } else if (sortBy === 'kelompok') {
-      comparison = a.jenisQurban.localeCompare(b.jenisQurban);
-    }
-    
-    return sortOrder === 'asc' ? comparison : -comparison;
-  });
+  // Urutan tetap berdasarkan tanggal daftar (pertama masuk = nomor 1, tidak bisa diubah)
+  const sortedAndFilteredData = [...filteredData].sort((a, b) =>
+    new Date(a.tanggalDaftar).getTime() - new Date(b.tanggalDaftar).getTime()
+  );
 
   const handleEdit = (item: ShohibulData) => {
     setEditingItem(item);
@@ -189,25 +179,6 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
                 <SelectItem value="sapi-patungan">Sapi Patungan</SelectItem>
               </SelectContent>
             </Select>
-
-            <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Urutkan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="tanggal">Tanggal Daftar</SelectItem>
-                <SelectItem value="nama">Nama Shohibul</SelectItem>
-                <SelectItem value="kelompok">Kelompok (Jenis)</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button 
-              variant="outline" 
-              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              title={`Urutan ${sortOrder === 'asc' ? 'Menaik (A-Z/Lama-Baru)' : 'Menurun (Z-A/Baru-Lama)'}`}
-            >
-              {sortOrder === 'asc' ? '↑' : '↓'}
-            </Button>
           </div>
         </div>
       </CardHeader>

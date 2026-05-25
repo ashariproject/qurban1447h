@@ -15,8 +15,8 @@ const PanitiaDashboard = () => {
   const totalKambing = hewanList.filter(h => h.jenis === 'kambing').length;
   const totalHewan = totalSapi + totalKambing;
 
-  const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima').length;
-  const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima').length;
+  const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima' && h.status !== 'daftar').length;
+  const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima' && h.status !== 'daftar').length;
   const totalDisembelih = sapiDisembelih + kambingDisembelih;
 
   const totalFotoHewan = hewanList.reduce((acc, curr) => acc + (curr.fotoUrls?.length || 0), 0);
@@ -48,7 +48,7 @@ const PanitiaDashboard = () => {
       const patunganShohibuls = shohibulList
         .filter(s => s.jenisQurban === 'sapi-patungan')
         .sort((a, b) => {
-          const dateCompare = a.tanggalDaftar.localeCompare(b.tanggalDaftar);
+          const dateCompare = (a.tanggalDaftar || '').localeCompare(b.tanggalDaftar || '');
           if (dateCompare !== 0) return dateCompare;
           return a.nama.localeCompare(b.nama);
         });
@@ -167,20 +167,20 @@ const PanitiaDashboard = () => {
               <CardContent className="pt-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100/50 text-center">
-                    <span className="text-xs font-bold text-gray-500 block">TOTAL TARGET</span>
+                    <span className="text-xs font-bold text-gray-500 block">PACK DIHASILKAN</span>
                     <span className="text-3xl font-black text-blue-600">{totalPacksInput}</span>
-                    <span className="text-[9px] text-gray-400 font-bold block mt-1">Pack Terencana</span>
+                    <span className="text-[9px] text-gray-400 font-bold block mt-1">Pack Dihasilkan</span>
                   </div>
                   <div className="bg-purple-50/50 p-3 rounded-lg border border-purple-100/50 text-center">
-                    <span className="text-xs font-bold text-gray-500 block">PACK SELESAI</span>
+                    <span className="text-xs font-bold text-gray-500 block">PACK DISTRIBUSI</span>
                     <span className="text-3xl font-black text-purple-600">{totalPacksOutput}</span>
-                    <span className="text-[9px] text-gray-400 font-bold block mt-1">Sisa: {totalPacksInput - totalPacksOutput} Pack</span>
+                    <span className="text-[9px] text-gray-400 font-bold block mt-1">Sisa Stok: {totalPacksInput - totalPacksOutput} Pack</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs font-bold text-gray-600">
-                    <span>Progres Produksi Pengemasan</span>
+                    <span>Progres Distribusi Paket</span>
                     <span>{totalPacksInput > 0 ? Math.round((totalPacksOutput / totalPacksInput) * 100) : 0}%</span>
                   </div>
                   <Progress value={totalPacksInput > 0 ? (totalPacksOutput / totalPacksInput) * 100 : 0} className="h-2 bg-blue-100" />

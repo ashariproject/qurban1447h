@@ -43,6 +43,7 @@ const formSchema = z.object({
     jumlahDibayar: z.number().min(0, "Jumlah dibayar minimal 0"),
     totalBiaya: z.number().min(1, "Total biaya minimal 1"),
   }),
+  tanggalDaftar: z.string().min(1, "Tanggal daftar harus diisi"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -67,6 +68,7 @@ const ShohibulEditDialog: React.FC<ShohibulEditDialogProps> = ({
       jenisQurban: item.jenisQurban,
       jumlahHewan: item.jumlahHewan,
       pembayaran: item.pembayaran,
+      tanggalDaftar: item.tanggalDaftar ? new Date(item.tanggalDaftar).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     },
   });
 
@@ -122,19 +124,35 @@ const ShohibulEditDialog: React.FC<ShohibulEditDialogProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="noTelepon"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nomor Telepon</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Masukkan nomor telepon" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="noTelepon"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nomor Telepon</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Masukkan nomor telepon" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tanggalDaftar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tanggal Daftar</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
