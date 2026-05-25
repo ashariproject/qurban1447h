@@ -133,6 +133,22 @@ export const QurbanProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           sapiPacksOutput: packagingRes.data.sapiPacksOutput || 0,
           kambingPacksOutput: packagingRes.data.kambingPacksOutput || 0,
         });
+      } else if (!packagingRes.data && (!packagingRes.error || packagingRes.error.code === 'PGRST116')) {
+        // Row 'main' does not exist in the database, let's create it
+        const defaultPack = {
+          id: 'main',
+          sapiPacksInput: 0,
+          kambingPacksInput: 0,
+          sapiPacksOutput: 0,
+          kambingPacksOutput: 0,
+        };
+        await supabase.from('packaging').insert([defaultPack]);
+        setPackagingData({
+          sapiPacksInput: 0,
+          kambingPacksInput: 0,
+          sapiPacksOutput: 0,
+          kambingPacksOutput: 0,
+        });
       }
       if (distRes.data) setDistributionList(distRes.data);
     } catch (error) {
@@ -163,15 +179,6 @@ export const QurbanProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       sapiDisembelih,
       kambingDisembelih
     });
-
-    const totalMeatSapi = hewanList.filter(h => h.jenis === 'sapi').reduce((acc, h) => acc + (h.beratDaging || 0), 0);
-    const totalMeatKambing = hewanList.filter(h => h.jenis === 'kambing').reduce((acc, h) => acc + (h.beratDaging || 0), 0);
-
-    setPackagingData(prev => ({
-      ...prev,
-      sapiPacksInput: totalMeatSapi > 0 ? Math.round(totalMeatSapi) : prev.sapiPacksInput,
-      kambingPacksInput: totalMeatKambing > 0 ? Math.round(totalMeatKambing) : prev.kambingPacksInput,
-    }));
 
     setDistributionList(prev => prev.map(d => {
       if (d.id === 'shohibul-sapi') {
@@ -294,10 +301,13 @@ export const QurbanProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const updatePackagingData = async (data: Partial<PackagingData>) => {
     setPackagingData(p => ({ ...p, ...data }));
     
-    // In database, we use camelCase columns matching the interface, but we need to map them properly
-    // if the schema uses double quotes (which it does). Supabase JS handles this if names match.
-    const { error } = await supabase.from('packaging').update(data).eq('id', 'main');
-    if (error) fetchData();
+    // Use upsert to handle missing 'main' row robustly
+    const { error } = await supabase.from('packaging').upsert({ id: 'main', ...data });
+    if (error) {
+      console.error("Error updating packaging data:", error);
+      toast({ variant: "destructive", title: "Gagal menyimpan data pengemasan" });
+      fetchData();
+    }
   };
 
   const updateDistribution = async (id: string, data: Partial<DistributionData>) => {
@@ -350,9 +360,19 @@ export const QurbanProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  const totalMeatSapi = hewanList.filter(h => h.jenis === 'sapi').reduce((acc, h) => acc + (h.beratDaging || 0), 0);
+  const totalMeatKambing = hewanList.filter(h => h.jenis === 'kambing').reduce((acc, h) => acc + (h.beratDaging || 0), 0);
+
+  const derivedPackagingData: PackagingData = {
+    sapiPacksInput: packagingData.sapiPacksInput || (totalMeatSapi > 0 ? Math.round(totalMeatSapi) : 0),
+    kambingPacksInput: packagingData.kambingPacksInput || (totalMeatKambing > 0 ? Math.round(totalMeatKambing) : 0),
+    sapiPacksOutput: packagingData.sapiPacksOutput,
+    kambingPacksOutput: packagingData.kambingPacksOutput,
+  };
+
   return (
     <QurbanContext.Provider value={{
-      shohibulList, hewanList, animalData, packagingData, distributionList, isLoading,
+      shohibulList, hewanList, animalData, packagingData: derivedPackagingData, distributionList, isLoading,
       addShohibul, editShohibul, deleteShohibul, updateShohibulStatus,
       updateHewanStatus, updateDistribution, updateHewanMeasurements,
       addFotoToHewan, removeFotoFromHewan, updatePackagingData, fetchData, resetAllData
