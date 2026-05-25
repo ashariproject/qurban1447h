@@ -45,6 +45,7 @@ const HewanFotoQR = lazyWithPreload(() => import("./pages/animal/FotoQR"));
 const HewanDetail = lazyWithPreload(() => import("./pages/HewanDetail"));
 const PackagingDashboard = lazyWithPreload(() => import("./pages/packaging/Dashboard"));
 const PackagingData = lazyWithPreload(() => import("./pages/packaging/Data"));
+const PackagingStatus = lazyWithPreload(() => import("./pages/packaging/Status"));
 const DistributionDashboard = lazyWithPreload(() => import("./pages/distribution/Dashboard"));
 const Recipients = lazyWithPreload(() => import("./pages/distribution/Recipients"));
 const DistributionRoutes = lazyWithPreload(() => import("./pages/distribution/Routes"));
@@ -187,6 +188,7 @@ const AppRoutes = () => {
         {/* Packaging Routes */}
         <Route path="/packaging" element={<ProtectedRoute allowedRoles={['admin', 'packaging', 'panitia']}><PackagingDashboard /></ProtectedRoute>} />
         <Route path="/packaging/data" element={<ProtectedRoute allowedRoles={['admin', 'packaging', 'panitia']}><PackagingData /></ProtectedRoute>} />
+        <Route path="/packaging/status" element={<ProtectedRoute allowedRoles={['admin', 'packaging', 'panitia']}><PackagingStatus /></ProtectedRoute>} />
 
         {/* Distribution Routes */}
         <Route path="/distribution" element={<ProtectedRoute allowedRoles={['admin', 'distribution', 'panitia']}><DistributionDashboard /></ProtectedRoute>} />
