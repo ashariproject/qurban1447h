@@ -31,6 +31,7 @@ const Reports = lazyWithPreload(() => import("./pages/admin/Reports"));
 const Settings = lazyWithPreload(() => import("./pages/admin/Settings"));
 const AdminDatabase = lazyWithPreload(() => import("./pages/admin/Database"));
 const AdminSheetsSync = lazyWithPreload(() => import("./pages/admin/SheetsSync"));
+const PanitiaDashboard = lazyWithPreload(() => import("./pages/panitia/Dashboard"));
 const ShohibulDashboard = lazyWithPreload(() => import("./pages/shohibul/Dashboard"));
 const ShohibulData = lazyWithPreload(() => import("./pages/shohibul/Data"));
 const LocationMap = lazyWithPreload(() => import("./pages/shohibul/Map"));
@@ -156,6 +157,9 @@ const AppRoutes = () => {
         
         {/* Portal Route - Public Monitoring Dashboard */}
         <Route path="/portal" element={<Index />} />
+
+        {/* Panitia Routes */}
+        <Route path="/panitia" element={<ProtectedRoute allowedRoles={['admin', 'panitia']}><PanitiaDashboard /></ProtectedRoute>} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
