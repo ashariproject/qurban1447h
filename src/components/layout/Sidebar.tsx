@@ -49,7 +49,7 @@ import { useToast } from '@/hooks/use-toast';
 import { LogOut } from 'lucide-react';
 
 // Define user roles for the sidebar
-type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution";
+type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution" | "panitia";
 
 interface RoleInfo {
   name: string;
@@ -122,6 +122,20 @@ const roles: Record<Role, RoleInfo> = {
       { name: "Distribusi Shohibul", icon: Package, path: "/distribution/shohibul" },
       { name: "Data Penerima", icon: FileText, path: "/distribution/recipients" },
       { name: "Rute Distribusi", icon: Truck, path: "/distribution/routes" },
+      { name: "Status Pengiriman", icon: ClipboardList, path: "/distribution/status" }
+    ]
+  },
+  panitia: {
+    name: "Panitia",
+    icon: Users,
+    description: "Akses pemantauan panitia. Monitoring progres hewan, pengemasan, distribusi, shohibul, dan status pengiriman secara terpusat.",
+    menuItems: [
+      { name: "Dashboard", icon: Home, path: "/panitia" },
+      { name: "Progres & Foto Hewan", icon: Beef, path: "/animal/data" },
+      { name: "Status Sembelih", icon: RotateCcw, path: "/animal/status" },
+      { name: "Hasil Pengemasan", icon: Package, path: "/packaging/data" },
+      { name: "Distribusi Shohibul", icon: Truck, path: "/distribution/shohibul" },
+      { name: "Data Shohibul", icon: Users, path: "/shohibul/data" },
       { name: "Status Pengiriman", icon: ClipboardList, path: "/distribution/status" }
     ]
   }

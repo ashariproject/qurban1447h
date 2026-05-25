@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution";
+export type Role = "admin" | "shohibul" | "animal" | "packaging" | "distribution" | "panitia";
 
 interface User {
   username: string;
@@ -25,6 +25,7 @@ export const CREDENTIALS: Record<string, { password: string; role: Role; name: s
   hewan: { password: 'hewan123', role: 'animal', name: 'Petugas Hewan' },
   pengemasan: { password: 'pengemasan123', role: 'packaging', name: 'Petugas Pengemasan' },
   distribusi: { password: 'distribusi123', role: 'distribution', name: 'Petugas Distribusi' },
+  panitia: { password: 'panitia123', role: 'panitia', name: 'Panitia Qurban' },
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

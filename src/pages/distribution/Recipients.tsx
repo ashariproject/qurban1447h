@@ -91,7 +91,7 @@ const Recipients = () => {
       return ['RT 01', 'RT 02', 'RT 03', 'RT 04', 'RT 05', 'RT 06', 'RT 07'];
     } else if (wilayah === 'komplek_al') {
       return [
-        'Jl. Sadikin', 
+        'Jl. Sodikun', 
         'Jl. Heri Kasiyanto', 
         'Jl. Muhammad', 
         'Jl. Isman', 
@@ -535,7 +535,7 @@ const Recipients = () => {
                       <div className="overflow-x-auto pb-2">
                         <TabsList className="min-w-max">
                           <TabsTrigger value="Semua">Semua Jalan</TabsTrigger>
-                          <TabsTrigger value="Jl. Sadikin">Jl. Sadikin</TabsTrigger>
+                          <TabsTrigger value="Jl. Sodikun">Jl. Sodikun</TabsTrigger>
                           <TabsTrigger value="Jl. Heri Kasiyanto">Jl. Heri Kasiyanto</TabsTrigger>
                           <TabsTrigger value="Jl. Muhammad">Jl. Muhammad</TabsTrigger>
                           <TabsTrigger value="Jl. Isman">Jl. Isman</TabsTrigger>
@@ -545,7 +545,7 @@ const Recipients = () => {
                         </TabsList>
                       </div>
                       
-                      {["Semua", "Jl. Sadikin", "Jl. Heri Kasiyanto", "Jl. Muhammad", "Jl. Isman", "Jl. Banuriyadi Kadir", "Jl. Mistar", "Jl. Sahabudin"].map(streetTab => (
+                      {["Semua", "Jl. Sodikun", "Jl. Heri Kasiyanto", "Jl. Muhammad", "Jl. Isman", "Jl. Banuriyadi Kadir", "Jl. Mistar", "Jl. Sahabudin"].map(streetTab => (
                         <TabsContent key={streetTab} value={streetTab}>
                           <div className="overflow-x-auto border rounded-md">
                             <Table>

@@ -10,7 +10,13 @@ interface SapiKolektifGroupsProps {
 }
 
 const SapiKolektifGroups: React.FC<SapiKolektifGroupsProps> = ({ shohibulList }) => {
-  const patunganList = shohibulList.filter(s => s.jenisQurban === 'sapi-patungan');
+  const patunganList = shohibulList
+    .filter(s => s.jenisQurban === 'sapi-patungan')
+    .sort((a, b) => {
+      const dateCompare = a.tanggalDaftar.localeCompare(b.tanggalDaftar);
+      if (dateCompare !== 0) return dateCompare;
+      return a.nama.localeCompare(b.nama);
+    });
   
   // Group into arrays of 7
   const groups: ShohibulData[][] = [];

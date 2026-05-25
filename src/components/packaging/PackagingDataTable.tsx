@@ -1,46 +1,36 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown } from "lucide-react";
-
-interface PackagingData {
-  sapi: {
-    input: number;
-    output: number;
-  };
-  kambing: {
-    input: number;
-    output: number;
-  };
-}
+import { useQurban } from '@/contexts/QurbanContext';
 
 const PackagingDataTable = () => {
-  const [data, setData] = useState<PackagingData>({
-    sapi: { input: 0, output: 0 },
-    kambing: { input: 0, output: 0 }
-  });
+  const { packagingData, updatePackagingData } = useQurban();
 
   // Calculate total packs produced
-  const totalPacksProduced = data.sapi.output + data.kambing.output;
+  const totalPacksProduced = (packagingData.sapiPacksOutput || 0) + (packagingData.kambingPacksOutput || 0);
 
   const updateValue = (type: 'sapi' | 'kambing', operation: 'input' | 'output', action: 'increment' | 'decrement') => {
-    setData(prev => {
-      const newData = { ...prev };
-      const currentValue = newData[type][operation];
-      
-      if (action === 'increment') {
-        newData[type][operation] = currentValue + 1;
-      } else if (action === 'decrement' && currentValue > 0) {
-        newData[type][operation] = currentValue - 1;
+    const field = `${type}Packs${operation.charAt(0).toUpperCase() + operation.slice(1)}` as keyof typeof packagingData;
+    const currentValue = (packagingData[field] as number) || 0;
+    let newValue = currentValue;
+    
+    if (action === 'increment') {
+      newValue = currentValue + 1;
+    } else if (action === 'decrement' && currentValue > 0) {
+      newValue = currentValue - 1;
+    }
+    
+    // Untuk output, tidak boleh melebihi input
+    if (operation === 'output') {
+      const inputField = `${type}PacksInput` as keyof typeof packagingData;
+      const inputValue = (packagingData[inputField] as number) || 0;
+      if (newValue > inputValue) {
+        newValue = inputValue;
       }
-      
-      // Untuk output, tidak boleh melebihi input
-      if (operation === 'output' && newData[type].output > newData[type].input) {
-        newData[type].output = newData[type].input;
-      }
-      
-      return newData;
-    });
+    }
+    
+    updatePackagingData({ [field]: newValue });
   };
 
   const CounterControl = ({ 
@@ -127,20 +117,20 @@ const PackagingDataTable = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CounterControl
                 label="INPUT (Pack Masuk)"
-                value={data.sapi.input}
+                value={packagingData.sapiPacksInput || 0}
                 onIncrement={() => updateValue('sapi', 'input', 'increment')}
                 onDecrement={() => updateValue('sapi', 'input', 'decrement')}
                 bgColor="bg-gradient-to-br from-green-500 to-green-600"
               />
               <CounterControl
                 label="OUTPUT (Pack Keluar)"
-                value={data.sapi.output}
+                value={packagingData.sapiPacksOutput || 0}
                 onIncrement={() => updateValue('sapi', 'output', 'increment')}
                 onDecrement={() => updateValue('sapi', 'output', 'decrement')}
                 bgColor="bg-gradient-to-br from-red-500 to-red-600"
               />
             </div>
-            <StockIndicator input={data.sapi.input} output={data.sapi.output} type="sapi" />
+            <StockIndicator input={packagingData.sapiPacksInput || 0} output={packagingData.sapiPacksOutput || 0} type="sapi" />
           </div>
 
           {/* Daging Kambing */}
@@ -149,20 +139,20 @@ const PackagingDataTable = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CounterControl
                 label="INPUT (Pack Masuk)"
-                value={data.kambing.input}
+                value={packagingData.kambingPacksInput || 0}
                 onIncrement={() => updateValue('kambing', 'input', 'increment')}
                 onDecrement={() => updateValue('kambing', 'input', 'decrement')}
                 bgColor="bg-gradient-to-br from-blue-500 to-blue-600"
               />
               <CounterControl
                 label="OUTPUT (Pack Keluar)"
-                value={data.kambing.output}
+                value={packagingData.kambingPacksOutput || 0}
                 onIncrement={() => updateValue('kambing', 'output', 'increment')}
                 onDecrement={() => updateValue('kambing', 'output', 'decrement')}
                 bgColor="bg-gradient-to-br from-orange-500 to-orange-600"
               />
             </div>
-            <StockIndicator input={data.kambing.input} output={data.kambing.output} type="kambing" />
+            <StockIndicator input={packagingData.kambingPacksInput || 0} output={packagingData.kambingPacksOutput || 0} type="kambing" />
           </div>
 
           {/* Summary */}
@@ -170,21 +160,24 @@ const PackagingDataTable = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-3">RINGKASAN</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-green-600">{data.sapi.input + data.kambing.input}</div>
+                <div className="text-2xl font-bold text-green-600">{(packagingData.sapiPacksInput || 0) + (packagingData.kambingPacksInput || 0)}</div>
                 <div className="text-sm text-gray-600">Total Input</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-red-600">{data.sapi.output + data.kambing.output}</div>
+                <div className="text-2xl font-bold text-red-600">{totalPacksProduced}</div>
                 <div className="text-sm text-gray-600">Total Output</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-blue-600">{(data.sapi.input - data.sapi.output) + (data.kambing.input - data.kambing.output)}</div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {((packagingData.sapiPacksInput || 0) - (packagingData.sapiPacksOutput || 0)) + 
+                   ((packagingData.kambingPacksInput || 0) - (packagingData.kambingPacksOutput || 0))}
+                </div>
                 <div className="text-sm text-gray-600">Sisa Stok</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-purple-600">
-                  {data.sapi.input + data.kambing.input > 0 ? 
-                    Math.round(((data.sapi.output + data.kambing.output) / (data.sapi.input + data.kambing.input)) * 100) : 0}%
+                  {(packagingData.sapiPacksInput || 0) + (packagingData.kambingPacksInput || 0) > 0 ? 
+                    Math.round((totalPacksProduced / ((packagingData.sapiPacksInput || 0) + (packagingData.kambingPacksInput || 0))) * 100) : 0}%
                 </div>
                 <div className="text-sm text-gray-600">Persentase Keluar</div>
               </div>

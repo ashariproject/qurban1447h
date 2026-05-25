@@ -234,8 +234,8 @@ const AnimalDataForm = () => {
                                     <div className="relative group h-10 w-10 rounded overflow-hidden border border-gray-200 shadow-sm">
                                       <img 
                                         src={animal.jenis === 'sapi' 
-                                          ? "https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&q=80&w=150" 
-                                          : "https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&q=80&w=150"
+                                          ? "/images/sapi_bali_lokal.png" 
+                                          : "/images/kambing_lokal.png"
                                         } 
                                         alt={`Dummy ${animal.jenis}`} 
                                         className="w-full h-full object-cover opacity-80 group-hover:opacity-40 transition-opacity" 
