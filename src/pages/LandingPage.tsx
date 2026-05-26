@@ -13,7 +13,10 @@ import {
   LogIn,
   ChevronDown,
   Play,
-  Beef
+  Beef,
+  Menu,
+  X,
+  Activity
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -38,6 +41,7 @@ const LandingPage = () => {
   const { animalData } = useQurban();
   const { isAuthenticated, user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState<string>('');
   const [formData, setFormData] = useState({
     nama: '',
@@ -128,20 +132,21 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-slate-100">
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm">
         <div className="container mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <img 
               src="/images/logo.png" 
               alt="Logo"
-              className="h-10 w-auto"
+              className="h-9 w-auto"
             />
-            <div className="hidden md:block">
-              <span className="text-lg font-black tracking-tighter text-slate-900 uppercase">AS SAKINAH</span>
-              <p className="text-[10px] font-bold text-slate-400 -mt-1 uppercase tracking-widest">Pantai Mentari Surabaya</p>
+            <div>
+              <span className="text-base md:text-lg font-black tracking-tighter text-slate-900 uppercase">AS SAKINAH</span>
+              <p className="text-[8px] md:text-[10px] font-bold text-slate-400 -mt-0.5 uppercase tracking-widest">Pantai Mentari Surabaya</p>
             </div>
           </div>
           
+          {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-600 uppercase tracking-widest">
             <a href="#about" className="hover:text-emerald-600 transition-colors">Tentang</a>
             <a href="#ayat" className="hover:text-emerald-600 transition-colors">Dalil</a>
@@ -155,6 +160,7 @@ const LandingPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Desktop: Login link */}
             {isAuthenticated ? (
               <Button asChild variant="ghost" className="hidden md:flex text-sm font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
                 <Link to={user?.role === 'admin' ? '/admin' : `/${user?.role}`}>
@@ -170,37 +176,186 @@ const LandingPage = () => {
                 </Link>
               </Button>
             )}
-            
-            {isAuthenticated ? (
-              <Button asChild variant="ghost" size="icon" className="md:hidden text-slate-500">
-                <Link to={user?.role === 'admin' ? '/admin' : `/${user?.role}`}><LayoutDashboard className="h-5 w-5" /></Link>
-              </Button>
-            ) : (
-              <Button asChild variant="ghost" size="icon" className="md:hidden text-slate-500">
-                <Link to="/login"><LogIn className="h-5 w-5" /></Link>
-              </Button>
-            )}
+
+            {/* Mobile: Monitoring Live button */}
+            <Button asChild size="sm" className="lg:hidden bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full text-[10px] px-2.5 h-7 flex items-center gap-1">
+              <Link to="/portal">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-300 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-400"></span>
+                </span>
+                LIVE
+              </Link>
+            </Button>
+
+            {/* Mobile: Hamburger menu */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 rounded-xl hover:bg-slate-100 transition-colors"
+              aria-label="Menu"
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5 text-slate-700" /> : <Menu className="h-5 w-5 text-slate-700" />}
+            </button>
+
+            {/* Daftar button - desktop only, replaced by menu item on mobile */}
             <Button 
               onClick={() => setIsDialogOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 md:px-6 text-sm rounded-full shadow-lg shadow-emerald-200"
+              className="hidden lg:flex bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 text-sm rounded-full shadow-lg shadow-emerald-200"
             >
               Daftar
             </Button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-white border-t border-slate-100 shadow-lg">
+            <div className="container mx-auto px-4 py-4 space-y-1">
+              <Link
+                to="/portal"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 transition-colors"
+              >
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Activity className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-blue-600 uppercase tracking-wide">Monitoring Live</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Pantau progress qurban real-time</p>
+                </div>
+                <span className="ml-auto relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+              </Link>
+
+              <a
+                href="#ayat"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <Heart className="h-4 w-4 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-slate-800 uppercase tracking-wide">Dalil Qurban</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Firman Allah & Hadits Nabi</p>
+                </div>
+              </a>
+
+              <a
+                href="#paket"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <Info className="h-4 w-4 text-orange-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-slate-800 uppercase tracking-wide">Paket & Harga</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Informasi paket qurban 1447H</p>
+                </div>
+              </a>
+
+              {isAuthenticated ? (
+                <Link
+                  to={user?.role === 'admin' ? '/admin' : `/${user?.role}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
+                    <LayoutDashboard className="h-4 w-4 text-slate-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-slate-800 uppercase tracking-wide">Dashboard</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Halaman panitia</p>
+                  </div>
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
+                    <LogIn className="h-4 w-4 text-slate-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-slate-800 uppercase tracking-wide">Login Petugas</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Masuk ke sistem panitia</p>
+                  </div>
+                </Link>
+              )}
+
+              <div className="pt-2 border-t border-slate-100">
+                <Button 
+                  onClick={() => { setIsDialogOpen(true); setIsMobileMenuOpen(false); }}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-emerald-100"
+                >
+                  Daftar Qurban Sekarang
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-8 md:pt-28 md:pb-12 lg:pt-32 lg:pb-16 overflow-hidden">
+      <section id="about" className="relative pt-14 md:pt-20 lg:pt-28 overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-emerald-50/50 -z-10 rounded-l-[100px] hidden lg:block" />
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
-            <div className="lg:w-1/2 space-y-4 md:space-y-5">
+        <div className="container mx-auto px-4 md:px-6">
+          
+          {/* Mobile: Carousel FIRST, then content */}
+          {/* Desktop: Side by side */}
+          <div className="flex flex-col lg:flex-row items-center gap-0 lg:gap-12 lg:py-12">
+            
+            {/* Carousel - shows first on mobile (order-first), second on desktop */}
+            <div className="w-full lg:w-1/2 relative lg:order-2 -mx-4 md:mx-0">
+              <div className="relative z-10 lg:rounded-[40px] overflow-hidden shadow-2xl lg:border-8 border-white bg-slate-100 h-[220px] sm:h-[300px] md:h-[380px] lg:h-[450px] w-full">
+                {heroImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${
+                      idx === currentHeroImageIdx ? "opacity-100 z-10" : "opacity-0 z-0"
+                    }`}
+                  >
+                    <img 
+                      src={img.src} 
+                      alt={img.title} 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-5 left-5 text-white z-20">
+                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">{img.sub}</p>
+                      <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter">{img.title}</h3>
+                    </div>
+                    {/* Slide indicators */}
+                    <div className="absolute bottom-5 right-5 flex gap-1.5 z-20">
+                      {heroImages.map((_, dotIdx) => (
+                        <button
+                          key={dotIdx}
+                          onClick={() => setCurrentHeroImageIdx(dotIdx)}
+                          className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                            dotIdx === currentHeroImageIdx ? 'bg-white w-4' : 'bg-white/50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Decorative elements - desktop only */}
+              <div className="hidden lg:block absolute -top-10 -right-10 w-40 h-40 bg-emerald-200/50 rounded-full blur-3xl" />
+              <div className="hidden lg:block absolute -bottom-10 -left-10 w-60 h-60 bg-blue-200/30 rounded-full blur-3xl" />
+            </div>
+
+            {/* Text content - below carousel on mobile, left side on desktop */}
+            <div className="w-full lg:w-1/2 space-y-4 lg:space-y-5 lg:order-1 px-4 md:px-0 py-6 lg:py-0">
               <Badge className="bg-emerald-100 text-emerald-700 border-none px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest animate-bounce">
                 Idul Adha 1447H / 2026
               </Badge>
 
-              {/* Thin Animal Stats Banner at the Top */}
+              {/* Animal Stats Banner */}
               <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-3 space-y-2 shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl" />
                 
@@ -223,7 +378,6 @@ const LandingPage = () => {
                   {/* Sapi Box */}
                   <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-2.5 flex items-center gap-3 hover:bg-slate-800 transition-all duration-300">
                     <div className="h-8 w-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shrink-0">
-                      {/* Sapi Icon */}
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                         <path d="M6 18c0 1.5 1 2.5 2.5 2.5h7c1.5 0 2.5-1 2.5-2.5V11H6v7z" />
                         <path d="M5 8c0-2.5 3-4 7-4s7 1.5 7 4v3H5V8z" />
@@ -247,7 +401,6 @@ const LandingPage = () => {
                   {/* Kambing Box */}
                   <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-2.5 flex items-center gap-3 hover:bg-slate-800 transition-all duration-300">
                     <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-                      {/* Kambing Icon */}
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                         <path d="M7 16V9l5-5 5 5v7l-2.5 3.5h-5L7 16z" />
                         <path d="M9 5C7.5 4 6 2 6 1" />
@@ -275,55 +428,36 @@ const LandingPage = () => {
                 </div>
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight">
                 Sempurnakan <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-700">Ibadah Qurban</span> <br />
                 Bersama Kami.
               </h1>
-              <p className="text-base text-slate-500 max-w-lg leading-relaxed font-medium">
+              <p className="text-sm md:text-base text-slate-500 max-w-lg leading-relaxed font-medium">
                 Masjid As Sakinah Pantai Mentari Surabaya memfasilitasi pelaksanaan ibadah Qurban Anda dengan amanah, transparan, dan profesional.
               </p>
 
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-12 md:h-12 px-6 rounded-xl shadow-xl shadow-slate-200 group">
-                  <Link to="/portal" className="flex items-center">
+              <div className="flex flex-wrap gap-3 pb-2">
+                <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-12 px-5 rounded-xl shadow-xl shadow-slate-200 group">
+                  <Link to="/portal" className="flex items-center gap-2">
                     LIHAT PROGRESS LIVE
-                    <span className="relative flex h-2 w-2 ml-2 mr-1">
+                    <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                     </span>
-                    <LayoutDashboard className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                    <LayoutDashboard className="h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Link>
+                </Button>
+                <Button 
+                  onClick={() => setIsDialogOpen(true)}
+                  size="lg"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 px-5 rounded-xl shadow-lg shadow-emerald-200"
+                >
+                  Daftar Qurban
                 </Button>
               </div>
             </div>
-            
-            <div className="lg:w-1/2 relative">
-              <div className="relative z-10 rounded-[40px] overflow-hidden shadow-2xl border-8 border-white bg-slate-100 h-[250px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
-                {heroImages.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className={`absolute inset-0 transition-opacity duration-1000 ${
-                      idx === currentHeroImageIdx ? "opacity-100 z-10" : "opacity-0 z-0"
-                    }`}
-                  >
-                    <img 
-                      src={img.src} 
-                      alt={img.title} 
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                    <div className="absolute bottom-8 left-8 text-white z-20">
-                      <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">{img.sub}</p>
-                      <h3 className="text-2xl font-black uppercase tracking-tighter">{img.title}</h3>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {/* Decorative elements */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-200/50 rounded-full blur-3xl" />
-              <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-blue-200/30 rounded-full blur-3xl" />
-            </div>
+
           </div>
         </div>
       </section>
@@ -690,18 +824,18 @@ const LandingPage = () => {
 
       {/* Registration Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[450px] rounded-[30px] border-none shadow-2xl overflow-hidden p-0">
-          <div className="bg-emerald-600 p-8 text-white">
+        <DialogContent className="w-[95vw] max-w-[450px] rounded-2xl md:rounded-[30px] border-none shadow-2xl overflow-hidden p-0 max-h-[90vh] overflow-y-auto">
+          <div className="bg-emerald-600 p-5 md:p-8 text-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-black uppercase tracking-tight">Daftar Qurban Sekarang</DialogTitle>
-              <DialogDescription className="text-emerald-100 font-medium">
+              <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight">Daftar Qurban Sekarang</DialogTitle>
+              <DialogDescription className="text-emerald-100 font-medium text-sm">
                 Lengkapi data Anda untuk pendaftaran Qurban 1447H.
               </DialogDescription>
             </DialogHeader>
           </div>
           
-          <form onSubmit={handleWhatsAppSubmit} className="p-8 space-y-6">
-            <div className="space-y-4">
+          <form onSubmit={handleWhatsAppSubmit} className="p-5 md:p-8 space-y-4 md:space-y-6">
+            <div className="space-y-3 md:space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="nama" className="text-xs font-black uppercase tracking-widest text-slate-400">Nama Lengkap</Label>
                 <Input 
