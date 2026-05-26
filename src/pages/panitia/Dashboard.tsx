@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -6,9 +6,17 @@ import { Beef, Package, Users, Truck, ArrowRight, Activity, Camera } from 'lucid
 import { useQurban } from '@/contexts/QurbanContext';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import AnimalDetailModal from '@/components/animal/AnimalDetailModal';
 
 const PanitiaDashboard = () => {
   const { hewanList, packagingData, shohibulList } = useQurban();
+  const [selectedAnimalForModal, setSelectedAnimalForModal] = useState<typeof hewanList[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleImageClick = (animal: typeof hewanList[0]) => {
+    setSelectedAnimalForModal(animal);
+    setIsModalOpen(true);
+  };
 
   // 1. DYNAMIC CALCULATIONS - HEWAN
   const totalSapi = hewanList.filter(h => h.jenis === 'sapi').length;
@@ -281,7 +289,10 @@ const PanitiaDashboard = () => {
               return (
                 <Card key={animal.id} className="border-none shadow-md hover:shadow-xl transition-all overflow-hidden flex flex-col bg-white group">
                   {/* Thumbnail Image (agak besar) */}
-                  <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
+                  <div 
+                    className="relative h-48 w-full bg-gray-100 overflow-hidden cursor-pointer"
+                    onClick={() => handleImageClick(animal)}
+                  >
                     <img 
                       src={imageUrl} 
                       alt={`Dokumentasi ${animal.kode}`} 
@@ -347,6 +358,13 @@ const PanitiaDashboard = () => {
         </div>
 
       </div>
+
+      <AnimalDetailModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        animal={selectedAnimalForModal}
+        shohibulList={shohibulList}
+      />
     </Layout>
   );
 };

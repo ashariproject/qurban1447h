@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,10 +8,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { useQurban } from '@/contexts/QurbanContext';
 import { Link } from 'react-router-dom';
+import AnimalDetailModal from '@/components/animal/AnimalDetailModal';
 
 const Index = () => {
   const { isAuthenticated, logout } = useAuth();
   const { shohibulList, animalData, hewanList, packagingData, distributionList } = useQurban();
+  const [selectedAnimalForModal, setSelectedAnimalForModal] = useState<typeof hewanList[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleImageClick = (animal: typeof hewanList[0]) => {
+    setSelectedAnimalForModal(animal);
+    setIsModalOpen(true);
+  };
 
   // Calculations for live monitoring
   const shohibulSapi = shohibulList.filter(s => s.jenisQurban.startsWith('sapi')).length;
@@ -405,7 +413,10 @@ const Index = () => {
               return (
                 <Card key={animal.id} className="border-none shadow-md hover:shadow-lg transition-all overflow-hidden flex flex-col bg-white group">
                   {/* Thumbnail Image */}
-                  <div className="relative h-40 w-full bg-gray-100 overflow-hidden">
+                  <div 
+                    className="relative h-40 w-full bg-gray-100 overflow-hidden cursor-pointer"
+                    onClick={() => handleImageClick(animal)}
+                  >
                     <img 
                       src={imageUrl} 
                       alt={`Dokumentasi ${animal.kode}`} 
@@ -482,6 +493,13 @@ const Index = () => {
         </footer>
 
       </div>
+
+      <AnimalDetailModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        animal={selectedAnimalForModal}
+        shohibulList={shohibulList}
+      />
     </div>
   );
 };
