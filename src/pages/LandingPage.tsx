@@ -77,6 +77,11 @@ const LandingPage = () => {
       src: "/images/live_monitoring_banner.jpg",
       sub: "Qurban Berkah",
       title: "Live Monitoring"
+    },
+    {
+      src: "/images/live_monitoring_banner2.jpg",
+      sub: "Qurban Berkah",
+      title: "Live Streaming"
     }
   ];
 
