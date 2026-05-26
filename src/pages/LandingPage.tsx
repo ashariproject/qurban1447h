@@ -67,6 +67,28 @@ const LandingPage = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const heroImages = [
+    {
+      src: "/images/masjid_as_sakinah_hero.png",
+      sub: "Masjid As Sakinah",
+      title: "Pantai Mentari"
+    },
+    {
+      src: "/images/live_monitoring_banner.jpg",
+      sub: "Qurban Berkah",
+      title: "Live Monitoring"
+    }
+  ];
+
+  const [currentHeroImageIdx, setCurrentHeroImageIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentHeroImageIdx((prev) => (prev + 1) % heroImages.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
 
   const handleWhatsAppSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,17 +294,26 @@ const LandingPage = () => {
             </div>
             
             <div className="lg:w-1/2 relative">
-              <div className="relative z-10 rounded-[40px] overflow-hidden shadow-2xl border-8 border-white bg-slate-100">
-                <img 
-                  src="/images/masjid_as_sakinah_hero.png" 
-                  alt="Masjid As Sakinah Pantai Mentari" 
-                  className="w-full h-full object-cover min-h-[300px]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                <div className="absolute bottom-8 left-8 text-white">
-                  <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">Masjid As Sakinah</p>
-                  <h3 className="text-2xl font-black uppercase tracking-tighter">Pantai Mentari</h3>
-                </div>
+              <div className="relative z-10 rounded-[40px] overflow-hidden shadow-2xl border-8 border-white bg-slate-100 aspect-[4/3] w-full">
+                {heroImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${
+                      idx === currentHeroImageIdx ? "opacity-100 z-10" : "opacity-0 z-0"
+                    }`}
+                  >
+                    <img 
+                      src={img.src} 
+                      alt={img.title} 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    <div className="absolute bottom-8 left-8 text-white z-20">
+                      <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">{img.sub}</p>
+                      <h3 className="text-2xl font-black uppercase tracking-tighter">{img.title}</h3>
+                    </div>
+                  </div>
+                ))}
               </div>
               {/* Decorative elements */}
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-200/50 rounded-full blur-3xl" />
