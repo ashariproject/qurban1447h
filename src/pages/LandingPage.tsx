@@ -118,9 +118,13 @@ const LandingPage = () => {
           <div className="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-600 uppercase tracking-widest">
             <a href="#about" className="hover:text-emerald-600 transition-colors">Tentang</a>
             <a href="#ayat" className="hover:text-emerald-600 transition-colors">Dalil</a>
-            <a href="#paket" className="hover:text-emerald-600 transition-colors">Info Qurban</a>
-            <a href="#documentation" className="hover:text-emerald-600 transition-colors">Dokumentasi</a>
-            <Link to="/portal" className="text-blue-600 hover:text-blue-700 transition-colors">Monitoring Live</Link>
+            <Link to="/portal" className="text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1.5 font-bold">
+              Monitoring Live
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
+            </Link>
           </div>
 
           <div className="flex items-center gap-2">
@@ -255,8 +259,12 @@ const LandingPage = () => {
 
               <div className="flex flex-wrap gap-3 pt-2">
                 <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-12 md:h-12 px-6 rounded-xl shadow-xl shadow-slate-200 group">
-                  <Link to="/portal">
+                  <Link to="/portal" className="flex items-center">
                     LIHAT PROGRESS LIVE
+                    <span className="relative flex h-2 w-2 ml-2 mr-1">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
                     <LayoutDashboard className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Link>
                 </Button>
@@ -392,7 +400,12 @@ const LandingPage = () => {
               <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-5 md:mb-8 group-hover:rotate-12 transition-transform">
                 <LayoutDashboard className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-3 uppercase tracking-tighter">Monitoring Live</h3>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-3 uppercase tracking-tighter flex items-center gap-2">
+                Monitoring Live
+                <span className="inline-flex items-center gap-1 bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full font-black tracking-widest uppercase animate-pulse">
+                  ● LIVE
+                </span>
+              </h3>
               <p className="text-slate-500 text-sm leading-relaxed mb-5">
                 Pantau proses penyembelihan, penimbangan, hingga pendistribusian secara real-time melalui dashboard interaktif kami.
               </p>
