@@ -285,7 +285,7 @@ const PanitiaDashboard = () => {
                     <img 
                       src={imageUrl} 
                       alt={`Dokumentasi ${animal.kode}`} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 animate-fade-in"
+                      className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 animate-fade-in ${!hasPhotos ? 'opacity-40' : ''}`}
                     />
                     
                     {/* Animal Code Badge (lebih besar) */}

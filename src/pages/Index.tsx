@@ -409,7 +409,7 @@ const Index = () => {
                     <img 
                       src={imageUrl} 
                       alt={`Dokumentasi ${animal.kode}`} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${!hasPhotos ? 'opacity-40' : ''}`}
                     />
                     
                     {/* Animal Code Badge */}

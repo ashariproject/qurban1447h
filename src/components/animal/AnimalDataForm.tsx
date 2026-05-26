@@ -209,7 +209,7 @@ const AnimalDataForm = () => {
                       <img src={animal.fotoUrls[0]} alt={label} className="w-full h-full object-cover" />
                     )
                   ) : (
-                    <img src={dummyImage} alt={`Dummy ${animal.jenis}`} className="w-full h-full object-cover opacity-80" />
+                    <img src={dummyImage} alt={`Dummy ${animal.jenis}`} className="w-full h-full object-cover opacity-40" />
                   )}
                   {/* Status Badge Over Image */}
                   <div className="absolute top-2 left-2 z-10">
