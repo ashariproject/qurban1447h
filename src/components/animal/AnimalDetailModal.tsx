@@ -221,15 +221,12 @@ const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
                       <div key={s.id} className="px-4 py-2.5 text-xs flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 hover:bg-slate-100 transition-colors">
                         <div className="flex items-center gap-3">
                           <span className="font-extrabold text-slate-400 w-4">{index + 1}.</span>
-                          <div>
-                            <span className="font-extrabold text-slate-800 text-sm">{s.nama}</span>
-                            <span className="text-[10px] text-slate-500 ml-2">({s.alamat})</span>
-                          </div>
+                          <span className="font-extrabold text-slate-800 text-sm">{s.nama}</span>
                         </div>
                         
-                        <div className="flex items-center gap-2 self-end sm:self-auto">
-                          <span className="text-[10px] text-slate-650 font-bold">
-                            {s.noTelepon}
+                        <div className="flex items-center gap-3 self-end sm:self-auto">
+                          <span className="text-[11px] text-slate-600 font-bold">
+                            {s.alamat}
                           </span>
                           {showWhatsApp && (
                             <a
