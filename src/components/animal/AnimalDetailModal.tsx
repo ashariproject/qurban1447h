@@ -249,18 +249,15 @@ const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
 
             {/* Photo Comparison Section */}
             <div className="space-y-3">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                <Info className="h-4 w-4 text-slate-450" />
-                Dokumentasi Foto Qurban
+              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5 border-b pb-1">
+                <Info className="h-4 w-4 text-blue-600" />
+                DOKUMENTASI FOTO HEWAN QURBAN
               </h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
                 {/* 1. Live Animal Photo */}
                 <div className="border border-slate-100 rounded-xl overflow-hidden bg-slate-50 flex flex-col">
-                  <div className="bg-slate-100 px-3 py-1.5 border-b font-extrabold text-[10px] uppercase text-slate-600 tracking-wider text-center">
-                    Foto Hewan Saat Hidup
-                  </div>
                   <div className="relative h-48 bg-slate-100 flex items-center justify-center overflow-hidden">
                     <img 
                       src={livePhoto} 
@@ -279,9 +276,6 @@ const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
 
                 {/* 2. Slaughter Photo */}
                 <div className="border border-slate-100 rounded-xl overflow-hidden bg-slate-50 flex flex-col">
-                  <div className="bg-slate-100 px-3 py-1.5 border-b font-extrabold text-[10px] uppercase text-slate-600 tracking-wider text-center">
-                    Foto Menjelang Penyembelihan
-                  </div>
                   <div className="relative h-48 bg-slate-100 flex items-center justify-center overflow-hidden">
                     {hasSlaughterPhoto && slaughterPhoto ? (
                       <img 
