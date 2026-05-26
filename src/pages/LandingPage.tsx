@@ -299,7 +299,7 @@ const LandingPage = () => {
             </div>
             
             <div className="lg:w-1/2 relative">
-              <div className="relative z-10 rounded-[40px] overflow-hidden shadow-2xl border-8 border-white bg-slate-100 aspect-[4/3] w-full">
+              <div className="relative z-10 rounded-[40px] overflow-hidden shadow-2xl border-8 border-white bg-slate-100 h-[250px] sm:h-[350px] md:h-[400px] lg:h-[450px] w-full">
                 {heroImages.map((img, idx) => (
                   <div
                     key={idx}
