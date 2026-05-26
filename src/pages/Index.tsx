@@ -499,6 +499,7 @@ const Index = () => {
         onClose={() => setIsModalOpen(false)}
         animal={selectedAnimalForModal}
         shohibulList={shohibulList}
+        showWhatsApp={false}
       />
     </div>
   );

@@ -364,6 +364,7 @@ const PanitiaDashboard = () => {
         onClose={() => setIsModalOpen(false)}
         animal={selectedAnimalForModal}
         shohibulList={shohibulList}
+        showWhatsApp={true}
       />
     </Layout>
   );

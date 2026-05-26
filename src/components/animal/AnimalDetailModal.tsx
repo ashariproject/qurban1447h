@@ -9,6 +9,7 @@ interface AnimalDetailModalProps {
   onClose: () => void;
   animal: HewanData | null;
   shohibulList: ShohibulData[];
+  showWhatsApp?: boolean;
 }
 
 const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
@@ -16,6 +17,7 @@ const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
   onClose,
   animal,
   shohibulList,
+  showWhatsApp = false,
 }) => {
   if (!animal) return null;
 
@@ -149,7 +151,7 @@ const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
               </div>
             </div>
 
-            {/* Animal Overview & WA Button */}
+            {/* Animal Overview & Action Button */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
               <div className="space-y-1">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kode Hewan</span>
@@ -176,8 +178,8 @@ const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
                   <span className="text-sm font-black text-slate-800">{animal.bobot ? `${Math.round(animal.bobot)} kg` : '-'}</span>
                 </div>
                 
-                {/* WA button top right for single shohibul */}
-                {!isPatungan && shohibuls.length > 0 ? (
+                {/* WA button top right for single shohibul - ADMIN ONLY */}
+                {showWhatsApp && (!isPatungan && shohibuls.length > 0 ? (
                   <a
                     href={getWhatsAppLink(shohibuls[0])}
                     target="_blank"
@@ -193,7 +195,7 @@ const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
                       Kirim WA via List di Bawah
                     </div>
                   )
-                )}
+                ))}
               </div>
             </div>
 
@@ -226,18 +228,20 @@ const AnimalDetailModal: React.FC<AnimalDetailModalProps> = ({
                         </div>
                         
                         <div className="flex items-center gap-2 self-end sm:self-auto">
-                          <span className="text-[10px] text-slate-500 font-medium print:inline hidden">
+                          <span className="text-[10px] text-slate-650 font-bold">
                             {s.noTelepon}
                           </span>
-                          <a
-                            href={getWhatsAppLink(s)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md font-bold border border-emerald-250 transition-colors duration-200 print-hide text-[10px]"
-                          >
-                            <MessageCircle className="h-3.5 w-3.5 fill-emerald-700" />
-                            <span>Kirim WA ({s.noTelepon})</span>
-                          </a>
+                          {showWhatsApp && (
+                            <a
+                              href={getWhatsAppLink(s)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md font-bold border border-emerald-250 transition-colors duration-200 print-hide text-[10px]"
+                            >
+                              <MessageCircle className="h-3.5 w-3.5 fill-emerald-700" />
+                              <span>Kirim WA</span>
+                            </a>
+                          )}
                         </div>
                       </div>
                     ))}
