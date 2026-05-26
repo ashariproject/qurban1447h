@@ -126,6 +126,9 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-2">
+              <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-gray-250 text-gray-700 hover:bg-gray-50 font-bold h-7 text-xs">
+                <Link to="/">KEMBALI KE WEBSITE</Link>
+              </Button>
               {isAuthenticated ? (
                 <div className="flex items-center gap-2">
                   <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-blue-200 text-blue-700 font-bold h-7 text-xs">
