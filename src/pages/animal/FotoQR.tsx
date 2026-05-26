@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog';
+import { compressImage } from "@/utils/imageCompressor";
 
 const HewanFotoQR = () => {
   const { hewanList, shohibulList, addFotoToHewan, removeFotoFromHewan } = useQurban();
@@ -26,8 +27,14 @@ const HewanFotoQR = () => {
     if (!files) return;
     for (const file of Array.from(files)) {
       const reader = new FileReader();
-      reader.onload = () => {
-        addFotoToHewan(hewan.id, reader.result as string);
+      reader.onload = async () => {
+        try {
+          const compressed = await compressImage(reader.result as string);
+          addFotoToHewan(hewan.id, compressed);
+        } catch (err) {
+          console.error("Compression failed, uploading original image", err);
+          addFotoToHewan(hewan.id, reader.result as string);
+        }
       };
       reader.readAsDataURL(file);
     }

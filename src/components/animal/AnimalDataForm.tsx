@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { compressImage } from "@/utils/imageCompressor";
 
 const AnimalDataForm = () => {
   const { shohibulList, hewanList, updateHewanStatus, addFotoToHewan, removeFotoFromHewan, updateHewanMeasurements } = useQurban();
@@ -84,8 +85,14 @@ const AnimalDataForm = () => {
     if (files) {
       Array.from(files).forEach(file => {
         const reader = new FileReader();
-        reader.onload = () => {
-          addFotoToHewan(id, reader.result as string);
+        reader.onload = async () => {
+          try {
+            const compressed = await compressImage(reader.result as string);
+            addFotoToHewan(id, compressed);
+          } catch (err) {
+            console.error("Compression failed, uploading original image", err);
+            addFotoToHewan(id, reader.result as string);
+          }
         };
         reader.readAsDataURL(file);
       });
