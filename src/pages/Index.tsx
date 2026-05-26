@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,19 @@ const Index = () => {
   const { shohibulList, animalData, hewanList, packagingData, distributionList } = useQurban();
   const [selectedAnimalForModal, setSelectedAnimalForModal] = useState<typeof hewanList[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [timeString, setTimeString] = useState('');
+  const [dateString, setDateString] = useState('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setTimeString(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setDateString(now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleImageClick = (animal: typeof hewanList[0]) => {
     setSelectedAnimalForModal(animal);
@@ -50,6 +63,15 @@ const Index = () => {
   // Data AKTUAL dari hewanList (sama dengan tampilan halaman Animal & Panitia)
   const hewanSapiAktual = hewanList.filter(h => h.jenis === 'sapi').length;
   const hewanKambingAktual = hewanList.filter(h => h.jenis === 'kambing').length;
+
+  const totalSapi = hewanSapiAktual;
+  const totalKambing = hewanKambingAktual;
+
+  const sapiDisembelih = hewanList.filter(h => h.jenis === 'sapi' && h.status !== 'diterima' && h.status !== 'daftar').length;
+  const kambingDisembelih = hewanList.filter(h => h.jenis === 'kambing' && h.status !== 'diterima' && h.status !== 'daftar').length;
+
+  const sapiProgress = totalSapi > 0 ? (sapiDisembelih / totalSapi) * 100 : 0;
+  const kambingProgress = totalKambing > 0 ? (kambingDisembelih / totalKambing) * 100 : 0;
 
   const totalDipotong = hewanList.filter(h => h.status === 'dipotong').length;
   const totalPacksPackaging = packagingData.sapiPacksOutput + packagingData.kambingPacksOutput;
@@ -110,39 +132,69 @@ const Index = () => {
       <div className="container mx-auto px-4 py-4 md:py-6">
         {/* Header Section - Compact */}
         <header className="mb-4 relative">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-white p-2 rounded-xl shadow-md border border-green-100">
-                <img 
-                  src="/images/logo.png" 
-                  alt="Logo"
-                  className="h-8 w-auto"
-                />
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4 mb-4">
+            <div className="flex justify-between items-center w-full md:w-auto">
+              <div className="flex items-center gap-3">
+                <div className="bg-white p-2 rounded-xl shadow-md border border-green-100">
+                  <img 
+                    src="/images/logo.png" 
+                    alt="Logo"
+                    className="h-8 w-auto"
+                  />
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900 leading-tight">QurbanKu Dashboard</h1>
+                  <p className="text-[10px] text-gray-500">Masjid As Sakinah Pantai Mentari</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900 leading-tight">QurbanKu Dashboard</h1>
-                <p className="text-[10px] text-gray-500">Masjid As Sakinah Pantai Mentari</p>
+              
+              <div className="md:hidden flex items-center gap-2">
+                <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-gray-250 text-gray-700 hover:bg-gray-50 font-bold h-7 text-xs">
+                  <Link to="/">KEMBALI KE WEBSITE</Link>
+                </Button>
+                {isAuthenticated ? (
+                  <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-blue-200 text-blue-700 font-bold h-7 text-xs">
+                    <Link to="/admin">ADMIN</Link>
+                  </Button>
+                ) : (
+                  <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-bold h-7 text-xs">
+                    <Link to="/login">LOGIN</Link>
+                  </Button>
+                )}
               </div>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-gray-250 text-gray-700 hover:bg-gray-50 font-bold h-7 text-xs">
-                <Link to="/">KEMBALI KE WEBSITE</Link>
-              </Button>
-              {isAuthenticated ? (
-                <div className="flex items-center gap-2">
-                  <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-blue-200 text-blue-700 font-bold h-7 text-xs">
-                    <Link to="/admin">MENU ADMIN</Link>
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={logout} className="text-red-500 hover:text-red-600 hover:bg-red-50 font-medium h-7 text-xs">
-                    LOGOUT
-                  </Button>
+
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+              <div className="bg-slate-900 text-white rounded-2xl px-4 py-2 shadow-lg flex items-center gap-3 border border-slate-800">
+                <div className="text-right">
+                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">Waktu Operasional Live</span>
+                  <span className="text-[10px] font-bold text-emerald-400 block mt-0.5">{dateString || 'Memuat tanggal...'}</span>
                 </div>
-              ) : (
-                <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-200 transition-all hover:scale-105 active:scale-95 h-7 text-xs">
-                  <Link to="/login">LOGIN PETUGAS</Link>
+                <div className="h-6 w-px bg-slate-800" />
+                <div className="text-lg md:text-xl font-black font-mono text-white tracking-widest min-w-[75px] text-center">
+                  {timeString || '00:00:00'}
+                </div>
+              </div>
+
+              <div className="hidden md:flex items-center gap-2">
+                <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-gray-250 text-gray-700 hover:bg-gray-50 font-bold h-7 text-xs">
+                  <Link to="/">KEMBALI KE WEBSITE</Link>
                 </Button>
-              )}
+                {isAuthenticated ? (
+                  <div className="flex items-center gap-2">
+                    <Button asChild variant="outline" size="sm" className="bg-white/80 backdrop-blur-sm border-blue-200 text-blue-700 font-bold h-7 text-xs">
+                      <Link to="/admin">MENU ADMIN</Link>
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={logout} className="text-red-500 hover:text-red-600 hover:bg-red-50 font-medium h-7 text-xs">
+                      LOGOUT
+                    </Button>
+                  </div>
+                ) : (
+                  <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-200 transition-all hover:scale-105 active:scale-95 h-7 text-xs">
+                    <Link to="/login">LOGIN PETUGAS</Link>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
           
@@ -150,10 +202,6 @@ const Index = () => {
             <Badge variant="secondary" className="bg-green-100 text-green-700 border-none px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">
               1447H / 2026
             </Badge>
-            <div className="flex items-center gap-1.5 text-gray-500 text-[11px] font-medium bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-sm border border-white/50">
-              <Calendar className="h-3 w-3 text-blue-500" />
-              {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-            </div>
           </div>
           <h2 className="text-xl font-bold text-gray-800 tracking-tight">Rekapitulasi Perolehan Hewan</h2>
         </header>
@@ -189,7 +237,7 @@ const Index = () => {
 
         {/* Live Operational Monitoring Section */}
         <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <div className="h-6 w-1.5 bg-emerald-600 rounded-full" />
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold text-gray-900">Monitoring Progress Operasional (Live)</h2>
@@ -198,6 +246,61 @@ const Index = () => {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
             </div>
+          </div>
+
+          {/* Sapi & Kambing Progress Bars */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Sapi Progress */}
+            <Card className="border-none shadow-md bg-white p-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🐂</span>
+                  <div>
+                    <h3 className="font-extrabold text-sm text-slate-800 uppercase tracking-wide">Progres Sapi</h3>
+                    <p className="text-[10px] text-slate-400 font-medium">Penyembelihan & Pemotongan</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xl font-black text-blue-600">{Math.round(sapiProgress)}%</span>
+                </div>
+              </div>
+              <div className="w-full bg-blue-50 rounded-full h-3 overflow-hidden">
+                <div 
+                  className="bg-blue-600 h-full rounded-full transition-all duration-500" 
+                  style={{ width: `${sapiProgress}%` }}
+                />
+              </div>
+              <div className="flex justify-between items-center text-[9px] font-bold text-slate-500 uppercase tracking-wider pt-0.5">
+                <span>Belum Diproses: {totalSapi - sapiDisembelih} Ekor</span>
+                <span className="text-slate-800">{sapiDisembelih} / {totalSapi} Ekor Selesai</span>
+              </div>
+            </Card>
+
+            {/* Kambing Progress */}
+            <Card className="border-none shadow-md bg-white p-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🐐</span>
+                  <div>
+                    <h3 className="font-extrabold text-sm text-slate-800 uppercase tracking-wide">Progres Kambing</h3>
+                    <p className="text-[10px] text-slate-400 font-medium">Penyembelihan & Pemotongan</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xl font-black text-green-600">{Math.round(kambingProgress)}%</span>
+                </div>
+              </div>
+              <div className="w-full bg-green-50 rounded-full h-3 overflow-hidden">
+                <div 
+                  className="bg-green-600 h-full rounded-full transition-all duration-500" 
+                  style={{ width: `${kambingProgress}%` }}
+                />
+              </div>
+              <div className="flex justify-between items-center text-[9px] font-bold text-slate-500 uppercase tracking-wider pt-0.5">
+                <span>Belum Diproses: {totalKambing - kambingDisembelih} Ekor</span>
+                <span className="text-slate-800">{kambingDisembelih} / {totalKambing} Ekor Selesai</span>
+              </div>
+            </Card>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
