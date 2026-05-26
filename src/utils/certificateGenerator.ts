@@ -59,7 +59,7 @@ export const generateCertificate = async (nama: string, jenisQurban?: string) =>
       let checkX = 0;
       let boxWidth = 12;
       let boxHeight = 12;
-      const checkY = 165; // Precise height matching the checkbox visual on the template
+      const checkY = 170; // Raised by 5px from 165 for exact box alignment
       
       if (jenisQurban === 'sapi-mandiri') {
         checkX = 208; // Adjusted X for box
