@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, Beef, Package, Info, Heart, ShieldCheck, Calendar, Truck, Activity } from 'lucide-react';
+import { Users, Beef, Package, Info, Heart, ShieldCheck, Calendar, Truck, Activity, Camera } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQurban } from '@/contexts/QurbanContext';
@@ -46,6 +46,56 @@ const Index = () => {
   const totalDipotong = hewanList.filter(h => h.status === 'dipotong').length;
   const totalPacksPackaging = packagingData.sapiPacksOutput + packagingData.kambingPacksOutput;
   const totalPacksDistributed = finalDistributionData.reduce((acc, curr) => acc + curr.current, 0);
+
+  // Resolve donor names and groups for each animal
+  const getAnimalDonorDetails = (animal: typeof hewanList[0]) => {
+    const representative = shohibulList.find(s => s.id === animal.shohibulId);
+    if (!representative) {
+      return {
+        label: 'HAMBA ALLAH',
+        isPatungan: false,
+        names: ['Hamba Allah']
+      };
+    }
+
+    if (representative.jenisQurban === 'sapi-patungan') {
+      const patunganShohibuls = shohibulList
+        .filter(s => s.jenisQurban === 'sapi-patungan')
+        .sort((a, b) => {
+          const dateCompare = (a.tanggalDaftar || '').localeCompare(b.tanggalDaftar || '');
+          if (dateCompare !== 0) return dateCompare;
+          return a.nama.localeCompare(b.nama);
+        });
+      
+      const match = animal.kode.match(/\d+/);
+      const cowNumber = match ? parseInt(match[0], 10) : 1;
+      const groupIdx = (cowNumber - 1) % 5;
+      
+      const start = groupIdx * 7;
+      const group = patunganShohibuls.slice(start, start + 7);
+      return {
+        label: 'SAPI PATUNGAN/KOLEKTIF',
+        isPatungan: true,
+        names: group.map(s => s.nama)
+      };
+    }
+
+    return {
+      label: representative.nama,
+      isPatungan: false,
+      names: [representative.nama]
+    };
+  };
+
+  // Sort animal list: Sapi first (S-01, S-02...), then Kambing (K-01, K-02...)
+  const sortedHewanList = [...hewanList].sort((a, b) => {
+    if (a.jenis !== b.jenis) {
+      return a.jenis === 'sapi' ? -1 : 1;
+    }
+    const numA = parseInt(a.kode.match(/\d+/)?.[0] || '0', 10);
+    const numB = parseInt(b.kode.match(/\d+/)?.[0] || '0', 10);
+    return numA - numB;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
@@ -328,7 +378,97 @@ const Index = () => {
           </div>
         </section>
 
+        {/* GALERI DOKUMENTASI HEWAN & SHOHIBUL */}
+        <section className="space-y-4 pt-4 mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-6 w-1.5 bg-blue-600 rounded-full" />
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
+                <Camera className="h-5 w-5 text-blue-600 animate-pulse" />
+                Galeri Dokumentasi Hewan & Pengqurban
+              </h2>
+              <p className="text-xs text-gray-500 font-medium">Foto dokumentasi real-time dari posko penyembelihan.</p>
+            </div>
+          </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {sortedHewanList.map((animal) => {
+              const { label, isPatungan, names } = getAnimalDonorDetails(animal);
+              const hasPhotos = animal.fotoUrls && animal.fotoUrls.length > 0;
+              const imageUrl = hasPhotos 
+                ? animal.fotoUrls[0] 
+                : (animal.jenis === 'sapi' 
+                  ? "/images/sapi_bali_lokal.png" 
+                  : "/images/kambing_lokal.png"
+                );
+
+              return (
+                <Card key={animal.id} className="border-none shadow-md hover:shadow-lg transition-all overflow-hidden flex flex-col bg-white group">
+                  {/* Thumbnail Image */}
+                  <div className="relative h-40 w-full bg-gray-100 overflow-hidden">
+                    <img 
+                      src={imageUrl} 
+                      alt={`Dokumentasi ${animal.kode}`} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    {/* Animal Code Badge */}
+                    <div className="absolute top-2 left-2 bg-black/85 backdrop-blur-sm text-white px-2.5 py-1 rounded-lg text-sm font-black tracking-wider shadow-md">
+                      {animal.kode}
+                    </div>
+
+                    {/* Status Badge */}
+                    <div className={`absolute top-2 right-2 px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider ${
+                      animal.status === 'dipotong' 
+                        ? 'bg-emerald-600 text-white' 
+                        : animal.status === 'disembelih' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'bg-blue-600 text-white'
+                    }`}>
+                      {animal.status}
+                    </div>
+
+                    {/* Animal Type Badge */}
+                    <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm text-gray-800 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wide">
+                      {animal.jenis.toUpperCase()}
+                    </div>
+                  </div>
+
+                  {/* Donor Names */}
+                  <CardContent className="p-3 flex-1 flex flex-col justify-between space-y-2">
+                    <div className="space-y-2">
+                      <div className="border-b pb-1">
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Pengqurban</span>
+                        <h4 className="font-bold text-gray-850 text-xs mt-0.5 truncate" title={label}>
+                          {label}
+                        </h4>
+                      </div>
+
+                      {isPatungan && (
+                        <div className="space-y-1">
+                          <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest block">Daftar Lengkap (7 Orang)</span>
+                          <div className="max-h-20 overflow-y-auto pr-1 space-y-0.5 scrollbar-thin">
+                            {names.map((name, idx) => (
+                              <div key={idx} className="flex items-center gap-1 text-[10px] text-gray-600 font-medium">
+                                <div className="w-1 h-1 rounded-full bg-blue-500 shrink-0" />
+                                <span className="truncate">{name}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-2 border-t flex items-center justify-between text-[9px] font-bold text-gray-500 uppercase tracking-wider">
+                      <span>Bobot Hidup:</span>
+                      <span className="text-gray-800 text-xs font-black">{animal.bobot ? `${Math.round(animal.bobot)} kg` : '-'}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Footer info */}
         <footer className="text-center py-12 border-t border-gray-100">
@@ -340,6 +480,7 @@ const Index = () => {
             &copy; 2026 - Dikembangkan untuk kemudahan dan transparansi ibadah qurban
           </p>
         </footer>
+
       </div>
     </div>
   );
