@@ -69,9 +69,9 @@ const LandingPage = () => {
 
   const heroImages = [
     {
-      src: "/images/masjid_as_sakinah_hero.png",
-      sub: "Masjid As Sakinah",
-      title: "Pantai Mentari"
+      src: "/images/qurban_berkah_cartoon.jpg",
+      sub: "Selamat Idul Adha",
+      title: "Qurban Berkah As Sakinah"
     },
     {
       src: "/images/live_monitoring_banner.jpg",
