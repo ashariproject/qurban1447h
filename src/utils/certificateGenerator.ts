@@ -1,104 +1,225 @@
 
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
-export const generateCertificate = async (nama: string, jenisQurban?: string) => {
+// ─────────────────────────────────────────────────────────────
+// Helper: Load template bytes (cached in memory)
+// ─────────────────────────────────────────────────────────────
+let _templateCache: ArrayBuffer | null = null;
+
+const getTemplateBytes = async (): Promise<ArrayBuffer> => {
+  if (_templateCache) return _templateCache;
+  const response = await fetch('/SERTIFIKAT.pdf');
+  if (!response.ok) throw new Error('Gagal memuat template sertifikat.');
+  _templateCache = await response.arrayBuffer();
+  return _templateCache;
+};
+
+// ─────────────────────────────────────────────────────────────
+// Helper: Load custom font (cached)
+// ─────────────────────────────────────────────────────────────
+let _fontCache: ArrayBuffer | null = null;
+const getFontBytes = async (): Promise<ArrayBuffer | null> => {
+  if (_fontCache) return _fontCache;
   try {
-    // Fetch the template
-    const response = await fetch('/SERTIFIKAT.pdf');
-    if (!response.ok) throw new Error('Gagal memuat template sertifikat.');
-    const existingPdfBytes = await response.arrayBuffer();
+    const res = await fetch('/fonts/Cinzel.ttf');
+    if (!res.ok) return null;
+    _fontCache = await res.arrayBuffer();
+    return _fontCache;
+  } catch {
+    return null;
+  }
+};
 
-    // Load a PDFDocument from the existing PDF bytes
-    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+// ─────────────────────────────────────────────────────────────
+// Draw one certificate page into a PDFDocument
+// ─────────────────────────────────────────────────────────────
+const drawCertPage = async (
+  pdfDoc: PDFDocument,
+  nama: string,
+  jenisQurban?: string
+) => {
+  // Embed fonts
+  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    // Embed the standard Helvetica fonts as fallback
-    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-
-    // Try loading custom Cinzel font
-    let customFont = helveticaFont;
+  let customFont = helveticaFont;
+  const fontBytes = await getFontBytes();
+  if (fontBytes) {
     try {
-      // Import fontkit dynamically or assuming it's imported globally. But for Vite we can use a dynamic import.
       const fontkit = await import('@pdf-lib/fontkit');
       pdfDoc.registerFontkit(fontkit.default || fontkit);
-      const fontUrl = '/fonts/Cinzel.ttf';
-      const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
       customFont = await pdfDoc.embedFont(fontBytes);
-    } catch (e) {
-      console.warn("Failed to load Cinzel font, falling back to Helvetica", e);
+    } catch {
+      // fallback to helvetica
     }
+  }
 
-    // Get the first page of the document
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0];
+  const pages = pdfDoc.getPages();
+  const page = pages[pages.length - 1]; // work on the last added page
+  const { width } = page.getSize();
 
-    // Get the width and height of the first page
-    const { width, height } = firstPage.getSize();
+  // Dynamic font size
+  let fontSize = 28;
+  if (nama.length > 25) fontSize = 18;
+  else if (nama.length > 18) fontSize = 22;
 
-    // Adjust font size dynamically based on length for a clean and modern look
-    let fontSize = 28;
-    if (nama.length > 25) {
-      fontSize = 18;
-    } else if (nama.length > 18) {
-      fontSize = 22;
+  const textWidth = customFont.widthOfTextAtSize(nama, fontSize);
+
+  page.drawText(nama, {
+    x: (width - textWidth) / 2,
+    y: 206,
+    size: fontSize,
+    font: customFont,
+    color: rgb(0.1, 0.1, 0.1),
+  });
+
+  if (jenisQurban) {
+    let checkX = 0;
+    const checkY = 170;
+    const boxWidth = 12;
+    const boxHeight = 12;
+
+    if (jenisQurban === 'sapi-mandiri') checkX = 208;
+    else if (jenisQurban === 'sapi-patungan') checkX = 285;
+    else if (jenisQurban.startsWith('kambing')) checkX = 371;
+
+    if (checkX > 0) {
+      page.drawRectangle({
+        x: checkX,
+        y: checkY - 2,
+        width: boxWidth,
+        height: boxHeight,
+        color: rgb(0.8, 0.15, 0.15),
+      });
+      page.drawText('v', {
+        x: checkX + 3,
+        y: checkY,
+        size: 10,
+        font: helveticaBoldFont,
+        color: rgb(1, 1, 1),
+      });
     }
+  }
+};
 
-    const textWidth = customFont.widthOfTextAtSize(nama, fontSize);
-    
-    // Draw the name with a thinner font and higher Y coordinate (208 instead of 190) to prevent overlap
-    firstPage.drawText(nama, {
-      x: (width - textWidth) / 2,
-      y: 206, // Slight adjustment for Cinzel baseline
-      size: fontSize,
-      font: customFont,
-      color: rgb(0.1, 0.1, 0.1),
-    });
+// ─────────────────────────────────────────────────────────────
+// Generate single certificate (original behaviour)
+// ─────────────────────────────────────────────────────────────
+export const generateCertificate = async (
+  nama: string,
+  jenisQurban?: string
+): Promise<Uint8Array> => {
+  try {
+    const templateBytes = await getTemplateBytes();
+    const pdfDoc = await PDFDocument.load(templateBytes.slice(0)); // slice to clone
 
-    // Draw the checkmark (V) inside the correct checkbox box
-    if (jenisQurban) {
-      let checkX = 0;
-      let boxWidth = 12;
-      let boxHeight = 12;
-      const checkY = 170; // Raised by 5px from 165 for exact box alignment
-      
-      if (jenisQurban === 'sapi-mandiri') {
-        checkX = 208; // Adjusted X for box
-      } else if (jenisQurban === 'sapi-patungan') {
-        checkX = 285; // Adjusted X for box
-      } else if (jenisQurban.startsWith('kambing')) {
-        checkX = 371; // Adjusted X for box
-      }
+    await drawCertPage(pdfDoc, nama, jenisQurban);
 
-      if (checkX > 0) {
-        // Draw a solid red square to fill the checkbox
-        firstPage.drawRectangle({
-          x: checkX,
-          y: checkY - 2, // Slight adjustment for exact box placement
-          width: boxWidth,
-          height: boxHeight,
-          color: rgb(0.8, 0.15, 0.15), // Red color
-        });
-        // Also draw a white checkmark inside the red box for better aesthetics
-        firstPage.drawText('v', {
-          x: checkX + 3,
-          y: checkY,
-          size: 10,
-          font: helveticaBoldFont,
-          color: rgb(1, 1, 1),
-        });
-      }
-    }
-
-    // Serialize the PDFDocument to bytes (a Uint8Array)
-    const pdfBytes = await pdfDoc.save();
-    
-    return pdfBytes;
+    return await pdfDoc.save();
   } catch (error) {
     console.error('Error generating certificate:', error);
     throw error;
   }
 };
 
+// ─────────────────────────────────────────────────────────────
+// Generate ALL certificates merged into one PDF
+// ─────────────────────────────────────────────────────────────
+export interface ShohibulCertInfo {
+  nama: string;
+  jenisQurban: string;
+}
+
+export const generateAllCertificates = async (
+  shohibulList: ShohibulCertInfo[],
+  onProgress?: (current: number, total: number) => void
+): Promise<Uint8Array> => {
+  const templateBytes = await getTemplateBytes();
+
+  // Merged PDF document
+  const mergedPdf = await PDFDocument.create();
+
+  const total = shohibulList.length;
+
+  for (let i = 0; i < total; i++) {
+    const s = shohibulList[i];
+    if (onProgress) onProgress(i + 1, total);
+
+    // Load fresh copy of template for this entry
+    const srcDoc = await PDFDocument.load(templateBytes.slice(0));
+
+    // Embed font on source doc & draw name
+    const helveticaFont = await srcDoc.embedFont(StandardFonts.Helvetica);
+    const helveticaBoldFont = await srcDoc.embedFont(StandardFonts.HelveticaBold);
+
+    let customFont = helveticaFont;
+    const fontBytes = await getFontBytes();
+    if (fontBytes) {
+      try {
+        const fontkit = await import('@pdf-lib/fontkit');
+        srcDoc.registerFontkit(fontkit.default || fontkit);
+        customFont = await srcDoc.embedFont(fontBytes);
+      } catch {
+        // fallback
+      }
+    }
+
+    const pages = srcDoc.getPages();
+    const page = pages[0];
+    const { width } = page.getSize();
+
+    // Draw name
+    const nama = s.nama;
+    let fontSize = 28;
+    if (nama.length > 25) fontSize = 18;
+    else if (nama.length > 18) fontSize = 22;
+
+    const textWidth = customFont.widthOfTextAtSize(nama, fontSize);
+    page.drawText(nama, {
+      x: (width - textWidth) / 2,
+      y: 206,
+      size: fontSize,
+      font: customFont,
+      color: rgb(0.1, 0.1, 0.1),
+    });
+
+    // Draw checkbox
+    const jenisQurban = s.jenisQurban;
+    let checkX = 0;
+    const checkY = 170;
+
+    if (jenisQurban === 'sapi-mandiri') checkX = 208;
+    else if (jenisQurban === 'sapi-patungan') checkX = 285;
+    else if (jenisQurban.startsWith('kambing')) checkX = 371;
+
+    if (checkX > 0) {
+      page.drawRectangle({
+        x: checkX,
+        y: checkY - 2,
+        width: 12,
+        height: 12,
+        color: rgb(0.8, 0.15, 0.15),
+      });
+      page.drawText('v', {
+        x: checkX + 3,
+        y: checkY,
+        size: 10,
+        font: helveticaBoldFont,
+        color: rgb(1, 1, 1),
+      });
+    }
+
+    // Copy page into merged doc
+    const [copiedPage] = await mergedPdf.copyPages(srcDoc, [0]);
+    mergedPdf.addPage(copiedPage);
+  }
+
+  return await mergedPdf.save();
+};
+
+// ─────────────────────────────────────────────────────────────
+// Download helper
+// ─────────────────────────────────────────────────────────────
 export const downloadPDF = (bytes: Uint8Array, fileName: string) => {
   const blob = new Blob([bytes], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);

@@ -21,8 +21,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import ShohibulEditDialog from './ShohibulEditDialog';
-import { Edit, Trash2, Filter, FileText, Share2, Printer, Phone } from 'lucide-react';
-import { generateCertificate, downloadPDF } from '@/utils/certificateGenerator';
+import { Edit, Trash2, Filter, FileText, Share2, Printer, Phone, Files, Loader2, AlertTriangle } from 'lucide-react';
+import { generateCertificate, generateAllCertificates, downloadPDF } from '@/utils/certificateGenerator';
 import { useToast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
@@ -47,6 +47,8 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
   const [filterJenis, setFilterJenis] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingItem, setEditingItem] = useState<ShohibulData | null>(null);
+  const [isGeneratingAll, setIsGeneratingAll] = useState(false);
+  const [generateProgress, setGenerateProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
 
   const handlePrintCertificate = async (shohibul: ShohibulData) => {
@@ -57,6 +59,44 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
       toast({ title: "Berhasil!", description: "Sertifikat telah diunduh." });
     } catch (error) {
       toast({ variant: "destructive", title: "Gagal", description: "Terjadi kesalahan saat membuat sertifikat." });
+    }
+  };
+
+  // ── Generate semua sertifikat sekaligus ──────────────────────
+  const handleGenerateAllCertificates = async () => {
+    const eligible = data.filter(s => s.nama && s.nama !== 'Hamba Allah');
+    if (eligible.length === 0) {
+      toast({ variant: 'destructive', title: 'Tidak ada data', description: 'Tidak ada shohibul yang bisa dicetak sertifikatnya.' });
+      return;
+    }
+
+    setIsGeneratingAll(true);
+    setGenerateProgress({ current: 0, total: eligible.length });
+
+    try {
+      toast({
+        title: '⏳ Membuat Sertifikat...',
+        description: `Memproses ${eligible.length} sertifikat, mohon tunggu.`,
+      });
+
+      const pdfBytes = await generateAllCertificates(
+        eligible.map(s => ({ nama: s.nama, jenisQurban: s.jenisQurban })),
+        (current, total) => setGenerateProgress({ current, total })
+      );
+
+      const today = new Date().toLocaleDateString('id-ID').replace(/\//g, '-');
+      downloadPDF(pdfBytes, `Semua_Sertifikat_Qurban_1447H_${today}.pdf`);
+
+      toast({
+        title: '✅ Berhasil!',
+        description: `${eligible.length} sertifikat berhasil digabung dan diunduh sebagai 1 file PDF.`,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({ variant: 'destructive', title: 'Gagal', description: 'Terjadi kesalahan saat membuat sertifikat gabungan.' });
+    } finally {
+      setIsGeneratingAll(false);
+      setGenerateProgress({ current: 0, total: 0 });
     }
   };
 
@@ -150,14 +190,59 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
     }).format(amount);
   };
 
+  // helper: cek validitas nomor HP
+  const isPhoneValid = (phone: string) => {
+    if (!phone || phone === '0' || phone === '-' || phone === '.') return false;
+    if (phone.length < 10) return false;
+    return /^(0|62|\+62)[0-9]+$/.test(phone);
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Filter className="h-5 w-5" />
-          Data Shohibul Qurban
-        </CardTitle>
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Data Shohibul Qurban
+            <Badge variant="secondary" className="ml-1 font-bold">{data.length} Orang</Badge>
+          </CardTitle>
+
+          {/* ── Tombol Generate Semua Sertifikat ── */}
+          <div className="flex flex-col items-end gap-1">
+            <Button
+              onClick={handleGenerateAllCertificates}
+              disabled={isGeneratingAll}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md gap-2 h-10"
+            >
+              {isGeneratingAll ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Memproses {generateProgress.current}/{generateProgress.total}...
+                </>
+              ) : (
+                <>
+                  <Files className="h-4 w-4" />
+                  Generate Semua Sertifikat (1 PDF)
+                </>
+              )}
+            </Button>
+            {isGeneratingAll && generateProgress.total > 0 && (
+              <div className="w-full max-w-[280px]">
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div
+                    className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
+                    style={{ width: `${(generateProgress.current / generateProgress.total) * 100}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-gray-500 text-right mt-0.5">
+                  {Math.round((generateProgress.current / generateProgress.total) * 100)}% selesai
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mt-2">
           <div className="flex-1 w-full">
             <Input
               placeholder="Cari nama, alamat, atau nomor telepon..."
@@ -213,7 +298,18 @@ const ShohibulDataTable: React.FC<ShohibulDataTableProps> = ({
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">{item.nama}</TableCell>
                     <TableCell>{item.alamat}</TableCell>
-                    <TableCell>{item.noTelepon}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        {!isPhoneValid(item.noTelepon) ? (
+                          <span className="flex items-center gap-1 text-red-600 font-semibold text-xs">
+                            <AlertTriangle className="h-3 w-3" />
+                            {item.noTelepon || '-'}
+                          </span>
+                        ) : (
+                          <span className="text-sm">{item.noTelepon}</span>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         item.jenisQurban === 'sapi-mandiri' 
